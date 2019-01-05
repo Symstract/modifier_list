@@ -10,15 +10,23 @@ bl_info = {
     "category": "3d View"
     }
 
-import bpy, math
-import numpy as np
-from bpy.app.handlers import persistent
 from bl_ui.properties_data_modifier import DATA_PT_modifiers
+import bpy 
+from bpy.app.handlers import persistent
 from bpy.props import *
+from bpy.types import (
+    AddonPreferences,
+    Menu,
+    Operator,
+    PropertyGroup,
+    UIList
+)
 import rna_keymap_ui
+import math
+import numpy as np
 
 
-class Preferences(bpy.types.AddonPreferences):
+class Preferences(AddonPreferences):
     bl_idname = __name__
     
     modifier_01 = StringProperty()
@@ -114,7 +122,7 @@ class ModifierAttributesUtil:
         return fav_mods_iter
 
 
-class AllModifiersCollection(bpy.types.PropertyGroup):
+class AllModifiersCollection(PropertyGroup):
     # Collection Property for search
     value = StringProperty(name="my modifier")
     
@@ -137,7 +145,7 @@ def add_modifier(self, context):
     bpy.ops.ed.undo_push(message="Add Modifier")
 
 
-class OBJECT_MT_custom_add_modifier_menu(bpy.types.Menu):
+class OBJECT_MT_custom_add_modifier_menu(Menu):
     bl_label = "Add Modifier"
     bl_idname = "OBJECT_MT_custom_add_modifier_menu"
     bl_description = "Add a procedural operation/effect to the active object"
@@ -189,7 +197,7 @@ class OBJECT_MT_custom_add_modifier_menu(bpy.types.Menu):
             col.operator("object.custom_modifier_add", text=name, icon=icon).modifier_type = mod
 
 
-class MODIFIERS_UL_modifier_list(bpy.types.UIList):
+class MODIFIERS_UL_modifier_list(UIList):
     
     def draw_item(self, context, layout, data, item, icon, active_data, active_propname):
         mod = item
@@ -215,7 +223,7 @@ class MODIFIERS_UL_modifier_list(bpy.types.UIList):
             layout.label(text="", icon_value=icon)
 
     
-class OBJECT_OT_modifier_list_action(bpy.types.Operator):    
+class OBJECT_OT_modifier_list_action(Operator):    
     bl_idname = "object.modifier_list_action"
     bl_label = "Move modifiers"
     bl_options = {'REGISTER', 'INTERNAL', 'UNDO'}
@@ -252,7 +260,7 @@ class OBJECT_OT_modifier_list_action(bpy.types.Operator):
         return {'FINISHED'}
 
 
-class OBJECT_OT_custom_modifier_add(bpy.types.Operator): 
+class OBJECT_OT_custom_modifier_add(Operator): 
     bl_idname = "object.custom_modifier_add"
     bl_label = "Add Modifier"
     bl_description = "Add a procedural operation/effect to the active object"
@@ -273,7 +281,7 @@ class OBJECT_OT_custom_modifier_add(bpy.types.Operator):
 
 
 
-class OBJECT_OT_custom_modifier_apply(bpy.types.Operator):
+class OBJECT_OT_custom_modifier_apply(Operator):
     bl_idname = "object.custom_modifier_apply"
     bl_label = "Apply Modifier"
     bl_description = "Apply modifier and remove from the stack"
@@ -301,7 +309,7 @@ class OBJECT_OT_custom_modifier_apply(bpy.types.Operator):
         return {'FINISHED'}
 
 
-class OBJECT_OT_custom_modifier_copy(bpy.types.Operator):
+class OBJECT_OT_custom_modifier_copy(Operator):
     bl_idname = "object.custom_modifier_copy"
     bl_label = "Copy Modifier"
     bl_description = "Duplicate modifier at the same position in the stack"
@@ -320,7 +328,7 @@ class OBJECT_OT_custom_modifier_copy(bpy.types.Operator):
         return {'FINISHED'}
 
 
-class VIEW_3D_PT_modifier_popup(bpy.types.Operator):
+class VIEW_3D_PT_modifier_popup(Operator):
     bl_idname = "view3d.modifier_popup"
     bl_label = "Modifier Pop-up Panel"
 
