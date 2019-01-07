@@ -178,7 +178,7 @@ class OBJECT_MT_custom_add_modifier_menu(Menu):
         col.label(text="Modify")
         
         sub = col.column()
-        sub.scale_y = 0.5
+        sub.scale_y = 0.3
         sub.separator()
 
         for name, icon, mod in all_name_icon_type[0:8]:
@@ -188,7 +188,7 @@ class OBJECT_MT_custom_add_modifier_menu(Menu):
         col.label(text="Generate")
         
         sub = col.column()
-        sub.scale_y = 0.5
+        sub.scale_y = 0.3
         sub.separator()
 
         for name, icon, mod in all_name_icon_type[9:24]:
@@ -198,7 +198,7 @@ class OBJECT_MT_custom_add_modifier_menu(Menu):
         col.label(text="Deform")
         
         sub = col.column()
-        sub.scale_y = 0.5
+        sub.scale_y = 0.3
         sub.separator()
 
         for name, icon, mod in all_name_icon_type[25:40]:
@@ -207,7 +207,7 @@ class OBJECT_MT_custom_add_modifier_menu(Menu):
         col = row.column()
         col.label(text="Simulate")
         sub = col.column()
-        sub.scale_y = 0.5
+        sub.scale_y = 0.3
         sub.separator()
 
         for name, icon, mod in all_name_icon_type[41:50]:
