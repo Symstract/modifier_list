@@ -18,7 +18,7 @@ bl_info = {
     "name": "Modifier Popup Panel",
     "author": "Antti Tikka",
     "version": (1, 0, 0),
-    "blender": (2, 79, 0),
+    "blender": (2, 80, 0),
     "location": "Spacebar",
     "description": "A handy popup panel for showing modifiers in 3D view",
     "warning": "",
@@ -46,18 +46,18 @@ import numpy as np
 class Preferences(AddonPreferences):
     bl_idname = __name__
     
-    modifier_01 = StringProperty()
-    modifier_02 = StringProperty()
-    modifier_03 = StringProperty()
-    modifier_04 = StringProperty()
-    modifier_05 = StringProperty()
-    modifier_06 = StringProperty()
-    modifier_07 = StringProperty()
-    modifier_08 = StringProperty()
-    modifier_09 = StringProperty()
-    modifier_10 = StringProperty()
-    modifier_11 = StringProperty()
-    modifier_12 = StringProperty()
+    modifier_01: StringProperty()
+    modifier_02: StringProperty()
+    modifier_03: StringProperty()
+    modifier_04: StringProperty()
+    modifier_05: StringProperty()
+    modifier_06: StringProperty()
+    modifier_07: StringProperty()
+    modifier_08: StringProperty()
+    modifier_09: StringProperty()
+    modifier_10: StringProperty()
+    modifier_11: StringProperty()
+    modifier_12: StringProperty()
 
 
     def draw(self, context):
@@ -75,7 +75,7 @@ class Preferences(AddonPreferences):
         wm = bpy.context.window_manager
 
         for attr in attr_iter:
-            row = col.split(percentage=0.5, align=True)
+            row = col.split(factor=0.5, align=True)
             row.prop_search(self, attr, wm, "all_modifiers", text="", icon='MODIFIER')
             row.prop_search(self, next(attr_iter), wm, "all_modifiers", text="", icon='MODIFIER')
 
@@ -97,13 +97,13 @@ class ModifierAttributesUtil:
     # For drawing favourite modifier list in preferences
     @classmethod
     def get_pref_attr_name(cls):
-        attr_name_list = [attr for attr in dir(Preferences) if "modifier_" in attr]
+        attr_name_list = [attr for attr in Preferences.__annotations__ if "modifier_" in attr]
         return attr_name_list
     
     # For buttons in pop-up panel
     @classmethod
     def get_pref_attr_value(cls):
-        fav_mods = bpy.context.user_preferences.addons[__name__].preferences
+        fav_mods = bpy.context.preferences.addons[__name__].preferences
         # get correct class attributes and then their values
         attr_list = [attr for attr in dir(fav_mods) if "modifier_" in attr]
         value_list = [getattr(fav_mods, attr) for attr in attr_list]
@@ -141,7 +141,7 @@ class ModifierAttributesUtil:
 
 class AllModifiersCollection(PropertyGroup):
     # Collection Property for search
-    value = StringProperty(name="my modifier")
+    value: StringProperty(name="my modifier")
     
  
 def add_modifier(self, context):
@@ -181,7 +181,7 @@ class OBJECT_MT_custom_add_modifier_menu(Menu):
         sub.scale_y = 0.5
         sub.separator()
 
-        for name, icon, mod in all_name_icon_type[0:8]:
+        for name, icon, mod in all_name_icon_type[0:9]:
             col.operator("object.custom_modifier_add", text=name, icon=icon).modifier_type = mod
 
         col = row.column()
@@ -191,7 +191,7 @@ class OBJECT_MT_custom_add_modifier_menu(Menu):
         sub.scale_y = 0.5
         sub.separator()
 
-        for name, icon, mod in all_name_icon_type[9:24]:
+        for name, icon, mod in all_name_icon_type[10:25]:
             col.operator("object.custom_modifier_add", text=name, icon=icon).modifier_type = mod
 
         col = row.column()
@@ -201,7 +201,7 @@ class OBJECT_MT_custom_add_modifier_menu(Menu):
         sub.scale_y = 0.5
         sub.separator()
 
-        for name, icon, mod in all_name_icon_type[25:40]:
+        for name, icon, mod in all_name_icon_type[26:41]:
             col.operator("object.custom_modifier_add", text=name, icon=icon).modifier_type = mod
 
         col = row.column()
@@ -210,7 +210,7 @@ class OBJECT_MT_custom_add_modifier_menu(Menu):
         sub.scale_y = 0.5
         sub.separator()
 
-        for name, icon, mod in all_name_icon_type[41:50]:
+        for name, icon, mod in all_name_icon_type[42:51]:
             col.operator("object.custom_modifier_add", text=name, icon=icon).modifier_type = mod
 
 
@@ -223,13 +223,11 @@ class MODIFIERS_UL_modifier_list(UIList):
             if mod:
                 layout.label(text="", translate=False, icon_value=layout.icon(mod))
                 layout.prop(mod, "name", text="", emboss=False, icon_value=icon)
-                
-                icon = 'RESTRICT_VIEW_OFF' if mod.show_viewport else 'RESTRICT_VIEW_ON'
-                layout.prop(mod, "show_viewport", text="", icon=icon, emboss=False)
-                
-                icon = 'RESTRICT_RENDER_OFF' if mod.show_render else 'RESTRICT_RENDER_ON'
-                layout.prop(mod, "show_render", text="", icon=icon, emboss=False)
-                
+
+                layout.prop(mod, "show_viewport", text="", emboss=False)
+
+                layout.prop(mod, "show_render", text="", emboss=False)
+
                 icon = 'EDITMODE_HLT' if mod.show_in_editmode else 'OBJECT_DATAMODE'
                 layout.prop(mod, "show_in_editmode", text="", icon=icon, emboss=False)
             else:
@@ -245,7 +243,7 @@ class OBJECT_OT_modifier_list_action(Operator):
     bl_label = "Move modifiers"
     bl_options = {'REGISTER', 'INTERNAL', 'UNDO'}
 
-    action = bpy.props.EnumProperty(
+    action: EnumProperty(
         items=(
             ('UP', "Up", ""),
             ('DOWN', "Down", ""),
@@ -283,7 +281,7 @@ class OBJECT_OT_custom_modifier_add(Operator):
     bl_description = "Add a procedural operation/effect to the active object"
     bl_options = {'REGISTER', 'INTERNAL', 'UNDO'}
 
-    modifier_type = StringProperty()
+    modifier_type: StringProperty()
 
     def execute(self, context):
         bpy.ops.object.modifier_add(type=self.modifier_type)
@@ -304,9 +302,9 @@ class OBJECT_OT_custom_modifier_apply(Operator):
     bl_description = "Apply modifier and remove from the stack"
     bl_options = {'REGISTER', 'INTERNAL', 'UNDO'}
 
-    modifier = StringProperty()
+    modifier: StringProperty()
 
-    apply_as = EnumProperty(
+    apply_as: EnumProperty(
         items=(
             ('DATA', "Data", ""),
             ('SHAPE', "Shape", "")), 
@@ -332,7 +330,7 @@ class OBJECT_OT_custom_modifier_copy(Operator):
     bl_description = "Duplicate modifier at the same position in the stack"
     bl_options = {'REGISTER', 'INTERNAL', 'UNDO'}
 
-    modifier = StringProperty()
+    modifier: StringProperty()
 
     def execute(self, context):
         bpy.ops.object.modifier_copy(modifier=self.modifier)
@@ -379,7 +377,7 @@ class VIEW_3D_PT_modifier_popup(Operator):
             for name, icon, mod in fav_name_icon_type:
                 next_mod = next(fav_name_icon_type)
                 if name or next_mod[0] is not None:
-                    row = col.split(percentage=0.5, align=True)
+                    row = col.split(factor=0.5, align=True)
                     
                     if name is not None:
                         add_modifer = row.operator("object.custom_modifier_add", text=name, icon=icon).modifier_type = mod
@@ -394,10 +392,9 @@ class VIEW_3D_PT_modifier_popup(Operator):
             # Modifier search and menu
             wm = bpy.context.window_manager
             col = layout.column()
-            row = col.split(percentage=0.65)
+            row = col.split(factor=0.65)
             row.prop_search(wm, "mod_to_add", wm, "all_modifiers", text="", icon='MODIFIER')
             row.menu("OBJECT_MT_custom_add_modifier_menu")
-
 
             # Modifier list
             ob = context.object
@@ -410,9 +407,10 @@ class VIEW_3D_PT_modifier_popup(Operator):
             
             sub = row.row(align=True)
             sub.scale_x = 2.0
-            sub.operator("object.toggle_apply_modifiers_view", icon='RESTRICT_VIEW_OFF', text="")
-            sub.operator("object.apply_all_modifiers", icon='IMPORT', text="")
-            sub.operator("object.delete_all_modifiers", icon='X', text="")
+            # To be replaced with my own operators:
+            # sub.operator("object.toggle_apply_modifiers_view", icon='RESTRICT_VIEW_OFF', text="")
+            # sub.operator("object.apply_all_modifiers", icon='IMPORT', text="")
+            # sub.operator("object.delete_all_modifiers", icon='X', text="")
 
             # List manipulation
             sub = row.row(align=True)
@@ -421,7 +419,7 @@ class VIEW_3D_PT_modifier_popup(Operator):
 
             move_up = sub.operator("object.modifier_list_action", icon='TRIA_UP', text="").action = 'UP'
             sub.operator("object.modifier_list_action", icon='TRIA_DOWN', text="").action = 'DOWN'
-            sub.operator("object.modifier_list_action", icon='ZOOMOUT', text="").action = 'REMOVE'
+            sub.operator("object.modifier_list_action", icon='REMOVE', text="").action = 'REMOVE'
 
             # Modifier settings
             mp = DATA_PT_modifiers(context)
@@ -506,8 +504,9 @@ classes = (
 addon_keymaps = []
 
 def register():
+    from bpy.utils import register_class
     for cls in classes:
-        bpy.utils.register_class(cls)
+        register_class(cls)
 
     bpy.types.Object.modifier_active_index = IntProperty()
 
@@ -533,8 +532,9 @@ def unregister():
         km.keymap_items.remove(kmi)
     addon_keymaps.clear()
 
+    from bpy.utils import unregister_class
     for cls in classes:
-        bpy.utils.unregister_class(cls)
+        unregister_class(cls)
     
     bpy.app.handlers.load_post.remove(on_file_load) 
     
