@@ -231,16 +231,10 @@ class MODIFIERS_UL_modifier_list(UIList):
             layout.label(text="", icon_value=icon)
 
     
-class OBJECT_OT_modifier_list_action(Operator):    
-    bl_idname = "object.modifier_list_action"
-    bl_label = "Move modifiers"
+class ModifierListActions(Operator):
     bl_options = {'REGISTER', 'INTERNAL', 'UNDO'}
 
-    action: EnumProperty(
-        items=(
-            ('UP', "Up", ""),
-            ('DOWN', "Down", ""),
-            ('REMOVE', "Remove", "")))
+    action: str
 
     def execute(self, context):
         ob = context.object
@@ -266,6 +260,30 @@ class OBJECT_OT_modifier_list_action(Operator):
                 ob.modifier_active_index = active_mod_index_up
 
         return {'FINISHED'}
+
+
+class OBJECT_OT_custom_modifier_move_up(ModifierListActions):
+    bl_idname = "object.custom_modifier_move_up"
+    bl_label = "Move modifier up"
+    bl_description = "Move modifier up in the stack"
+
+    action = 'UP'
+
+
+class OBJECT_OT_custom_modifier_move_down(ModifierListActions):
+    bl_idname = "object.custom_modifier_move_down"
+    bl_label = "Move modifier down"
+    bl_description = "Move modifier down in the stack"
+
+    action = 'DOWN'
+
+
+class OBJECT_OT_custom_modifier_remove(ModifierListActions):
+    bl_idname = "object.custom_modifier_remove"
+    bl_label = "Remove Modifier"
+    bl_description = "Remove modifier from the active object"
+
+    action = 'REMOVE'
 
 
 class OBJECT_OT_custom_modifier_add(Operator): 
@@ -410,9 +428,9 @@ class VIEW_3D_PT_modifier_popup(Operator):
             sub.scale_x = 2.0
             sub.alignment = 'RIGHT'
 
-            move_up = sub.operator("object.modifier_list_action", icon='TRIA_UP', text="").action = 'UP'
-            sub.operator("object.modifier_list_action", icon='TRIA_DOWN', text="").action = 'DOWN'
-            sub.operator("object.modifier_list_action", icon='REMOVE', text="").action = 'REMOVE'
+            move_up = sub.operator(OBJECT_OT_custom_modifier_move_up.bl_idname, icon='TRIA_UP', text="")
+            sub.operator(OBJECT_OT_custom_modifier_move_down.bl_idname, icon='TRIA_DOWN', text="")
+            sub.operator(OBJECT_OT_custom_modifier_remove.bl_idname, icon='REMOVE', text="")
 
             # Modifier settings
             mp = DATA_PT_modifiers(context)
@@ -487,7 +505,9 @@ classes = (
     AllModifiersCollection,
     OBJECT_MT_custom_add_modifier_menu,
     MODIFIERS_UL_modifier_list,
-    OBJECT_OT_modifier_list_action,
+    OBJECT_OT_custom_modifier_move_up,
+    OBJECT_OT_custom_modifier_move_down,
+    OBJECT_OT_custom_modifier_remove,
     OBJECT_OT_custom_modifier_add,
     OBJECT_OT_custom_modifier_apply,
     OBJECT_OT_custom_modifier_copy,
