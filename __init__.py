@@ -416,9 +416,10 @@ class VIEW_3D_PT_modifier_popup(Operator):
             # Modifier tools (from the addon)
             row = layout.row()
             
-            sub = row.row(align=True)
-            sub.scale_x = 2.0
-            # To be replaced with my own operators:
+            ### Addon is not yet in 2.80 Beta (9.1.2019) ###
+            # sub = row.row(align=True)
+            # sub.scale_x = 2.0
+
             # sub.operator("object.toggle_apply_modifiers_view", icon='RESTRICT_VIEW_OFF', text="")
             # sub.operator("object.apply_all_modifiers", icon='IMPORT', text="")
             # sub.operator("object.delete_all_modifiers", icon='X', text="")
@@ -428,7 +429,7 @@ class VIEW_3D_PT_modifier_popup(Operator):
             sub.scale_x = 2.0
             sub.alignment = 'RIGHT'
 
-            move_up = sub.operator(OBJECT_OT_custom_modifier_move_up.bl_idname, icon='TRIA_UP', text="")
+            sub.operator(OBJECT_OT_custom_modifier_move_up.bl_idname, icon='TRIA_UP', text="")
             sub.operator(OBJECT_OT_custom_modifier_move_down.bl_idname, icon='TRIA_DOWN', text="")
             sub.operator(OBJECT_OT_custom_modifier_remove.bl_idname, icon='REMOVE', text="")
 
