@@ -445,9 +445,7 @@ class VIEW_3D_PT_modifier_popup(Operator):
             
             row = layout.row()
             if ob:
-                if not ob.modifiers:
-                    row.label('No modifiers')
-                else:
+                if ob.modifiers:
                     active_mod_index = ob.modifier_active_index
                     active_mod = ob.modifiers[active_mod_index]
 
