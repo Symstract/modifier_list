@@ -471,9 +471,9 @@ class VIEW_3D_PT_modifier_popup(Operator):
                     row.operator("object.custom_modifier_apply", text="Apply").modifier = active_mod.name
 
                     sub = row.row()
-                    sub.scale_x = 1.2
+                    sub.scale_x = 1.3
                     if active_mod.type in deform_mods:
-                        apply_as_shapekey = sub.operator("object.custom_modifier_apply", text="Apply as shapekey")
+                        apply_as_shapekey = sub.operator("object.custom_modifier_apply", text="Apply as Shape Key")
                         apply_as_shapekey.modifier=active_mod.name
                         apply_as_shapekey.apply_as='SHAPE'
                     
