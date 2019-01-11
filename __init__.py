@@ -232,6 +232,9 @@ class MODIFIERS_UL_modifier_list(UIList):
                 
                 icon = 'EDITMODE_HLT' if mod.show_in_editmode else 'OBJECT_DATAMODE'
                 layout.prop(mod, "show_in_editmode", text="", icon=icon, emboss=False)
+
+                icon = 'OUTLINER_OB_MESH' if mod.show_on_cage else 'MESH_DATA'
+                layout.prop(mod, "show_on_cage", text="", icon=icon, emboss=False)
             else:
                 layout.label(text="", translate=False, icon_value=icon)
         
