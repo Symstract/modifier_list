@@ -216,10 +216,13 @@ class MODIFIERS_UL_modifier_list(UIList):
             if mod:
                 layout.label(text="", translate=False, icon_value=layout.icon(mod))
                 layout.prop(mod, "name", text="", emboss=False, icon_value=icon)
+                
+                # Hide visibility toggles for collision modifier as they are not used
+                # in the regular UI either (apparently can cause problems in some scenes)
+                if mod.type != 'COLLISION':
+                    layout.prop(mod, "show_viewport", text="", emboss=False)
 
-                layout.prop(mod, "show_viewport", text="", emboss=False)
-
-                layout.prop(mod, "show_render", text="", emboss=False)
+                    layout.prop(mod, "show_render", text="", emboss=False)
 
                 icon = 'EDITMODE_HLT' if mod.show_in_editmode else 'OBJECT_DATAMODE'
                 layout.prop(mod, "show_in_editmode", text="", icon=icon, emboss=False)
