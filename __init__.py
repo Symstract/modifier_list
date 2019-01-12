@@ -485,7 +485,9 @@ class VIEW_3D_PT_modifier_popup(Operator):
                     row.operator("object.custom_modifier_apply", text="Apply").modifier = active_mod.name
 
                     sub = row.row()
-                    sub.scale_x = 1.3
+
+                    if active_mod.type not in {'CLOTH', 'SOFT_BODY'}:
+                        sub.scale_x = 1.3
                     
                     deform_mods = {mod for name, icon, mod in all_name_icon_type[25:42]}
                     other_shape_key_mods = {'CLOTH', 'SOFT_BODY', 'MESH_CACHE'}
