@@ -465,8 +465,11 @@ class VIEW_3D_PT_modifier_popup(Operator):
                     sub = row.row(align=True)
                     sub.scale_x = 1.2
                     sub.alignment = 'RIGHT'
-                    sub.prop(active_mod, "show_viewport", text="")
-                    sub.prop(active_mod, "show_render", text="")
+                    # Hide visibility toggles for collision modifier as they are not used
+                    # in the regular UI either (apparently can cause problems in some scenes)
+                    if active_mod.type != 'COLLISION':
+                        sub.prop(active_mod, "show_viewport", text="")
+                        sub.prop(active_mod, "show_render", text="")
                     sub.prop(active_mod, "show_in_editmode", text="")
                     sub.prop(active_mod, "show_on_cage", text="")
                     
