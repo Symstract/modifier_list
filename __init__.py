@@ -224,11 +224,14 @@ class MODIFIERS_UL_modifier_list(UIList):
                 layout.label(text="", translate=False, icon_value=layout.icon(mod))
                 layout.prop(mod, "name", text="", emboss=False, icon_value=icon)
                 
-                icon = 'RESTRICT_VIEW_OFF' if mod.show_viewport else 'RESTRICT_VIEW_ON'
-                layout.prop(mod, "show_viewport", text="", icon=icon, emboss=False)
-                
-                icon = 'RESTRICT_RENDER_OFF' if mod.show_render else 'RESTRICT_RENDER_ON'
-                layout.prop(mod, "show_render", text="", icon=icon, emboss=False)
+                # Hide visibility toggles for collision modifier as they are not used
+                # in the regular UI either (apparently can cause problems in some scenes)
+                if mod.type != 'COLLISION':
+                    icon = 'RESTRICT_VIEW_OFF' if mod.show_viewport else 'RESTRICT_VIEW_ON'
+                    layout.prop(mod, "show_viewport", text="", icon=icon, emboss=False)
+                    
+                    icon = 'RESTRICT_RENDER_OFF' if mod.show_render else 'RESTRICT_RENDER_ON'
+                    layout.prop(mod, "show_render", text="", icon=icon, emboss=False)
                 
                 icon = 'EDITMODE_HLT' if mod.show_in_editmode else 'OBJECT_DATAMODE'
                 layout.prop(mod, "show_in_editmode", text="", icon=icon, emboss=False)
@@ -469,7 +472,7 @@ class VIEW_3D_PT_modifier_popup(Operator):
 
                     sub = row.row(align=True)
                     sub.scale_x = 1.2
-                    sub.alignment = 'RIGHT'
+                    sub.alignment = 'RIGHT'                    
                     sub.prop(active_mod, "show_viewport", text="")
                     sub.prop(active_mod, "show_render", text="")
                     sub.prop(active_mod, "show_in_editmode", text="")
