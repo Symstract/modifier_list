@@ -486,7 +486,9 @@ class VIEW_3D_PT_modifier_popup(Operator):
                         apply_as_shapekey.modifier=active_mod.name
                         apply_as_shapekey.apply_as='SHAPE'
                     
-                    row.operator("object.custom_modifier_copy", text="Copy").modifier = active_mod.name
+                    has_no_copy = {'CLOTH', 'COLLISION', 'DYNAMIC_PAINT', 'FLUID_SIMULATION', 'PARTICLE_SYSTEM', 'SMOKE', 'SOFT_BODY'}
+                    if active_mod.type not in has_no_copy:
+                        row.operator("object.custom_modifier_copy", text="Copy").modifier = active_mod.name
                     
                     # Modifier specific settings
                     box = column.box()
