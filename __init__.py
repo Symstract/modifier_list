@@ -480,19 +480,21 @@ class VIEW_3D_PT_modifier_popup(Operator):
                         sub.prop(active_mod, "show_render", text="")
                     sub.prop(active_mod, "show_in_editmode", text="")
                     sub.prop(active_mod, "show_on_cage", text="")
-                    
-                    deform_mods = {'ARMATURE', 'CAST', 'CORRECTIVE_SMOOTH', 'CURVE', 'DISPLACE', 'HOOK', 'LAPLACIANSMOOTH', 
-                                'LAPLACIANDEFORM', 'LATTICE', 'MESH_DEFORM', 'SHRINKWRAP', 'SIMPLE_DEFORM', 'SMOOTH', 'WARP', 'WAVE'}
 
                     row = box.row()
                     row.operator("object.custom_modifier_apply", text="Apply").modifier = active_mod.name
 
                     sub = row.row()
                     sub.scale_x = 1.3
-                    if active_mod.type in deform_mods:
-                        apply_as_shapekey = sub.operator("object.custom_modifier_apply", text="Apply as Shape Key")
-                        apply_as_shapekey.modifier=active_mod.name
-                        apply_as_shapekey.apply_as='SHAPE'
+                    
+                    deform_mods = {mod for name, icon, mod in all_name_icon_type[25:42]}
+                    other_shape_key_mods = {'CLOTH', 'SOFT_BODY', 'MESH_CACHE'}
+                    has_shape_key = deform_mods.union(other_shape_key_mods)
+                    
+                    if active_mod.type in has_shape_key:
+                        apply_as_shape_key = sub.operator("object.custom_modifier_apply", text="Apply as Shape Key")
+                        apply_as_shape_key.modifier=active_mod.name
+                        apply_as_shape_key.apply_as='SHAPE'
                     
                     has_no_copy = {'CLOTH', 'COLLISION', 'DYNAMIC_PAINT', 'FLUID_SIMULATION', 'PARTICLE_SYSTEM', 'SMOKE', 'SOFT_BODY'}
                     if active_mod.type not in has_no_copy:
