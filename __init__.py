@@ -181,7 +181,7 @@ class OBJECT_MT_custom_add_modifier_menu(Menu):
         sub.scale_y = 0.3
         sub.separator()
 
-        for name, icon, mod in all_name_icon_type[0:8]:
+        for name, icon, mod in all_name_icon_type[0:9]:
             col.operator("object.custom_modifier_add", text=name, icon=icon).modifier_type = mod
 
         col = row.column()
@@ -191,7 +191,7 @@ class OBJECT_MT_custom_add_modifier_menu(Menu):
         sub.scale_y = 0.3
         sub.separator()
 
-        for name, icon, mod in all_name_icon_type[9:24]:
+        for name, icon, mod in all_name_icon_type[9:25]:
             col.operator("object.custom_modifier_add", text=name, icon=icon).modifier_type = mod
 
         col = row.column()
@@ -201,7 +201,7 @@ class OBJECT_MT_custom_add_modifier_menu(Menu):
         sub.scale_y = 0.3
         sub.separator()
 
-        for name, icon, mod in all_name_icon_type[25:40]:
+        for name, icon, mod in all_name_icon_type[25:41]:
             col.operator("object.custom_modifier_add", text=name, icon=icon).modifier_type = mod
 
         col = row.column()
@@ -210,7 +210,7 @@ class OBJECT_MT_custom_add_modifier_menu(Menu):
         sub.scale_y = 0.3
         sub.separator()
 
-        for name, icon, mod in all_name_icon_type[41:50]:
+        for name, icon, mod in all_name_icon_type[41:51]:
             col.operator("object.custom_modifier_add", text=name, icon=icon).modifier_type = mod
 
 
