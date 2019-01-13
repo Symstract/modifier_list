@@ -67,10 +67,10 @@ class Preferences(AddonPreferences):
 
         col = layout.column(align=True)
 
-        num_of_mods = len(ModifierAttributesUtil.get_pref_attr_name())
+        num_of_mods = len(get_pref_attr_name())
         num_of_rows = math.ceil(num_of_mods / 2)
         
-        attr_iter = iter(ModifierAttributesUtil.get_pref_attr_name())
+        attr_iter = iter(get_pref_attr_name())
         
         wm = bpy.context.window_manager
 
@@ -91,52 +91,46 @@ class Preferences(AddonPreferences):
             col.context_pointer_set("keymap", km)
             rna_keymap_ui.draw_kmi([], kc, km, kmi, col, 0)
 
-            
-class ModifierAttributesUtil:
     
-    # For drawing favourite modifier list in preferences
-    @classmethod
-    def get_pref_attr_name(cls):
-        attr_name_list = [attr for attr in dir(Preferences) if "modifier_" in attr]
-        return attr_name_list
+# For drawing favourite modifier list in preferences
+def get_pref_attr_name():
+    attr_name_list = [attr for attr in dir(Preferences) if "modifier_" in attr]
+    return attr_name_list
+
+# For buttons in pop-up panel
+def get_pref_attr_value():
+    fav_mods = bpy.context.user_preferences.addons[__name__].preferences
+    # get correct class attributes and then their values
+    attr_list = [attr for attr in dir(fav_mods) if "modifier_" in attr]
+    value_list = [getattr(fav_mods, attr) for attr in attr_list]
     
-    # For buttons in pop-up panel
-    @classmethod
-    def get_pref_attr_value(cls):
-        fav_mods = bpy.context.user_preferences.addons[__name__].preferences
-        # get correct class attributes and then their values
-        attr_list = [attr for attr in dir(fav_mods) if "modifier_" in attr]
-        value_list = [getattr(fav_mods, attr) for attr in attr_list]
-        
-        return value_list
+    return value_list
 
-    # List of all modifier names, icons and types
-    @classmethod
-    def all_name_icon_type(cls):
-        mods_enum = bpy.types.Modifier.bl_rna.properties['type'].enum_items
-        
-        all_mod_names = [modifier.name for modifier in mods_enum]
-        all_mod_icons = [modifier.icon for modifier in mods_enum]
-        all_mod_types = [modifier.identifier for modifier in mods_enum]
+# List of all modifier names, icons and types
+def all_name_icon_type():
+    mods_enum = bpy.types.Modifier.bl_rna.properties['type'].enum_items
+    
+    all_mod_names = [modifier.name for modifier in mods_enum]
+    all_mod_icons = [modifier.icon for modifier in mods_enum]
+    all_mod_types = [modifier.identifier for modifier in mods_enum]
 
-        all_mods_zipped = list(zip(all_mod_names, all_mod_icons, all_mod_types))
-        
-        return all_mods_zipped
+    all_mods_zipped = list(zip(all_mod_names, all_mod_icons, all_mod_types))
+    
+    return all_mods_zipped
 
-    # Iterator of favourite modifier names, icons and types
-    @classmethod
-    def fav_name_icon_type(cls):
-        mods_enum = bpy.types.Modifier.bl_rna.properties['type'].enum_items
+# Iterator of favourite modifier names, icons and types
+def fav_name_icon_type():
+    mods_enum = bpy.types.Modifier.bl_rna.properties['type'].enum_items
 
-        all_mod_names = [modifier.name for modifier in mods_enum]
+    all_mod_names = [modifier.name for modifier in mods_enum]
 
-        all_mods_dict = dict(zip(all_mod_names, cls.all_name_icon_type()))
+    all_mods_dict = dict(zip(all_mod_names, all_name_icon_type()))
 
-        fav_mods_list = [all_mods_dict[mod] if mod in all_mods_dict else (None, None, None) for mod in cls.get_pref_attr_value()]
+    fav_mods_list = [all_mods_dict[mod] if mod in all_mods_dict else (None, None, None) for mod in get_pref_attr_value()]
 
-        fav_mods_iter = iter(fav_mods_list)
-        
-        return fav_mods_iter
+    fav_mods_iter = iter(fav_mods_list)
+    
+    return fav_mods_iter
 
 
 class AllModifiersCollection(PropertyGroup):
@@ -172,8 +166,6 @@ class OBJECT_MT_custom_add_modifier_menu(Menu):
         row = layout.row()
         row.alignment = 'LEFT'
 
-        all_name_icon_type = (ModifierAttributesUtil.all_name_icon_type())
-
         col = row.column()
         col.label(text="Modify")
         
@@ -181,7 +173,7 @@ class OBJECT_MT_custom_add_modifier_menu(Menu):
         sub.scale_y = 0.3
         sub.separator()
 
-        for name, icon, mod in all_name_icon_type[0:9]:
+        for name, icon, mod in all_name_icon_type()[0:9]:
             col.operator("object.custom_modifier_add", text=name, icon=icon).modifier_type = mod
 
         col = row.column()
@@ -191,7 +183,7 @@ class OBJECT_MT_custom_add_modifier_menu(Menu):
         sub.scale_y = 0.3
         sub.separator()
 
-        for name, icon, mod in all_name_icon_type[9:25]:
+        for name, icon, mod in all_name_icon_type()[9:25]:
             col.operator("object.custom_modifier_add", text=name, icon=icon).modifier_type = mod
 
         col = row.column()
@@ -201,7 +193,7 @@ class OBJECT_MT_custom_add_modifier_menu(Menu):
         sub.scale_y = 0.3
         sub.separator()
 
-        for name, icon, mod in all_name_icon_type[25:41]:
+        for name, icon, mod in all_name_icon_type()[25:41]:
             col.operator("object.custom_modifier_add", text=name, icon=icon).modifier_type = mod
 
         col = row.column()
@@ -210,7 +202,7 @@ class OBJECT_MT_custom_add_modifier_menu(Menu):
         sub.scale_y = 0.3
         sub.separator()
 
-        for name, icon, mod in all_name_icon_type[41:51]:
+        for name, icon, mod in all_name_icon_type()[41:51]:
             col.operator("object.custom_modifier_add", text=name, icon=icon).modifier_type = mod
 
 
@@ -396,12 +388,12 @@ class VIEW_3D_PT_modifier_popup(Operator):
             # Favourite modifiers
             col = layout.column(align=True)
 
-            fav_name_icon_type = ModifierAttributesUtil.fav_name_icon_type()
+            fav_name_icon_type_iter = fav_name_icon_type()
 
             # Check if an item or the next item in fav_name_icon_type has a value 
             # and add rows and buttons accordingly (two buttons per row)
-            for name, icon, mod in fav_name_icon_type:
-                next_mod = next(fav_name_icon_type)
+            for name, icon, mod in fav_name_icon_type_iter:
+                next_mod = next(fav_name_icon_type_iter)
                 if name or next_mod[0] is not None:
                     row = col.split(percentage=0.5, align=True)
                     
@@ -457,9 +449,7 @@ class VIEW_3D_PT_modifier_popup(Operator):
                     active_mod_index = ob.modifier_active_index
                     active_mod = ob.modifiers[active_mod_index]
 
-                    all_name_icon_type = ModifierAttributesUtil.all_name_icon_type()
-
-                    active_mod_icon = [icon for name, icon, mod in all_name_icon_type if mod == active_mod.type].pop()
+                    active_mod_icon = [icon for name, icon, mod in all_name_icon_type() if mod == active_mod.type].pop()
 
                     column = layout.column(align=True)
                     box = column.box()
@@ -489,7 +479,7 @@ class VIEW_3D_PT_modifier_popup(Operator):
                     if active_mod.type not in {'CLOTH', 'SOFT_BODY'}:
                         sub.scale_x = 1.3
                     
-                    deform_mods = {mod for name, icon, mod in all_name_icon_type[25:42]}
+                    deform_mods = {mod for name, icon, mod in all_name_icon_type()[25:42]}
                     other_shape_key_mods = {'CLOTH', 'SOFT_BODY', 'MESH_CACHE'}
                     has_shape_key = deform_mods.union(other_shape_key_mods)
                     
@@ -511,7 +501,7 @@ def set_modifier_collection_items():
         all_modifiers = bpy.context.window_manager.all_modifiers
         
         if not all_modifiers:
-            for name, icon, mod in ModifierAttributesUtil.all_name_icon_type():
+            for name, icon, mod in all_name_icon_type():
                 item = all_modifiers.add()
                 item.name = name
                 item.value = mod
