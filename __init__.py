@@ -232,7 +232,7 @@ class MODIFIERS_UL_modifier_list(UIList):
 class ModifierListActions(Operator):
     bl_options = {'REGISTER', 'INTERNAL', 'UNDO'}
 
-    action: str
+    action = None
 
     def execute(self, context):
         ob = context.object
