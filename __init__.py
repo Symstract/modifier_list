@@ -130,7 +130,8 @@ def fav_name_icon_type():
 
     all_mods_dict = dict(zip(all_mod_names, all_name_icon_type()))
 
-    fav_mods_list = [all_mods_dict[mod] if mod in all_mods_dict else (None, None, None) for mod in get_pref_attr_value()]
+    fav_mods_list = [all_mods_dict[mod] if mod in all_mods_dict else (None, None, None)
+                     for mod in get_pref_attr_value()]
 
     fav_mods_iter = iter(fav_mods_list)
     
@@ -402,12 +403,16 @@ class VIEW_3D_PT_modifier_popup(Operator):
                     row = col.split(percentage=0.5, align=True)
                     
                     if name is not None:
-                        add_modifer = row.operator("object.custom_modifier_add", text=name, icon=icon).modifier_type = mod
+                        add_modifer = row.operator("object.custom_modifier_add",
+                                                   text=name,
+                                                   icon=icon).modifier_type = mod
                     else:
                         row.label(text="")
                     
                     if next_mod[0] is not None:
-                        row.operator("object.custom_modifier_add", text=next_mod[0], icon=next_mod[1]).modifier_type = next_mod[2]
+                        row.operator("object.custom_modifier_add", 
+                                     text=next_mod[0],
+                                     icon=next_mod[1]).modifier_type = next_mod[2]
                     else:
                         row.label(text="")
 
@@ -422,7 +427,8 @@ class VIEW_3D_PT_modifier_popup(Operator):
             # Modifier list
             ob = context.object
 
-            layout.template_list("MODIFIERS_UL_modifier_list", "", ob, "modifiers", ob, "modifier_active_index")
+            layout.template_list("MODIFIERS_UL_modifier_list", "", ob, "modifiers", 
+                                 ob, "modifier_active_index")
 
             # Modifier tools (from the addon)
             row = layout.row()
@@ -452,7 +458,8 @@ class VIEW_3D_PT_modifier_popup(Operator):
                     active_mod_index = ob.modifier_active_index
                     active_mod = ob.modifiers[active_mod_index]
 
-                    active_mod_icon = [icon for name, icon, mod in all_name_icon_type() if mod == active_mod.type].pop()
+                    active_mod_icon = [icon for name, icon, mod in all_name_icon_type() 
+                                       if mod == active_mod.type].pop()
 
                     column = layout.column(align=True)
                     box = column.box()
@@ -475,7 +482,8 @@ class VIEW_3D_PT_modifier_popup(Operator):
                     sub.prop(active_mod, "show_on_cage", text="")
 
                     row = box.row()
-                    row.operator("object.custom_modifier_apply", text="Apply").modifier = active_mod.name
+                    row.operator("object.custom_modifier_apply", 
+                                 text="Apply").modifier = active_mod.name
 
                     sub = row.row()
 
@@ -487,13 +495,16 @@ class VIEW_3D_PT_modifier_popup(Operator):
                     has_shape_key = deform_mods.union(other_shape_key_mods)
                     
                     if active_mod.type in has_shape_key:
-                        apply_as_shape_key = sub.operator("object.custom_modifier_apply", text="Apply as Shape Key")
+                        apply_as_shape_key = sub.operator("object.custom_modifier_apply", 
+                                                          text="Apply as Shape Key")
                         apply_as_shape_key.modifier=active_mod.name
                         apply_as_shape_key.apply_as='SHAPE'
                     
-                    has_no_copy = {'CLOTH', 'COLLISION', 'DYNAMIC_PAINT', 'FLUID_SIMULATION', 'PARTICLE_SYSTEM', 'SMOKE', 'SOFT_BODY'}
+                    has_no_copy = {'CLOTH', 'COLLISION', 'DYNAMIC_PAINT', 'FLUID_SIMULATION', 
+                                   'PARTICLE_SYSTEM', 'SMOKE', 'SOFT_BODY'}
                     if active_mod.type not in has_no_copy:
-                        row.operator("object.custom_modifier_copy", text="Copy").modifier = active_mod.name
+                        row.operator("object.custom_modifier_copy", 
+                                     text="Copy").modifier = active_mod.name
                     
                     # Modifier specific settings
                     box = column.box()
@@ -538,7 +549,8 @@ def register():
     bpy.types.Object.modifier_active_index = IntProperty()
 
     wm = bpy.types.WindowManager
-    wm.mod_to_add = StringProperty(name="Modifier to add", update=add_modifier, description="Search for a modifier and add it to the stack")
+    wm.mod_to_add = StringProperty(name="Modifier to add", update=add_modifier, 
+                                   description="Search for a modifier and add it to the stack")
     wm.all_modifiers = CollectionProperty(type=AllModifiersCollection)
       
     bpy.app.handlers.load_post.append(on_file_load)
