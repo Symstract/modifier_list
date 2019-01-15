@@ -101,6 +101,7 @@ def get_pref_attr_name():
     attr_name_list = [attr for attr in dir(Preferences) if "modifier_" in attr]
     return attr_name_list
 
+
 # For buttons in pop-up panel
 def get_pref_attr_value():
     fav_mods = bpy.context.user_preferences.addons[__name__].preferences
@@ -109,6 +110,7 @@ def get_pref_attr_value():
     value_list = [getattr(fav_mods, attr) for attr in attr_list]
     
     return value_list
+
 
 # List of all modifier names, icons and types
 def all_name_icon_type():
@@ -121,6 +123,7 @@ def all_name_icon_type():
     all_mods_zipped = list(zip(all_mod_names, all_mod_icons, all_mod_types))
     
     return all_mods_zipped
+
 
 # Iterator of favourite modifier names, icons and types
 def fav_name_icon_type():
