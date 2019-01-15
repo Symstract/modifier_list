@@ -411,7 +411,6 @@ class VIEW_3D_PT_modifier_popup(Operator):
 
             # Modifier list
             ob = context.object
-            wm = bpy.context.window_manager
 
             layout.template_list("MODIFIERS_UL_modifier_list", "", ob, "modifiers", ob, "modifier_active_index")
 
