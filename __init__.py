@@ -67,6 +67,7 @@ class Preferences(AddonPreferences):
     def draw(self, context):
         layout = self.layout
 
+        # === Favourite modifiers selection ===
         layout.label(text="Favourite modifiers:")
 
         col = layout.column(align=True)
@@ -85,7 +86,7 @@ class Preferences(AddonPreferences):
 
         col.separator()
 
-        # Hotkey
+        # === Hotkey ===
         col.label(text="Hotkey:")
 
         col = layout.column()
@@ -94,6 +95,9 @@ class Preferences(AddonPreferences):
             km = km.active()
             col.context_pointer_set("keymap", km)
             rna_keymap_ui.draw_kmi([], kc, km, kmi, col, 0)
+
+
+#=======================================================================
 
     
 # For drawing favourite modifier list in preferences
@@ -139,6 +143,9 @@ def fav_name_icon_type():
     fav_mods_iter = iter(fav_mods_list)
     
     return fav_mods_iter
+
+
+#=======================================================================
 
 
 class AllModifiersCollection(PropertyGroup):
@@ -369,6 +376,9 @@ class OBJECT_OT_custom_modifier_copy(Operator):
         return {'FINISHED'}
 
 
+#=======================================================================
+
+
 class VIEW_3D_PT_modifier_popup(Operator):
     bl_idname = "view3d.modifier_popup"
     bl_label = "Modifier Pop-up Panel"
@@ -393,7 +403,7 @@ class VIEW_3D_PT_modifier_popup(Operator):
             layout.label(text="Wrong object type")
         else:
 
-            # Favourite modifiers
+            # === Favourite modifiers ===
             col = layout.column(align=True)
 
             fav_name_icon_type_iter = fav_name_icon_type()
@@ -419,7 +429,7 @@ class VIEW_3D_PT_modifier_popup(Operator):
                     else:
                         row.label(text="")
 
-            # Modifier search and menu
+            # === Modifier search and menu ===
             wm = bpy.context.window_manager
             col = layout.column()
             row = col.split(percentage=0.65)
@@ -427,13 +437,13 @@ class VIEW_3D_PT_modifier_popup(Operator):
             row.menu("OBJECT_MT_custom_add_modifier_menu")
 
 
-            # Modifier list
+            # === Modifier list ===
             ob = context.object
 
             layout.template_list("MODIFIERS_UL_modifier_list", "", ob, "modifiers", 
                                  ob, "modifier_active_index")
 
-            # Modifier tools (from the addon)
+            # === Modifier tools (from the addon) ===
             row = layout.row()
             
             sub = row.row(align=True)
@@ -442,7 +452,7 @@ class VIEW_3D_PT_modifier_popup(Operator):
             sub.operator("object.apply_all_modifiers", icon='IMPORT', text="")
             sub.operator("object.delete_all_modifiers", icon='X', text="")
 
-            # List manipulation
+            # === List manipulation ===
             sub = row.row(align=True)
             sub.scale_x = 2.0
             sub.alignment = 'RIGHT'
@@ -451,7 +461,7 @@ class VIEW_3D_PT_modifier_popup(Operator):
             sub.operator(OBJECT_OT_custom_modifier_move_down.bl_idname, icon='TRIA_DOWN', text="")
             sub.operator(OBJECT_OT_custom_modifier_remove.bl_idname, icon='ZOOMOUT', text="")
 
-            # Modifier settings
+            # === Modifier settings ===
             mp = DATA_PT_modifiers(context)
             ob = context.object
             
@@ -468,7 +478,7 @@ class VIEW_3D_PT_modifier_popup(Operator):
                     box = column.box()
                     row = box.row()
                     
-                    # General settings
+                    # === General settings ===
                     sub = row.row()
                     sub.label(text="", icon=active_mod_icon)
                     sub.prop(active_mod, "name", text="")
@@ -509,9 +519,12 @@ class VIEW_3D_PT_modifier_popup(Operator):
                         row.operator("object.custom_modifier_copy", 
                                      text="Copy").modifier = active_mod.name
                     
-                    # Modifier specific settings
+                    # === Modifier specific settings ===
                     box = column.box()
                     getattr(mp, active_mod.type)(box, ob, active_mod)
+
+
+#=======================================================================
 
 
 def set_modifier_collection_items():
