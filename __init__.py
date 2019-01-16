@@ -498,6 +498,8 @@ class VIEW_3D_PT_modifier_popup(Operator):
 
                     sub = row.row()
 
+                    # Cloth and Soft Body have "Apply As Shape Key" but no "Copy Modifier" .
+                    # In those cases "Apply As Shape Key" doesn't need to be scaled up.
                     if active_mod.type not in {'CLOTH', 'SOFT_BODY'}:
                         sub.scale_x = 1.3
 
