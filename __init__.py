@@ -100,14 +100,16 @@ class Preferences(AddonPreferences):
 #=======================================================================
 
     
-# For drawing favourite modifier list in preferences
 def get_pref_attr_name():
+    """For drawing favourite modifier selection rows in preferences."""
+
     attr_name_list = [attr for attr in Preferences.__annotations__ if "modifier_" in attr]
     return attr_name_list
 
 
-# For buttons in pop-up panel
 def get_pref_attr_value():
+    """For buttons in pop-up panel."""
+
     fav_mods = bpy.context.preferences.addons[__name__].preferences
     # get correct class attributes and then their values
     attr_list = [attr for attr in dir(fav_mods) if "modifier_" in attr]
@@ -116,8 +118,9 @@ def get_pref_attr_value():
     return value_list
 
 
-# List of all modifier names, icons and types
 def all_name_icon_type():
+    """List of all modifier names, icons and types."""
+
     mods_enum = bpy.types.Modifier.bl_rna.properties['type'].enum_items
     
     all_mod_names = [modifier.name for modifier in mods_enum]
@@ -129,8 +132,9 @@ def all_name_icon_type():
     return all_mods_zipped
 
 
-# Iterator of favourite modifier names, icons and types
 def fav_name_icon_type():
+    """Iterator of favourite modifier names, icons and types."""
+
     mods_enum = bpy.types.Modifier.bl_rna.properties['type'].enum_items
 
     all_mod_names = [modifier.name for modifier in mods_enum]
@@ -245,6 +249,8 @@ class MODIFIERS_UL_modifier_list(UIList):
 
     
 class ModifierListActions(Operator):
+    """Base operator for list actions."""
+
     bl_options = {'REGISTER', 'INTERNAL', 'UNDO'}
 
     action = None
@@ -520,13 +526,17 @@ class VIEW_3D_PT_modifier_popup(Operator):
 
 
 def set_modifier_collection_items():
-        all_modifiers = bpy.context.window_manager.all_modifiers
-        
-        if not all_modifiers:
-            for name, icon, mod in all_name_icon_type():
-                item = all_modifiers.add()
-                item.name = name
-                item.value = mod
+    """This is to be called on loading a new file or reloading addons
+    to make modifiers available in search.
+    """
+    
+    all_modifiers = bpy.context.window_manager.all_modifiers
+    
+    if not all_modifiers:
+        for name, icon, mod in all_name_icon_type():
+            item = all_modifiers.add()
+            item.name = name
+            item.value = mod
 
 
 @persistent
