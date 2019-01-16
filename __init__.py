@@ -506,6 +506,8 @@ class VIEW_3D_PT_modifier_popup(Operator):
 
                     sub = row.row()
 
+                    # Cloth and Soft Body have "Apply As Shape Key" but no "Copy Modifier" .
+                    # In those cases "Apply As Shape Key" doesn't need to be scaled up.
                     if active_mod.type not in {'CLOTH', 'SOFT_BODY'}:
                         sub.scale_x = 1.3
                     
@@ -537,7 +539,7 @@ def set_modifier_collection_items():
     """This is to be called on loading a new file or reloading addons
     to make modifiers available in search.
     """
-    
+
     all_modifiers = bpy.context.window_manager.all_modifiers
     
     if not all_modifiers:
