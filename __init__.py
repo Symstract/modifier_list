@@ -79,6 +79,7 @@ class Preferences(AddonPreferences):
         
         wm = bpy.context.window_manager
 
+        # Draw two property searches per row 
         for attr in attr_iter:
             row = col.split(factor=0.5, align=True)
             row.prop_search(self, attr, wm, "all_modifiers", text="", icon='MODIFIER')
