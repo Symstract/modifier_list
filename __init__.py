@@ -113,9 +113,9 @@ def get_pref_attr_value():
     fav_mods = bpy.context.user_preferences.addons[__name__].preferences
     # get correct class attributes and then their values
     attr_list = [attr for attr in dir(fav_mods) if "modifier_" in attr]
-    value_list = [getattr(fav_mods, attr) for attr in attr_list]
+    attr_value_list = [getattr(fav_mods, attr) for attr in attr_list]
     
-    return value_list
+    return attr_value_list
 
 
 def all_name_icon_type():
