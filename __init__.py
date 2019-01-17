@@ -31,6 +31,9 @@ bl_info = {
 }
 
 
+import math
+import numpy as np
+
 from bl_ui.properties_data_modifier import DATA_PT_modifiers
 import bpy 
 from bpy.app.handlers import persistent
@@ -43,8 +46,6 @@ from bpy.types import (
     UIList
 )
 import rna_keymap_ui
-import math
-import numpy as np
 
 
 class Preferences(AddonPreferences):
