@@ -594,8 +594,6 @@ def unregister():
 
     bpy.app.handlers.load_post.remove(on_file_load)
 
-    wm = bpy.context.window_manager
-
     del bpy.types.Object.modifier_active_index
 
 if __name__ == "__main__":
