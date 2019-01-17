@@ -434,10 +434,8 @@ class VIEW_3D_PT_modifier_popup(Operator):
                         row.label(text="")
 
             # === Modifier search and menu ===
-            wm = bpy.context.window_manager
-
             col = layout.column()
-
+            wm = bpy.context.window_manager
             row = col.split(percentage=0.65)
             row.prop_search(wm, "mod_to_add", wm, "all_modifiers", text="", icon='MODIFIER')
             row.menu("OBJECT_MT_custom_add_modifier_menu")
@@ -466,7 +464,6 @@ class VIEW_3D_PT_modifier_popup(Operator):
             sub.operator(OBJECT_OT_custom_modifier_remove.bl_idname, icon='ZOOMOUT', text="")
 
             # === Modifier settings ===
-            mp = DATA_PT_modifiers(context)
             ob = context.object
 
             row = layout.row()
@@ -480,10 +477,9 @@ class VIEW_3D_PT_modifier_popup(Operator):
 
                     column = layout.column(align=True)
 
+                    # === General settings ===
                     box = column.box()
                     row = box.row()
-
-                    # === General settings ===
                     sub = row.row()
                     sub.label(text="", icon=active_mod_icon)
                     sub.prop(active_mod, "name", text="")
@@ -525,6 +521,7 @@ class VIEW_3D_PT_modifier_popup(Operator):
 
                     # === Modifier specific settings ===
                     box = column.box()
+                    mp = DATA_PT_modifiers(context)
                     getattr(mp, active_mod.type)(box, ob, active_mod)
 
 
