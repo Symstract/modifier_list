@@ -72,10 +72,10 @@ class Preferences(AddonPreferences):
 
         col = layout.column(align=True)
 
-        num_of_mods = len(get_pref_attr_name())
+        num_of_mods = len(get_pref_mod_attr_name())
         num_of_rows = math.ceil(num_of_mods / 2)
 
-        attr_iter = iter(get_pref_attr_name())
+        attr_iter = iter(get_pref_mod_attr_name())
 
         wm = bpy.context.window_manager
 
@@ -101,27 +101,30 @@ class Preferences(AddonPreferences):
 #=======================================================================
 
 
-def get_pref_attr_name():
-    """For drawing favourite modifier selection rows in preferences."""
+def get_pref_mod_attr_name():
+    """List of the names of favourite modifier attributes in Preferences
+    class for making drawing favourite modifier selection rows in
+    preferences easy.
+    """
 
     attr_name_list = [attr for attr in dir(Preferences) if "modifier_" in attr]
 
     return attr_name_list
 
 
-def get_pref_attr_value():
-    """For buttons in pop-up panel."""
+def get_pref_mod_attr_value():
+    """List of the names of favourite modifiers"""
 
-    fav_mods = bpy.context.user_preferences.addons[__name__].preferences
-    # get correct class attributes and then their values
-    attr_list = [attr for attr in dir(fav_mods) if "modifier_" in attr]
-    attr_value_list = [getattr(fav_mods, attr) for attr in attr_list]
+    prefs = bpy.context.user_preferences.addons[__name__].preferences
+    # Get correct class attributes and then their values
+    attr_list = [attr for attr in dir(prefs) if "modifier_" in attr]
+    attr_value_list = [getattr(prefs, attr) for attr in attr_list]
 
     return attr_value_list
 
 
 def all_name_icon_type():
-    """List of all modifier names, icons and types."""
+    """List of tuples of the names, icons and types of all modifiers."""
 
     mods_enum = bpy.types.Modifier.bl_rna.properties['type'].enum_items
 
@@ -135,13 +138,15 @@ def all_name_icon_type():
 
 
 def fav_name_icon_type():
-    """Iterator of favourite modifier names, icons and types."""
+    """Iterator of tuples of the names, icons and types of favourite
+    modifiers.
+    """
 
     mods_enum = bpy.types.Modifier.bl_rna.properties['type'].enum_items
     all_mod_names = [modifier.name for modifier in mods_enum]
     all_mods_dict = dict(zip(all_mod_names, all_name_icon_type()))
     fav_mods_list = [all_mods_dict[mod] if mod in all_mods_dict else (None, None, None)
-                     for mod in get_pref_attr_value()]
+                     for mod in get_pref_mod_attr_value()]
     fav_mods_iter = iter(fav_mods_list)
 
     return fav_mods_iter
