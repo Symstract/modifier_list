@@ -441,7 +441,7 @@ class VIEW_3D_PT_modifier_popup(Operator):
             # === Modifier search and menu ===
             col = layout.column()
             wm = bpy.context.window_manager
-            row = col.split(percentage=0.65)
+            row = col.split(percentage=0.59)
             row.prop_search(wm, "mod_to_add", wm, "all_modifiers", text="", icon='MODIFIER')
             row.menu("OBJECT_MT_custom_add_modifier_menu")
 
