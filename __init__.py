@@ -240,7 +240,7 @@ class MODIFIERS_UL_modifier_list(UIList):
                 layout.prop(mod, "name", text="", emboss=False, icon_value=icon)
 
                 # Hide visibility toggles for collision modifier as they are not used
-                # in the regular UI either (apparently can cause problems in some scenes)
+                # in the regular UI either (apparently can cause problems in some scenes).
                 if mod.type != 'COLLISION':
                     icon = 'RESTRICT_VIEW_OFF' if mod.show_viewport else 'RESTRICT_VIEW_ON'
                     layout.prop(mod, "show_viewport", text="", icon=icon, emboss=False)
@@ -418,7 +418,7 @@ class VIEW_3D_PT_modifier_popup(Operator):
             fav_name_icon_type_iter = fav_name_icon_type()
 
             # Check if an item or the next item in fav_name_icon_type has a value
-            # and add rows and buttons accordingly (two buttons per row)
+            # and add rows and buttons accordingly (two buttons per row).
             for name, icon, mod in fav_name_icon_type_iter:
                 next_mod = next(fav_name_icon_type_iter)
                 if name or next_mod[0] is not None:
@@ -493,7 +493,7 @@ class VIEW_3D_PT_modifier_popup(Operator):
                     sub.scale_x = 1.2
                     sub.alignment = 'RIGHT'
                     # Hide visibility toggles for collision modifier as they are not used
-                    # in the regular UI either (apparently can cause problems in some scenes)
+                    # in the regular UI either (apparently can cause problems in some scenes).
                     if active_mod.type != 'COLLISION':
                         sub.prop(active_mod, "show_viewport", text="")
                         sub.prop(active_mod, "show_render", text="")
@@ -575,6 +575,9 @@ def register():
 
     bpy.types.Object.modifier_active_index = IntProperty()
 
+    # Use Window Manager for storing modifier search property
+    # and modifier collection because it can be accessed on
+    # registering and it's not scene specific.
     wm = bpy.types.WindowManager
     wm.mod_to_add = StringProperty(name="Modifier to add", update=add_modifier,
                                    description="Search for a modifier and add it to the stack")
