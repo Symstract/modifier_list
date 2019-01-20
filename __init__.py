@@ -152,6 +152,74 @@ def fav_name_icon_type():
     return fav_mods_iter
 
 
+def mod_show_editmode_and_cage(modifier, layout):
+    """This handles showing, hiding and activating/deactivating
+    show_in_editmode and show_on_cage buttons to match the behaviour of
+    the regular UI. When called, adds those buttons, for the specified
+    modifier, in their correct state, to the specified (sub-)layout .
+
+    Note: some modifiers show show_on_cage in the regular UI only if,
+    for example, an object to use for deforming is specified. Eg.
+    Armatature modifier requires an armature object to be specified in
+    order to show the button. This function doesn't take that into
+    account but instead shows the button always in those cases. It's
+    easier to achieve and hardly makes a difference.
+    """
+
+    has_no_show_in_editmode = {'MESH_SEQUENCE_CACHE', 'BUILD', 'DECIMATE', 'MULTIRES', 'CLOTH', 'COLLISION',
+                           'DYNAMIC_PAINT','EXPLODE', 'FLUID_SIMULATION', 'PARTICLE_SYSTEM',
+                           'SMOKE', 'SOFT_BODY'}
+
+    deform_mods = {mod for name, icon, mod in all_name_icon_type()[25:41]}
+    other_show_on_cage_mods = {'DATA_TRANSFER', 'NORMAL_EDIT', 'WEIGHTED_NORMAL', 'UV_PROJECT',
+                           'VERTEX_WEIGHT_EDIT', 'VERTEX_WEIGHT_MIX', 'VERTEX_WEIGHT_PROXIMITY',
+                           'ARRAY', 'EDGE_SPLIT', 'MASK', 'MIRROR','SOLIDIFY', 'SUBSURF',
+                           'TRIANGULATE'}
+    has_show_on_cage = deform_mods.union(other_show_on_cage_mods)
+
+    # === Main layout ===
+    sub = layout.row(align=True)
+    if not modifier.show_viewport:
+        sub.active = False
+
+    # === show_in_editmode ===
+    if modifier.type not in has_no_show_in_editmode:
+        icon = 'EDITMODE_HLT' if modifier.show_in_editmode else 'OBJECT_DATAMODE'
+        sub.prop(modifier, "show_in_editmode", text="", icon=icon, emboss=False)
+
+    # === show_on_cage ===
+    if modifier.type in has_show_on_cage:
+        ob = bpy.context.object
+        mods = ob.modifiers
+        mod_index = mods.find(modifier.name)
+
+        # Check if some modifier before this has show_in_editmode on
+        # and doesn't have show_on_cage setting.
+        is_before_show_in_editmode_on = False
+        end_index = np.clip(mod_index, 1, 99)
+        for mod in mods[0:end_index]:
+            if mod.show_in_editmode and mod.type not in has_show_on_cage:
+                is_before_show_in_editmode_on = True
+                break
+
+        # Check if some modifier after this has show_in_editmode and
+        # show_on_cage both on and also is visible in viewport.
+        is_after_show_on_cage_on = False
+        for mod in mods[(mod_index + 1):(len(mods))]:
+            if (mod.show_viewport and mod.show_in_editmode
+                    and mod.show_on_cage):
+                is_after_show_on_cage_on = True
+                break
+
+        # show_on_cage drawing
+        if not is_before_show_in_editmode_on:
+            sub_sub = sub.row()
+            if not modifier.show_in_editmode or is_after_show_on_cage_on:
+                sub_sub.active = False
+            icon = 'OUTLINER_OB_MESH' if modifier.show_on_cage else 'MESH_DATA'
+            sub_sub.prop(modifier, "show_on_cage", text="", icon=icon, emboss=False)
+
+
 #=======================================================================
 
 
@@ -236,23 +304,23 @@ class MODIFIERS_UL_modifier_list(UIList):
 
         if self.layout_type in {'DEFAULT', 'COMPACT'}:
             if mod:
-                layout.label(text="", translate=False, icon_value=layout.icon(mod))
-                layout.prop(mod, "name", text="", emboss=False, icon_value=icon)
+                col = layout.column()
+                row = col.split(percentage=0.70)
+                sub = row.row(align=True)
+                sub.label(text="", translate=False, icon_value=layout.icon(mod))
+                sub.prop(mod, "name", text="", emboss=False, icon_value=icon)
 
                 # Hide visibility toggles for collision modifier as they are not used
                 # in the regular UI either (apparently can cause problems in some scenes).
                 if mod.type != 'COLLISION':
+                    sub = row.row(align=True)
                     icon = 'RESTRICT_VIEW_OFF' if mod.show_viewport else 'RESTRICT_VIEW_ON'
-                    layout.prop(mod, "show_viewport", text="", icon=icon, emboss=False)
+                    sub.prop(mod, "show_viewport", text="", icon=icon, emboss=False)
 
                     icon = 'RESTRICT_RENDER_OFF' if mod.show_render else 'RESTRICT_RENDER_ON'
-                    layout.prop(mod, "show_render", text="", icon=icon, emboss=False)
+                    sub.prop(mod, "show_render", text="", icon=icon, emboss=False)
 
-                icon = 'EDITMODE_HLT' if mod.show_in_editmode else 'OBJECT_DATAMODE'
-                layout.prop(mod, "show_in_editmode", text="", icon=icon, emboss=False)
-
-                icon = 'OUTLINER_OB_MESH' if mod.show_on_cage else 'MESH_DATA'
-                layout.prop(mod, "show_on_cage", text="", icon=icon, emboss=False)
+                    mod_show_editmode_and_cage(mod, sub)
             else:
                 layout.label(text="", translate=False, icon_value=icon)
 
