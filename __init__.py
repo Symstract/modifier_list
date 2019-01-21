@@ -152,7 +152,7 @@ def fav_name_icon_type():
     return fav_mods_iter
 
 
-def mod_show_editmode_and_cage(modifier, layout):
+def mod_show_editmode_and_cage(modifier, layout, emboss=True):
     """This handles showing, hiding and activating/deactivating
     show_in_editmode and show_on_cage buttons to match the behaviour of
     the regular UI. When called, adds those buttons, for the specified
@@ -185,7 +185,7 @@ def mod_show_editmode_and_cage(modifier, layout):
     # === show_in_editmode ===
     if modifier.type not in has_no_show_in_editmode:
         icon = 'EDITMODE_HLT' if modifier.show_in_editmode else 'OBJECT_DATAMODE'
-        sub.prop(modifier, "show_in_editmode", text="", icon=icon, emboss=False)
+        sub.prop(modifier, "show_in_editmode", text="", icon=icon, emboss=emboss)
 
     # === show_on_cage ===
     if modifier.type in has_show_on_cage:
@@ -213,11 +213,11 @@ def mod_show_editmode_and_cage(modifier, layout):
 
         # show_on_cage drawing
         if not is_before_show_in_editmode_on:
-            sub_sub = sub.row()
+            sub_sub = sub.row(align=True)
             if not modifier.show_in_editmode or is_after_show_on_cage_on:
                 sub_sub.active = False
             icon = 'OUTLINER_OB_MESH' if modifier.show_on_cage else 'MESH_DATA'
-            sub_sub.prop(modifier, "show_on_cage", text="", icon=icon, emboss=False)
+            sub_sub.prop(modifier, "show_on_cage", text="", icon=icon, emboss=emboss)
 
 
 #=======================================================================
@@ -320,7 +320,7 @@ class MODIFIERS_UL_modifier_list(UIList):
                     icon = 'RESTRICT_RENDER_OFF' if mod.show_render else 'RESTRICT_RENDER_ON'
                     sub.prop(mod, "show_render", text="", icon=icon, emboss=False)
 
-                    mod_show_editmode_and_cage(mod, sub)
+                    mod_show_editmode_and_cage(mod, sub, emboss=False)
             else:
                 layout.label(text="", translate=False, icon_value=icon)
 
@@ -565,8 +565,7 @@ class VIEW_3D_PT_modifier_popup(Operator):
                     if active_mod.type != 'COLLISION':
                         sub.prop(active_mod, "show_viewport", text="")
                         sub.prop(active_mod, "show_render", text="")
-                    sub.prop(active_mod, "show_in_editmode", text="")
-                    sub.prop(active_mod, "show_on_cage", text="")
+                    mod_show_editmode_and_cage(active_mod, sub, emboss=True)
 
                     row = box.row()
                     row.operator("object.custom_modifier_apply",
