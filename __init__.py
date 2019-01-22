@@ -542,7 +542,6 @@ class VIEW_3D_PT_modifier_popup(Operator):
             # === Modifier settings ===
             ob = context.object
 
-            row = layout.row()
             if ob:
                 if ob.modifiers:
                     active_mod_index = ob.modifier_active_index
