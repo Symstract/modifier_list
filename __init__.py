@@ -152,7 +152,7 @@ def fav_name_icon_type():
     return fav_mods_iter
 
 
-def mod_show_editmode_and_cage(modifier, layout, emboss=True):
+def mod_show_editmode_and_cage(modifier, layout, scale_x=1.0, emboss=True):
     """This handles showing, hiding and activating/deactivating
     show_in_editmode and show_on_cage buttons to match the behaviour of
     the regular UI. When called, adds those buttons, for the specified
@@ -177,12 +177,11 @@ def mod_show_editmode_and_cage(modifier, layout, emboss=True):
                            'TRIANGULATE'}
     has_show_on_cage = deform_mods.union(other_show_on_cage_mods)
 
-    # === Main layout ===
+    # === show_in_editmode ===
     sub = layout.row(align=True)
+    sub.scale_x = scale_x
     if not modifier.show_viewport:
         sub.active = False
-
-    # === show_in_editmode ===
     if modifier.type not in has_no_show_in_editmode:
         icon = 'EDITMODE_HLT' if modifier.show_in_editmode else 'OBJECT_DATAMODE'
         sub.prop(modifier, "show_in_editmode", text="", icon=icon, emboss=emboss)
@@ -213,11 +212,14 @@ def mod_show_editmode_and_cage(modifier, layout, emboss=True):
 
         # show_on_cage drawing
         if not is_before_show_in_editmode_on:
-            sub_sub = sub.row(align=True)
+            sub = layout.row(align=True)
+            sub.scale_x = scale_x
+            if not modifier.show_viewport:
+                sub.active = False
             if not modifier.show_in_editmode or is_after_show_on_cage_on:
-                sub_sub.active = False
+                sub.active = False
             icon = 'OUTLINER_OB_MESH' if modifier.show_on_cage else 'MESH_DATA'
-            sub_sub.prop(modifier, "show_on_cage", text="", icon=icon, emboss=emboss)
+            sub.prop(modifier, "show_on_cage", text="", icon=icon, emboss=emboss)
 
 
 #=======================================================================
@@ -314,6 +316,7 @@ class MODIFIERS_UL_modifier_list(UIList):
                 # in the regular UI either (apparently can cause problems in some scenes).
                 if mod.type != 'COLLISION':
                     sub = row.row(align=True)
+
                     icon = 'RESTRICT_VIEW_OFF' if mod.show_viewport else 'RESTRICT_VIEW_ON'
                     sub.prop(mod, "show_viewport", text="", icon=icon, emboss=False)
 
@@ -548,24 +551,25 @@ class VIEW_3D_PT_modifier_popup(Operator):
                     active_mod_icon = [icon for name, icon, mod in all_name_icon_type()
                                        if mod == active_mod.type].pop()
 
-                    column = layout.column(align=True)
+                    col = layout.column(align=True)
 
                     # === General settings ===
-                    box = column.box()
+                    box = col.box()
                     row = box.row()
+
                     sub = row.row()
                     sub.label(text="", icon=active_mod_icon)
                     sub.prop(active_mod, "name", text="")
 
                     sub = row.row(align=True)
-                    sub.scale_x = 1.2
-                    sub.alignment = 'RIGHT'
+                    sub_sub = sub.row(align=True)
+                    sub_sub.scale_x = 1.2
                     # Hide visibility toggles for collision modifier as they are not used
                     # in the regular UI either (apparently can cause problems in some scenes).
                     if active_mod.type != 'COLLISION':
-                        sub.prop(active_mod, "show_viewport", text="")
-                        sub.prop(active_mod, "show_render", text="")
-                    mod_show_editmode_and_cage(active_mod, sub, emboss=True)
+                        sub_sub.prop(active_mod, "show_viewport", text="")
+                        sub_sub.prop(active_mod, "show_render", text="")
+                    mod_show_editmode_and_cage(active_mod, sub, scale_x=1.2 ,emboss=True)
 
                     row = box.row()
                     row.operator("object.custom_modifier_apply",
@@ -592,7 +596,7 @@ class VIEW_3D_PT_modifier_popup(Operator):
                                      text="Copy").modifier = active_mod.name
 
                     # === Modifier specific settings ===
-                    box = column.box()
+                    box = col.box()
                     mp = DATA_PT_modifiers(context)
                     getattr(mp, active_mod.type)(box, ob, active_mod)
 
