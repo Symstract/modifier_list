@@ -291,7 +291,7 @@ class OBJECT_MT_custom_add_modifier_menu(Menu):
             col.operator("object.custom_modifier_add", text=name, icon=icon).modifier_type = mod
 
 
-class MODIFIERS_UL_modifier_list(UIList):
+class OBJECT_UL_modifier_list(UIList):
 
     def draw_item(self, context, layout, data, item, icon, active_data, active_propname):
         mod = item
@@ -505,7 +505,7 @@ class VIEW_3D_PT_modifier_popup(Operator):
             # === Modifier list ===
             ob = context.object
 
-            layout.template_list("MODIFIERS_UL_modifier_list", "", ob, "modifiers",
+            layout.template_list("OBJECT_UL_modifier_list", "", ob, "modifiers",
                                  ob, "modifier_active_index")
 
             # === Modifier tools (from the addon) ===
@@ -613,7 +613,7 @@ classes = (
     Preferences,
     AllModifiersCollection,
     OBJECT_MT_custom_add_modifier_menu,
-    MODIFIERS_UL_modifier_list,
+    OBJECT_UL_modifier_list,
     OBJECT_OT_custom_modifier_move_up,
     OBJECT_OT_custom_modifier_move_down,
     OBJECT_OT_custom_modifier_remove,
