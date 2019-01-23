@@ -596,8 +596,11 @@ class VIEW_3D_PT_modifier_popup(Operator):
 
                     # === Modifier specific settings ===
                     box = col.box()
+                    # A column is needed here to keep the layout more compact,
+                    # because in a box separators give an unnecessarily big space.
+                    col = box.column()
                     mp = DATA_PT_modifiers(context)
-                    getattr(mp, active_mod.type)(box, ob, active_mod)
+                    getattr(mp, active_mod.type)(col, ob, active_mod)
 
 
 #=======================================================================
