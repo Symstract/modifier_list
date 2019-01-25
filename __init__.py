@@ -34,6 +34,7 @@ bl_info = {
 import math
 import numpy as np
 
+import addon_utils
 from bl_ui.properties_data_modifier import DATA_PT_modifiers
 import bpy
 from bpy.app.handlers import persistent
@@ -522,14 +523,16 @@ class VIEW_3D_PT_modifier_popup(Operator):
             layout.template_list("OBJECT_UL_modifier_list", "", ob, "modifiers",
                                  ob, "modifier_active_index")
 
-            # === Modifier tools (from the addon) ===
             row = layout.row()
 
-            sub = row.row(align=True)
-            sub.scale_x = 2.0
-            sub.operator("object.toggle_apply_modifiers_view", icon='RESTRICT_VIEW_OFF', text="")
-            sub.operator("object.apply_all_modifiers", icon='IMPORT', text="")
-            sub.operator("object.delete_all_modifiers", icon='X', text="")
+            # === Modifier tools (from the addon) ===
+            is_loaded, is_enabled = addon_utils.check("space_view3d_modifier_tools")
+            if is_loaded and is_enabled:
+                sub = row.row(align=True)
+                sub.scale_x = 2.0
+                sub.operator("object.toggle_apply_modifiers_view", icon='RESTRICT_VIEW_OFF', text="")
+                sub.operator("object.apply_all_modifiers", icon='IMPORT', text="")
+                sub.operator("object.delete_all_modifiers", icon='X', text="")
 
             # === List manipulation ===
             sub = row.row(align=True)
