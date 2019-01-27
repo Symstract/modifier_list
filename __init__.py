@@ -65,6 +65,11 @@ class Preferences(AddonPreferences):
     modifier_11 = StringProperty()
     modifier_12 = StringProperty()
 
+    mod_list_def_len = IntProperty(name="",
+                                   description="Default/min number of rows to display in modifier list",
+                                   default=7)
+
+
     def draw(self, context):
         layout = self.layout
 
@@ -86,10 +91,19 @@ class Preferences(AddonPreferences):
             row.prop_search(self, attr, wm, "all_modifiers", text="", icon='MODIFIER')
             row.prop_search(self, next(attr_iter), wm, "all_modifiers", text="", icon='MODIFIER')
 
-        col.separator()
+        layout.separator()
+
+        # === Number of rows in modifier list ===
+        layout.label(text="Default/min number of rows to display in modifier list:")
+
+        row = layout.row()
+        split = row.split(percentage=0.5)
+        split.prop(self, "mod_list_def_len")
+
+        layout.separator()
 
         # === Hotkey ===
-        col.label(text="Hotkey:")
+        layout.label(text="Hotkey:")
 
         col = layout.column()
         kc = bpy.context.window_manager.keyconfigs.addon
@@ -520,8 +534,10 @@ class VIEW_3D_PT_modifier_popup(Operator):
             # === Modifier list ===
             ob = context.object
 
+            prefs = bpy.context.user_preferences.addons[__name__].preferences
+            num_of_rows = prefs.mod_list_def_len
             layout.template_list("OBJECT_UL_modifier_list", "", ob, "modifiers",
-                                 ob, "modifier_active_index")
+                                 ob, "modifier_active_index", rows=num_of_rows)
 
             row = layout.row()
 
