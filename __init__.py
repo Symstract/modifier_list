@@ -66,8 +66,8 @@ class Preferences(AddonPreferences):
     modifier_12: StringProperty()
 
     mod_list_def_len: IntProperty(name="",
-                                   description="Default/min number of rows to display in modifier list",
-                                   default=7)
+                                  description="Default/min number of rows to display in modifier list",
+                                  default=7)
 
     def draw(self, context):
         layout = self.layout
@@ -120,26 +120,21 @@ def get_pref_mod_attr_name():
     class for making drawing favourite modifier selection rows in
     preferences easy.
     """
-
     attr_name_list = [attr for attr in Preferences.__annotations__ if "modifier_" in attr]
-
     return attr_name_list
 
 
 def get_pref_mod_attr_value():
     """List of the names of favourite modifiers"""
-
     prefs = bpy.context.preferences.addons[__name__].preferences
     # get correct class attributes and then their values
     attr_list = [attr for attr in dir(prefs) if "modifier_" in attr]
     attr_value_list = [getattr(prefs, attr) for attr in attr_list]
-
     return attr_value_list
 
 
 def all_name_icon_type():
     """List of tuples of the names, icons and types of all modifiers."""
-
     mods_enum = bpy.types.Modifier.bl_rna.properties['type'].enum_items
 
     all_mod_names = [modifier.name for modifier in mods_enum]
@@ -147,7 +142,6 @@ def all_name_icon_type():
     all_mod_types = [modifier.identifier for modifier in mods_enum]
 
     all_mods_zipped = list(zip(all_mod_names, all_mod_icons, all_mod_types))
-
     return all_mods_zipped
 
 
@@ -155,14 +149,12 @@ def fav_name_icon_type():
     """Iterator of tuples of the names, icons and types of favourite
     modifiers.
     """
-
     mods_enum = bpy.types.Modifier.bl_rna.properties['type'].enum_items
     all_mod_names = [modifier.name for modifier in mods_enum]
     all_mods_dict = dict(zip(all_mod_names, all_name_icon_type()))
     fav_mods_list = [all_mods_dict[mod] if mod in all_mods_dict else (None, None, None)
                      for mod in get_pref_mod_attr_value()]
     fav_mods_iter = iter(fav_mods_list)
-
     return fav_mods_iter
 
 
@@ -170,24 +162,25 @@ def mod_show_editmode_and_cage(modifier, layout, scale_x=1.0, emboss=True):
     """This handles showing, hiding and activating/deactivating
     show_in_editmode and show_on_cage buttons to match the behaviour of
     the regular UI. When called, adds those buttons, for the specified
-    modifier, in their correct state, to the specified (sub-)layout .
-     Note: some modifiers show show_on_cage in the regular UI only if,
+    modifier, in their correct state, to the specified (sub-)layout.
+    Note: some modifiers show show_on_cage in the regular UI only if,
     for example, an object to use for deforming is specified. Eg.
     Armatature modifier requires an armature object to be specified in
     order to show the button. This function doesn't take that into
     account but instead shows the button always in those cases. It's
     easier to achieve and hardly makes a difference.
     """
-
-    has_no_show_in_editmode = {'MESH_SEQUENCE_CACHE', 'BUILD', 'DECIMATE', 'MULTIRES', 'CLOTH', 'COLLISION',
-                           'DYNAMIC_PAINT','EXPLODE', 'FLUID_SIMULATION', 'PARTICLE_SYSTEM',
-                           'SMOKE', 'SOFT_BODY'}
+    has_no_show_in_editmode = {
+        'MESH_SEQUENCE_CACHE', 'BUILD', 'DECIMATE', 'MULTIRES', 'CLOTH', 'COLLISION',
+        'DYNAMIC_PAINT','EXPLODE', 'FLUID_SIMULATION', 'PARTICLE_SYSTEM','SMOKE', 'SOFT_BODY'
+    }
 
     deform_mods = {mod for name, icon, mod in all_name_icon_type()[25:41]}
-    other_show_on_cage_mods = {'DATA_TRANSFER', 'NORMAL_EDIT', 'WEIGHTED_NORMAL', 'UV_PROJECT',
-                           'VERTEX_WEIGHT_EDIT', 'VERTEX_WEIGHT_MIX', 'VERTEX_WEIGHT_PROXIMITY',
-                           'ARRAY', 'EDGE_SPLIT', 'MASK', 'MIRROR','SOLIDIFY', 'SUBSURF',
-                           'TRIANGULATE'}
+    other_show_on_cage_mods = {
+        'DATA_TRANSFER', 'NORMAL_EDIT', 'WEIGHTED_NORMAL', 'UV_PROJECT','VERTEX_WEIGHT_EDIT',
+        'VERTEX_WEIGHT_MIX', 'VERTEX_WEIGHT_PROXIMITY', 'ARRAY', 'EDGE_SPLIT', 'MASK', 'MIRROR',
+        'SOLIDIFY', 'SUBSURF', 'TRIANGULATE'
+    }
     has_show_on_cage = deform_mods.union(other_show_on_cage_mods)
 
     # === show_in_editmode ===
@@ -215,7 +208,7 @@ def mod_show_editmode_and_cage(modifier, layout, scale_x=1.0, emboss=True):
                 break
 
         # Check if some modifier after this has show_in_editmode and
-        # show_on_cage both on and also is visible in viewport.
+        # show_on_cage both on and also is visible in the viewport.
         is_after_show_on_cage_on = False
         for mod in mods[(mod_index + 1):(len(mods))]:
             if (mod.show_viewport and mod.show_in_editmode
@@ -256,7 +249,7 @@ def add_modifier(self, context):
     mods_len = len(mods) - 1
     ob.modifier_active_index = mods_len
 
-    # Executing an operator via function doesn't create an undo event,
+    # Executing an operator via a function doesn't create an undo event,
     # so it needs to be added manually.
     bpy.ops.ed.undo_push(message="Add Modifier")
 
@@ -274,33 +267,25 @@ class OBJECT_MT_custom_add_modifier_menu(Menu):
 
         col = row.column()
         col.label(text="Modify")
-
         col.separator(factor=0.3)
-
         for name, icon, mod in all_name_icon_type()[0:10]:
             col.operator("object.custom_modifier_add", text=name, icon=icon).modifier_type = mod
 
         col = row.column()
         col.label(text="Generate")
-
         col.separator(factor=0.3)
-
         for name, icon, mod in all_name_icon_type()[10:26]:
             col.operator("object.custom_modifier_add", text=name, icon=icon).modifier_type = mod
 
         col = row.column()
         col.label(text="Deform")
-
         col.separator(factor=0.3)
-
         for name, icon, mod in all_name_icon_type()[26:42]:
             col.operator("object.custom_modifier_add", text=name, icon=icon).modifier_type = mod
 
         col = row.column()
         col.label(text="Simulate")
-
         col.separator(factor=0.3)
-
         for name, icon, mod in all_name_icon_type()[42:52]:
             col.operator("object.custom_modifier_add", text=name, icon=icon).modifier_type = mod
 
@@ -422,8 +407,10 @@ class OBJECT_OT_custom_modifier_apply(Operator):
     apply_as: EnumProperty(
         items=(
             ('DATA', "Data", ""),
-            ('SHAPE', "Shape", "")),
-        default='DATA')
+            ('SHAPE', "Shape", "")
+        ),
+        default='DATA'
+    )
 
     def execute(self, context):
         if context.mode == 'EDIT_MESH':
@@ -496,15 +483,13 @@ class VIEW_3D_PT_modifier_popup(Operator):
                     row = col.split(factor=0.5, align=True)
 
                     if name is not None:
-                        add_modifer = row.operator("object.custom_modifier_add",
-                                                   text=name,
+                        add_modifer = row.operator("object.custom_modifier_add", text=name,
                                                    icon=icon).modifier_type = mod
                     else:
                         row.label(text="")
 
                     if next_mod[0] is not None:
-                        row.operator("object.custom_modifier_add",
-                                     text=next_mod[0],
+                        row.operator("object.custom_modifier_add", text=next_mod[0],
                                      icon=next_mod[1]).modifier_type = next_mod[2]
                     else:
                         row.label(text="")
@@ -527,7 +512,6 @@ class VIEW_3D_PT_modifier_popup(Operator):
             row = layout.row()
 
             # === Modifier tools (from the addon) ===
-
             is_loaded, is_enabled = addon_utils.check("space_view3d_modifier_tools")
             if is_loaded and is_enabled:
                 sub = row.row(align=True)
@@ -592,8 +576,10 @@ class VIEW_3D_PT_modifier_popup(Operator):
                         apply_as_shape_key.modifier=active_mod.name
                         apply_as_shape_key.apply_as='SHAPE'
 
-                    has_no_copy = {'CLOTH', 'COLLISION', 'DYNAMIC_PAINT', 'FLUID_SIMULATION',
-                                   'PARTICLE_SYSTEM', 'SMOKE', 'SOFT_BODY'}
+                    has_no_copy = {
+                        'CLOTH', 'COLLISION', 'DYNAMIC_PAINT', 'FLUID_SIMULATION',
+                        'PARTICLE_SYSTEM', 'SMOKE', 'SOFT_BODY'
+                    }
                     if active_mod.type not in has_no_copy:
                         row.operator("object.custom_modifier_copy",
                                      text="Copy").modifier = active_mod.name
@@ -614,7 +600,6 @@ def set_modifier_collection_items():
     """This is to be called on loading a new file or reloading addons
     to make modifiers available in search.
     """
-
     all_modifiers = bpy.context.window_manager.all_modifiers
 
     if not all_modifiers:
@@ -657,8 +642,7 @@ def register():
     # and modifier collection because it can be accessed on
     # registering and it's not scene specific.
     wm = bpy.types.WindowManager
-    wm.mod_to_add = StringProperty(name="Modifier to add",
-                                   update=add_modifier,
+    wm.mod_to_add = StringProperty(name="Modifier to add", update=add_modifier,
                                    description="Search for a modifier and add it to the stack")
     wm.all_modifiers = CollectionProperty(type=AllModifiersCollection)
 
