@@ -339,12 +339,10 @@ class ModifierListActions(Operator):
             if self.action == 'UP':
                 bpy.ops.object.modifier_move_up(modifier=active_mod_name)
                 ob.modifier_active_index = active_mod_index_up
-
-            if self.action == 'DOWN':
+            elif self.action == 'DOWN':
                 bpy.ops.object.modifier_move_down(modifier=active_mod_name)
                 ob.modifier_active_index = active_mod_index_down
-
-            if self.action == 'REMOVE':
+            elif self.action == 'REMOVE':
                 bpy.ops.object.modifier_remove(modifier=active_mod_name)
                 ob.modifier_active_index = active_mod_index_up
 
