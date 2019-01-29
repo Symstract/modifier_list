@@ -256,9 +256,9 @@ def add_modifier(self, context):
     bpy.ops.ed.undo_push(message="Add Modifier")
 
 
-class OBJECT_MT_custom_add_modifier_menu(Menu):
+class OBJECT_MT_mpp_add_modifier_menu(Menu):
     bl_label = "Add Modifier"
-    bl_idname = "OBJECT_MT_custom_add_modifier_menu"
+    bl_idname = "OBJECT_MT_mpp_add_modifier_menu"
     bl_description = "Add a procedural operation/effect to the active object"
 
     def draw(self, context):
@@ -275,7 +275,7 @@ class OBJECT_MT_custom_add_modifier_menu(Menu):
         sub.separator()
 
         for name, icon, mod in all_name_icon_type()[0:9]:
-            col.operator("object.custom_modifier_add", text=name, icon=icon).modifier_type = mod
+            col.operator("object.mpp_modifier_add", text=name, icon=icon).modifier_type = mod
 
         col = row.column()
         col.label(text="Generate")
@@ -285,7 +285,7 @@ class OBJECT_MT_custom_add_modifier_menu(Menu):
         sub.separator()
 
         for name, icon, mod in all_name_icon_type()[9:25]:
-            col.operator("object.custom_modifier_add", text=name, icon=icon).modifier_type = mod
+            col.operator("object.mpp_modifier_add", text=name, icon=icon).modifier_type = mod
 
         col = row.column()
         col.label(text="Deform")
@@ -295,7 +295,7 @@ class OBJECT_MT_custom_add_modifier_menu(Menu):
         sub.separator()
 
         for name, icon, mod in all_name_icon_type()[25:41]:
-            col.operator("object.custom_modifier_add", text=name, icon=icon).modifier_type = mod
+            col.operator("object.mpp_modifier_add", text=name, icon=icon).modifier_type = mod
 
         col = row.column()
         col.label(text="Simulate")
@@ -304,7 +304,7 @@ class OBJECT_MT_custom_add_modifier_menu(Menu):
         sub.separator()
 
         for name, icon, mod in all_name_icon_type()[41:51]:
-            col.operator("object.custom_modifier_add", text=name, icon=icon).modifier_type = mod
+            col.operator("object.mpp_modifier_add", text=name, icon=icon).modifier_type = mod
 
 
 class OBJECT_UL_modifier_list(UIList):
@@ -371,32 +371,32 @@ class ModifierListActions(Operator):
         return {'FINISHED'}
 
 
-class OBJECT_OT_custom_modifier_move_up(ModifierListActions):
-    bl_idname = "object.custom_modifier_move_up"
+class OBJECT_OT_mpp_modifier_move_up(ModifierListActions):
+    bl_idname = "object.mpp_modifier_move_up"
     bl_label = "Move modifier up"
     bl_description = "Move modifier up in the stack"
 
     action = 'UP'
 
 
-class OBJECT_OT_custom_modifier_move_down(ModifierListActions):
-    bl_idname = "object.custom_modifier_move_down"
+class OBJECT_OT_mpp_modifier_move_down(ModifierListActions):
+    bl_idname = "object.mpp_modifier_move_down"
     bl_label = "Move modifier down"
     bl_description = "Move modifier down in the stack"
 
     action = 'DOWN'
 
 
-class OBJECT_OT_custom_modifier_remove(ModifierListActions):
-    bl_idname = "object.custom_modifier_remove"
+class OBJECT_OT_mpp_modifier_remove(ModifierListActions):
+    bl_idname = "object.mpp_modifier_remove"
     bl_label = "Remove Modifier"
     bl_description = "Remove modifier from the active object"
 
     action = 'REMOVE'
 
 
-class OBJECT_OT_custom_modifier_add(Operator):
-    bl_idname = "object.custom_modifier_add"
+class OBJECT_OT_mpp_modifier_add(Operator):
+    bl_idname = "object.mpp_modifier_add"
     bl_label = "Add Modifier"
     bl_description = "Add a procedural operation/effect to the active object"
     bl_options = {'REGISTER', 'INTERNAL', 'UNDO'}
@@ -416,8 +416,8 @@ class OBJECT_OT_custom_modifier_add(Operator):
 
 
 
-class OBJECT_OT_custom_modifier_apply(Operator):
-    bl_idname = "object.custom_modifier_apply"
+class OBJECT_OT_mpp_modifier_apply(Operator):
+    bl_idname = "object.mpp_modifier_apply"
     bl_label = "Apply Modifier"
     bl_description = "Apply modifier and remove from the stack"
     bl_options = {'REGISTER', 'INTERNAL', 'UNDO'}
@@ -446,8 +446,8 @@ class OBJECT_OT_custom_modifier_apply(Operator):
         return {'FINISHED'}
 
 
-class OBJECT_OT_custom_modifier_copy(Operator):
-    bl_idname = "object.custom_modifier_copy"
+class OBJECT_OT_mpp_modifier_copy(Operator):
+    bl_idname = "object.mpp_modifier_copy"
     bl_label = "Copy Modifier"
     bl_description = "Duplicate modifier at the same position in the stack"
     bl_options = {'REGISTER', 'INTERNAL', 'UNDO'}
@@ -504,13 +504,13 @@ class VIEW_3D_PT_modifier_popup(Operator):
                     row = col.split(percentage=0.5, align=True)
 
                     if name is not None:
-                        add_modifer = row.operator("object.custom_modifier_add", text=name,
+                        add_modifer = row.operator("object.mpp_modifier_add", text=name,
                                                    icon=icon).modifier_type = mod
                     else:
                         row.label(text="")
 
                     if next_mod[0] is not None:
-                        row.operator("object.custom_modifier_add", text=next_mod[0],
+                        row.operator("object.mpp_modifier_add", text=next_mod[0],
                                      icon=next_mod[1]).modifier_type = next_mod[2]
                     else:
                         row.label(text="")
@@ -520,7 +520,7 @@ class VIEW_3D_PT_modifier_popup(Operator):
             wm = bpy.context.window_manager
             row = col.split(percentage=0.59)
             row.prop_search(wm, "mod_to_add", wm, "all_modifiers", text="", icon='MODIFIER')
-            row.menu("OBJECT_MT_custom_add_modifier_menu")
+            row.menu("OBJECT_MT_mpp_add_modifier_menu")
 
             # === Modifier list ===
             ob = context.object
@@ -545,9 +545,9 @@ class VIEW_3D_PT_modifier_popup(Operator):
             sub = row.row(align=True)
             sub.scale_x = 2.0
             sub.alignment = 'RIGHT'
-            sub.operator(OBJECT_OT_custom_modifier_move_up.bl_idname, icon='TRIA_UP', text="")
-            sub.operator(OBJECT_OT_custom_modifier_move_down.bl_idname, icon='TRIA_DOWN', text="")
-            sub.operator(OBJECT_OT_custom_modifier_remove.bl_idname, icon='ZOOMOUT', text="")
+            sub.operator(OBJECT_OT_mpp_modifier_move_up.bl_idname, icon='TRIA_UP', text="")
+            sub.operator(OBJECT_OT_mpp_modifier_move_down.bl_idname, icon='TRIA_DOWN', text="")
+            sub.operator(OBJECT_OT_mpp_modifier_remove.bl_idname, icon='ZOOMOUT', text="")
 
             # === Modifier settings ===
             ob = context.object
@@ -581,7 +581,7 @@ class VIEW_3D_PT_modifier_popup(Operator):
                     mod_show_editmode_and_cage(active_mod, sub, scale_x=1.2 ,emboss=True)
 
                     row = box.row()
-                    row.operator("object.custom_modifier_apply",
+                    row.operator("object.mpp_modifier_apply",
                                  text="Apply").modifier = active_mod.name
 
                     sub = row.row()
@@ -593,7 +593,7 @@ class VIEW_3D_PT_modifier_popup(Operator):
                     other_shape_key_mods = {'CLOTH', 'SOFT_BODY', 'MESH_CACHE'}
                     has_shape_key = deform_mods.union(other_shape_key_mods)
                     if active_mod.type in has_shape_key:
-                        apply_as_shape_key = sub.operator("object.custom_modifier_apply",
+                        apply_as_shape_key = sub.operator("object.mpp_modifier_apply",
                                                           text="Apply as Shape Key")
                         apply_as_shape_key.modifier=active_mod.name
                         apply_as_shape_key.apply_as='SHAPE'
@@ -603,7 +603,7 @@ class VIEW_3D_PT_modifier_popup(Operator):
                         'PARTICLE_SYSTEM', 'SMOKE', 'SOFT_BODY'
                     }
                     if active_mod.type not in has_no_copy:
-                        row.operator("object.custom_modifier_copy",
+                        row.operator("object.mpp_modifier_copy",
                                      text="Copy").modifier = active_mod.name
 
                     # === Modifier specific settings ===
@@ -639,14 +639,14 @@ def on_file_load(dummy):
 classes = (
     Preferences,
     AllModifiersCollection,
-    OBJECT_MT_custom_add_modifier_menu,
+    OBJECT_MT_mpp_add_modifier_menu,
     OBJECT_UL_modifier_list,
-    OBJECT_OT_custom_modifier_move_up,
-    OBJECT_OT_custom_modifier_move_down,
-    OBJECT_OT_custom_modifier_remove,
-    OBJECT_OT_custom_modifier_add,
-    OBJECT_OT_custom_modifier_apply,
-    OBJECT_OT_custom_modifier_copy,
+    OBJECT_OT_mpp_modifier_move_up,
+    OBJECT_OT_mpp_modifier_move_down,
+    OBJECT_OT_mpp_modifier_remove,
+    OBJECT_OT_mpp_modifier_add,
+    OBJECT_OT_mpp_modifier_apply,
+    OBJECT_OT_mpp_modifier_copy,
     VIEW_3D_PT_modifier_popup,
 )
 
