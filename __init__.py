@@ -66,7 +66,7 @@ class Preferences(AddonPreferences):
     modifier_12: StringProperty()
 
     mod_list_def_len: IntProperty(name="",
-                                  description="Default/min number of rows to display in modifier list",
+                                  description="Default/min number of rows to display in the modifier list",
                                   default=7)
 
     def draw(self, context):
@@ -92,8 +92,8 @@ class Preferences(AddonPreferences):
 
         layout.separator()
 
-        # === Number of rows in modifier list ===
-        layout.label(text="Default/min number of rows to display in modifier list:")
+        # === Number of rows in the modifier list ===
+        layout.label(text="Default/min number of rows to display in the modifier list:")
 
         row = layout.row()
         split = row.split(factor=0.5)
