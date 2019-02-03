@@ -33,6 +33,7 @@ bl_info = {
 
 import math
 import numpy as np
+import os
 
 import addon_utils
 from bl_ui.properties_data_modifier import DATA_PT_modifiers
@@ -158,7 +159,8 @@ def fav_name_icon_type():
     return fav_mods_iter
 
 
-def mod_show_editmode_and_cage(modifier, layout, scale_x=1.0, emboss=True):
+def mod_show_editmode_and_cage(modifier, layout, scale_x=1.0, emboss=True,
+                               enable_inactive_icons=False):
     """This handles showing, hiding and activating/deactivating
     show_in_editmode and show_on_cage buttons to match the behaviour of
     the regular UI. When called, adds those buttons, for the specified
@@ -170,6 +172,12 @@ def mod_show_editmode_and_cage(modifier, layout, scale_x=1.0, emboss=True):
     account but instead shows the button always in those cases. It's
     easier to achieve and hardly makes a difference.
     """
+    # Note: When using custom icons, the icons don't seem to get dimmer
+    # in inactive state, so custom dimmer icons are needed.
+    # SHOW_IN_EDITMODE_ON_INACTIVE_BUTTON and
+    # SHOW_ON_CAGE_ON_INACTIVE_BUTTON are used here for that reason.
+    # Is it a bug or just how icon_value works?
+
     has_no_show_in_editmode = {
         'MESH_SEQUENCE_CACHE', 'BUILD', 'DECIMATE', 'MULTIRES', 'CLOTH', 'COLLISION',
         'DYNAMIC_PAINT','EXPLODE', 'FLUID_SIMULATION', 'PARTICLE_SYSTEM','SMOKE', 'SOFT_BODY'
@@ -183,14 +191,25 @@ def mod_show_editmode_and_cage(modifier, layout, scale_x=1.0, emboss=True):
     }
     has_show_on_cage = deform_mods.union(other_show_on_cage_mods)
 
+    pcoll = preview_collections["main"]
+
     # === show_in_editmode ===
     sub = layout.row(align=True)
     sub.scale_x = scale_x
-    if not modifier.show_viewport:
-        sub.active = False
+    sub.active = modifier.show_viewport
     if modifier.type not in has_no_show_in_editmode:
-        icon = 'EDITMODE_HLT' if modifier.show_in_editmode else 'OBJECT_DATAMODE'
-        sub.prop(modifier, "show_in_editmode", text="", icon=icon, emboss=emboss)
+        if not modifier.show_viewport and enable_inactive_icons:
+            show_in_editmode_on = pcoll['SHOW_IN_EDITMODE_ON_INACTIVE']
+            show_in_editmode_off = pcoll['SHOW_IN_EDITMODE_OFF_INACTIVE']
+        elif not modifier.show_viewport:
+            show_in_editmode_off = pcoll['SHOW_IN_EDITMODE_OFF']
+            show_in_editmode_on = pcoll['SHOW_IN_EDITMODE_ON_INACTIVE_BUTTON']
+        else:
+            show_in_editmode_on = pcoll['SHOW_IN_EDITMODE_ON']
+            show_in_editmode_off = pcoll['SHOW_IN_EDITMODE_OFF']
+        icon = show_in_editmode_on.icon_id if modifier.show_in_editmode else show_in_editmode_off.icon_id
+        sub.prop(modifier, "show_in_editmode", text="", icon_value=icon,
+                 emboss=emboss)
 
     # === show_on_cage ===
     if modifier.type in has_show_on_cage:
@@ -220,12 +239,18 @@ def mod_show_editmode_and_cage(modifier, layout, scale_x=1.0, emboss=True):
         if not is_before_show_in_editmode_on:
             sub = layout.row(align=True)
             sub.scale_x = scale_x
-            if not modifier.show_viewport:
+            show_on_cage_on = pcoll['SHOW_ON_CAGE_ON']
+            show_on_cage_off = pcoll['SHOW_ON_CAGE_OFF']
+            if (not modifier.show_viewport or not modifier.show_in_editmode
+                    or is_after_show_on_cage_on):
                 sub.active = False
-            if not modifier.show_in_editmode or is_after_show_on_cage_on:
-                sub.active = False
-            icon = 'OUTLINER_OB_MESH' if modifier.show_on_cage else 'MESH_DATA'
-            sub.prop(modifier, "show_on_cage", text="", icon=icon, emboss=emboss)
+                if enable_inactive_icons:
+                    show_on_cage_on = pcoll['SHOW_ON_CAGE_ON_INACTIVE']
+                    show_on_cage_off = pcoll['SHOW_ON_CAGE_OFF_INACTIVE']
+                else:
+                    show_on_cage_on = pcoll['SHOW_ON_CAGE_ON_INACTIVE_BUTTON']
+            icon = show_on_cage_on.icon_id if modifier.show_on_cage else show_on_cage_off.icon_id
+            sub.prop(modifier, "show_on_cage", text="", icon_value=icon, emboss=emboss)
 
 
 #=======================================================================
@@ -309,7 +334,7 @@ class OBJECT_UL_modifier_list(UIList):
                     sub = row.row(align=True)
                     sub.prop(mod, "show_viewport", text="", emboss=False)
                     sub.prop(mod, "show_render", text="", emboss=False)
-                    mod_show_editmode_and_cage(mod, sub, emboss=False)
+                    mod_show_editmode_and_cage(mod, sub, emboss=False, enable_inactive_icons=True)
             else:
                 layout.label(text="", translate=False, icon_value=icon)
 
@@ -628,6 +653,8 @@ classes = (
 
 addon_keymaps = []
 
+preview_collections = {}
+
 
 def register():
     from bpy.utils import register_class
@@ -657,8 +684,28 @@ def register():
         kmi.active = True
         addon_keymaps.append((km, kmi))
 
+    # Icons
+    from bpy.utils import previews
+    pcoll = previews.new()
+
+    icons_dir = os.path.join(os.path.dirname(__file__), "icons")
+    icons_dir_files = os.listdir(icons_dir)
+
+    all_icon_files = [icon for icon in icons_dir_files if icon.endswith(".png")]
+    all_icon_names = [icon[0:-4] for icon in all_icon_files]
+    all_icon_files_and_names = zip(all_icon_names, all_icon_files)
+
+    for icon_name, icon_file in all_icon_files_and_names:
+        pcoll.load(icon_name, os.path.join(icons_dir, icon_file), 'IMAGE')
+
+    preview_collections["main"] = pcoll
+
 
 def unregister():
+    for pcoll in preview_collections.values():
+        bpy.utils.previews.remove(pcoll)
+        preview_collections.clear()
+
     for km, kmi in addon_keymaps:
         km.keymap_items.remove(kmi)
     addon_keymaps.clear()
