@@ -538,14 +538,18 @@ class VIEW_3D_PT_modifier_popup(Operator):
             is_loaded, is_enabled = addon_utils.check("space_view3d_modifier_tools")
             if is_loaded and is_enabled:
                 sub = row.row(align=True)
-                sub.scale_x = 2.0
+                # Note: In 2.79, this is what scale 2.0 looks like. Here 2.0 causes list ordering
+                # buttons to get tiny. 2.8 Bug?
+                sub.scale_x = 1.5
                 sub.operator("object.toggle_apply_modifiers_view", icon='RESTRICT_VIEW_OFF', text="")
                 sub.operator("object.apply_all_modifiers", icon='IMPORT', text="")
                 sub.operator("object.delete_all_modifiers", icon='X', text="")
 
             # === List manipulation ===
             sub = row.row(align=True)
-            sub.scale_x = 2.0
+            #  Note: In 2.79, this is what scale 2.0 looks like. Here 2.0 causes list ordering
+            # buttons to get tiny. 2.8 Bug?
+            sub.scale_x = 1.5
             sub.alignment = 'RIGHT'
             sub.operator(OBJECT_OT_mpp_modifier_move_up.bl_idname, icon='TRIA_UP', text="")
             sub.operator(OBJECT_OT_mpp_modifier_move_down.bl_idname, icon='TRIA_DOWN', text="")
