@@ -159,8 +159,7 @@ def fav_name_icon_type():
     return fav_mods_iter
 
 
-def mod_show_editmode_and_cage(modifier, layout, scale_x=1.0, emboss=True,
-                               enable_inactive_icons=False):
+def mod_show_editmode_and_cage(modifier, layout, scale_x=1.0, use_in_list=False):
     """This handles showing, hiding and activating/deactivating
     show_in_editmode and show_on_cage buttons to match the behaviour of
     the regular UI. When called, adds those buttons, for the specified
@@ -198,7 +197,7 @@ def mod_show_editmode_and_cage(modifier, layout, scale_x=1.0, emboss=True,
     sub.scale_x = scale_x
     sub.active = modifier.show_viewport
     if modifier.type not in has_no_show_in_editmode:
-        if not modifier.show_viewport and enable_inactive_icons:
+        if not modifier.show_viewport and use_in_list:
             show_in_editmode_on = pcoll['SHOW_IN_EDITMODE_ON_INACTIVE']
             show_in_editmode_off = pcoll['SHOW_IN_EDITMODE_OFF_INACTIVE']
         elif not modifier.show_viewport:
@@ -209,7 +208,7 @@ def mod_show_editmode_and_cage(modifier, layout, scale_x=1.0, emboss=True,
             show_in_editmode_off = pcoll['SHOW_IN_EDITMODE_OFF']
         icon = show_in_editmode_on.icon_id if modifier.show_in_editmode else show_in_editmode_off.icon_id
         sub.prop(modifier, "show_in_editmode", text="", icon_value=icon,
-                 emboss=emboss)
+                 emboss=not use_in_list)
 
     # === show_on_cage ===
     if modifier.type in has_show_on_cage:
@@ -244,13 +243,13 @@ def mod_show_editmode_and_cage(modifier, layout, scale_x=1.0, emboss=True,
             if (not modifier.show_viewport or not modifier.show_in_editmode
                     or is_after_show_on_cage_on):
                 sub.active = False
-                if enable_inactive_icons:
+                if use_in_list:
                     show_on_cage_on = pcoll['SHOW_ON_CAGE_ON_INACTIVE']
                     show_on_cage_off = pcoll['SHOW_ON_CAGE_OFF_INACTIVE']
                 else:
                     show_on_cage_on = pcoll['SHOW_ON_CAGE_ON_INACTIVE_BUTTON']
             icon = show_on_cage_on.icon_id if modifier.show_on_cage else show_on_cage_off.icon_id
-            sub.prop(modifier, "show_on_cage", text="", icon_value=icon, emboss=emboss)
+            sub.prop(modifier, "show_on_cage", text="", icon_value=icon, emboss=not use_in_list)
 
 
 #=======================================================================
@@ -334,7 +333,7 @@ class OBJECT_UL_modifier_list(UIList):
                     sub = row.row(align=True)
                     sub.prop(mod, "show_viewport", text="", emboss=False)
                     sub.prop(mod, "show_render", text="", emboss=False)
-                    mod_show_editmode_and_cage(mod, sub, emboss=False, enable_inactive_icons=True)
+                    mod_show_editmode_and_cage(mod, sub, use_in_list=True)
             else:
                 layout.label(text="", translate=False, icon_value=icon)
 
