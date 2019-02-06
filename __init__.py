@@ -351,11 +351,11 @@ class OBJECT_UL_modifier_list(UIList):
                 if mod.type != 'COLLISION':
                     sub = row.row(align=True)
 
-                    icon = 'RESTRICT_VIEW_OFF' if mod.show_viewport else 'RESTRICT_VIEW_ON'
-                    sub.prop(mod, "show_viewport", text="", icon=icon, emboss=False)
-
                     icon = 'RESTRICT_RENDER_OFF' if mod.show_render else 'RESTRICT_RENDER_ON'
                     sub.prop(mod, "show_render", text="", icon=icon, emboss=False)
+
+                    icon = 'RESTRICT_VIEW_OFF' if mod.show_viewport else 'RESTRICT_VIEW_ON'
+                    sub.prop(mod, "show_viewport", text="", icon=icon, emboss=False)
 
                     mod_show_editmode_and_cage(mod, sub, use_in_llist=True)
             else:
@@ -602,8 +602,8 @@ class VIEW_3D_PT_modifier_popup(Operator):
                     # Hide visibility toggles for collision modifier as they are not used
                     # in the regular UI either (apparently can cause problems in some scenes).
                     if active_mod.type != 'COLLISION':
-                        sub_sub.prop(active_mod, "show_viewport", text="")
                         sub_sub.prop(active_mod, "show_render", text="")
+                        sub_sub.prop(active_mod, "show_viewport", text="")
                     mod_show_editmode_and_cage(active_mod, sub, scale_x=1.2)
 
                     row = box.row()
