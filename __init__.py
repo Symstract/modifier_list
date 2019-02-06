@@ -195,7 +195,8 @@ def mod_show_editmode_and_cage(modifier, layout, scale_x=1.0, use_in_list=False)
     # === show_in_editmode ===
     sub = layout.row(align=True)
     sub.scale_x = scale_x
-    sub.active = modifier.show_viewport
+    if not use_in_list:
+        sub.active = modifier.show_viewport
     if modifier.type not in has_no_show_in_editmode:
         if not modifier.show_viewport and use_in_list:
             show_in_editmode_on = pcoll['SHOW_IN_EDITMODE_ON_INACTIVE']
@@ -242,11 +243,11 @@ def mod_show_editmode_and_cage(modifier, layout, scale_x=1.0, use_in_list=False)
             show_on_cage_off = pcoll['SHOW_ON_CAGE_OFF']
             if (not modifier.show_viewport or not modifier.show_in_editmode
                     or is_after_show_on_cage_on):
-                sub.active = False
                 if use_in_list:
                     show_on_cage_on = pcoll['SHOW_ON_CAGE_ON_INACTIVE']
                     show_on_cage_off = pcoll['SHOW_ON_CAGE_OFF_INACTIVE']
                 else:
+                    sub.active = False
                     show_on_cage_on = pcoll['SHOW_ON_CAGE_ON_INACTIVE_BUTTON']
             icon = show_on_cage_on.icon_id if modifier.show_on_cage else show_on_cage_off.icon_id
             sub.prop(modifier, "show_on_cage", text="", icon_value=icon, emboss=not use_in_list)
