@@ -708,7 +708,7 @@ def register():
 def unregister():
     for pcoll in preview_collections.values():
         bpy.utils.previews.remove(pcoll)
-        preview_collections.clear()
+    preview_collections.clear()
 
     for km, kmi in addon_keymaps:
         km.keymap_items.remove(kmi)
