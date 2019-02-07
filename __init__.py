@@ -27,7 +27,7 @@ bl_info = {
     "description": "A handy popup panel for showing modifiers in 3D view",
     "warning": "",
     "wiki_url": "",
-    "category": "3d View"
+    "category": "3D View"
 }
 
 
