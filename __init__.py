@@ -469,6 +469,16 @@ class OBJECT_OT_mpp_modifier_apply(Operator):
         else:
             bpy.ops.object.modifier_apply(apply_as=self.apply_as, modifier=self.modifier)
 
+        # Set correct active_mod index in case the applied modifier is
+        # not the first in modifier stack.
+        ob = context.object
+        current_active_mod_index = ob.modifier_active_index
+        new_active_mod_index = np.clip(current_active_mod_index - 1, 0, 99)
+        ob.modifier_active_index = new_active_mod_index
+
+        if current_active_mod_index != 0:
+            self.report({'INFO'}, "Applied modifier was not first, result may not be as expected")
+
         return {'FINISHED'}
 
 
