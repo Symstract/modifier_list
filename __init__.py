@@ -541,9 +541,17 @@ class VIEW_3D_PT_modifier_popup(Operator):
                 # Note: In 2.79, this is what scale 2.0 looks like. Here 2.0 causes list ordering
                 # buttons to get tiny. 2.8 Bug?
                 sub.scale_x = 1.5
-                sub.operator("object.toggle_apply_modifiers_view", icon='RESTRICT_VIEW_OFF', text="")
-                sub.operator("object.apply_all_modifiers", icon='IMPORT', text="")
-                sub.operator("object.delete_all_modifiers", icon='X', text="")
+
+                pcoll = preview_collections["main"]
+
+                icon = pcoll['TOGGLE_ALL_MODIFIERS_VISIBILITY']
+                sub.operator("object.toggle_apply_modifiers_view", icon_value=icon.icon_id, text="")
+
+                icon = pcoll['APPLY_ALL_MODIFIERS']
+                sub.operator("object.apply_all_modifiers", icon_value=icon.icon_id, text="")
+
+                icon = pcoll['DELETE_ALL_MODIFIERS']
+                sub.operator("object.delete_all_modifiers", icon_value=icon.icon_id, text="")
 
             # === List manipulation ===
             sub = row.row(align=True)
