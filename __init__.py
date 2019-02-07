@@ -112,6 +112,13 @@ class Preferences(AddonPreferences):
             col.context_pointer_set("keymap", km)
             rna_keymap_ui.draw_kmi([], kc, km, kmi, col, 0)
 
+        layout.separator()
+
+        # === Info ===
+        is_loaded, is_enabled = addon_utils.check("space_view3d_modifier_tools")
+        if not is_enabled:
+            layout.label(icon='INFO', text="Enable Modifier Tools addon for modifier batch operators.")
+
 
 #=======================================================================
 
