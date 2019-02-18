@@ -26,7 +26,7 @@ bl_info = {
     "location": "Spacebar",
     "description": "A handy popup panel for showing modifiers in 3D view",
     "warning": "",
-    "wiki_url": "",
+    "wiki_url": "https://github.com/Symstract/Modifier-Popup-Panel/tree/master",
     "category": "3D View"
 }
 
