@@ -1,4 +1,4 @@
-# Modifier Popup Panel
+# Modifiers Popup UI + Blend Ops
 
 ![](panel.png)
 ![](panel2.png)
