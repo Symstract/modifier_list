@@ -1,6 +1,7 @@
 # Modifier Popup Panel
 
 ![](panel.png)
+![](panel2.png)
 
 ## Features
 
