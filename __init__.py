@@ -21,20 +21,18 @@
 bl_info = {
     "name": "Modifier Popup Panel + Blend Ops",
     "author": "Antti Tikka, Nick Bosse",
-    "version": (1, 0, 1),
+    "version": (1, 0, 2),
     "blender": (2, 79, 0),
-    "location": "Spacebar",
+    "location": "Q, Ctrl+Shift+Alt+B",
     "description": "UI minimising addon that provides expanded, modifier popup and substance integration options",
     "warning": "",
     "wiki_url": "https://github.com/Symstract/Modifier-Popup-Panel/tree/master",
     "category": "3D View"
 }
 
-
 import math
 import numpy as np
 import os
-
 import addon_utils
 from bl_ui.properties_data_modifier import DATA_PT_modifiers
 import bpy
@@ -49,6 +47,9 @@ from bpy.types import (
 )
 import rna_keymap_ui
 
+
+# =======================================================================
+# Modifier Pop-up Set-up Functions
 
 class Preferences(AddonPreferences):
     bl_idname = __name__
@@ -70,7 +71,6 @@ class Preferences(AddonPreferences):
                                    description="Default/min number of rows to display in the modifier list",
                                    default=4)
 
-
     def draw(self, context):
         layout = self.layout
 
@@ -79,8 +79,8 @@ class Preferences(AddonPreferences):
 
         col = layout.column(align=True)
 
-        num_of_mods = len(get_pref_mod_attr_name())
-        num_of_rows = math.ceil(num_of_mods / 2)
+        # num_of_mods = len(get_pref_mod_attr_name())
+        # num_of_rows = math.ceil(num_of_mods / 2)
 
         attr_iter = iter(get_pref_mod_attr_name())
 
@@ -119,9 +119,6 @@ class Preferences(AddonPreferences):
         is_loaded, is_enabled = addon_utils.check("space_view3d_modifier_tools")
         if not is_enabled:
             layout.label(icon='INFO', text="Enable Modifier Tools addon for modifier batch operators.")
-
-
-#=======================================================================
 
 
 def get_pref_mod_attr_name():
@@ -183,7 +180,7 @@ def mod_show_editmode_and_cage(modifier, layout, scale_x=1.0, use_in_llist=False
 
     has_no_show_in_editmode = {
         'MESH_SEQUENCE_CACHE', 'BUILD', 'DECIMATE', 'MULTIRES', 'CLOTH', 'COLLISION',
-        'DYNAMIC_PAINT','EXPLODE', 'FLUID_SIMULATION', 'PARTICLE_SYSTEM','SMOKE', 'SOFT_BODY'
+        'DYNAMIC_PAINT', 'EXPLODE', 'FLUID_SIMULATION', 'PARTICLE_SYSTEM', 'SMOKE', 'SOFT_BODY'
     }
 
     deform_mods = {mod for name, icon, mod in all_name_icon_type()[25:41]}
@@ -215,7 +212,6 @@ def mod_show_editmode_and_cage(modifier, layout, scale_x=1.0, use_in_llist=False
                      emboss=False)
         else:
             sub.prop(modifier, "show_in_editmode", text="")
-
 
     # === show_on_cage ===
     if modifier.type in has_show_on_cage:
@@ -263,8 +259,8 @@ def mod_show_editmode_and_cage(modifier, layout, scale_x=1.0, use_in_llist=False
                 sub.prop(modifier, "show_on_cage", text="")
 
 
-#=======================================================================
-
+# =======================================================================
+# Main Classes for Modifier Pop-up
 
 class AllModifiersCollection(PropertyGroup):
     # Collection Property for search
@@ -507,8 +503,8 @@ class OBJECT_OT_mpp_modifier_copy(Operator):
         return {'FINISHED'}
 
 
-#=======================================================================
-
+# =======================================================================
+# Main Class for Modifier Pop-up
 
 class VIEW_3D_PT_modifier_popup(Operator):
     bl_idname = "view3d.modifier_popup"
@@ -657,10 +653,12 @@ class VIEW_3D_PT_modifier_popup(Operator):
                     getattr(mp, active_mod.type)(col, ob, active_mod)
 
 
-#=======================================================================
-
+# =======================================================================
+# Blend Ops Code Start
+# Blend Primitive Menu Class
 
 class BlackOpsMeshMenu(Menu):
+    """Menu containing all the custom primitive operators"""
     bl_label = "Add Blend Ops Mesh"
     bl_idname = "view3d.black_ops.sub_menu"
 
@@ -683,10 +681,11 @@ class BlackOpsMeshMenu(Menu):
         layout.operator("mesh.def_sphere_eight", text="8 Cube Sphere", icon="WIRE")
 
 
-#=======================================================================
-
+# =======================================================================
+# Blend Ops Main Menu Class
 
 class BlackOps(Menu):
+    """Custom menu for expanded features/operations"""
     bl_label = "Blend Ops Menu"
     bl_idname = "view3d.black_ops"
 
@@ -707,7 +706,7 @@ class BlackOps(Menu):
         layout.operator("object.origin_mirror", text="Origin Mirror", icon="MOD_MIRROR")
         # layout.operator("object.remove_mirror", text="Unmirror Object", icon="GROUP")
 
-        layout.operator("object.bevel_w_weight", text="Bevel", icon="MOD_BEVEL")
+        layout.operator("object.bevel_w_weight", text="Bevel Angle", icon="MOD_BEVEL")
         layout.operator("edge.set_bevel_sharp", text="Bevel Sharp", icon="SNAP_EDGE")
         layout.operator("object.black_slice", text="Split Boolean", icon="ROTATECENTER")
         layout.operator("object.clear_not_sharp", text="Clear Not Sharp", icon="SNAP_EDGE")
@@ -742,326 +741,18 @@ class BlackOps(Menu):
         layout.operator("scene.substance_export", text="Export Scene for Substance", icon="EXPORT")
 
 
-#=======================================================================
-
-
-class SharpShading(Operator):
-    """Shade smooth with auto smooth enabled"""
-    bl_idname = "object.shade_sharp"
-    bl_label = "Sharp Shade"
-
-    @classmethod
-    def poll(cls, context):
-        # Variable for storing current mode
-        if bpy.context.object == None:
-            return False
-        else:
-            current_mode = bpy.context.object.mode
-            return current_mode == "OBJECT"
-
-    # Function section for sharp shading
-    def execute(self, context):
-        bpy.ops.object.shade_smooth()
-        bpy.context.object.data.use_auto_smooth = True
-        bpy.context.object.data.auto_smooth_angle = 0.610865
-        return {'FINISHED'}
-
-
-class OriginMirror(Operator):
-    """Origin to 3D cursor, mirror on x axis with clipping"""
-    bl_idname = "object.origin_mirror"
-    bl_label = "Origin Mirror"
-
-    @classmethod
-    def poll(cls, context):
-        if bpy.context.object == None:
-            return False
-        else:
-            current_mode = bpy.context.object.mode
-            return current_mode == "OBJECT"
-
-    def execute(self, context):
-        bpy.ops.object.origin_set(type="ORIGIN_CURSOR")
-        bpy.ops.object.modifier_add(type="MIRROR")
-        bpy.context.object.modifiers["Mirror"].use_clip = True
-        return {'FINISHED'}
-
-
-class BevelWeight(Operator):
-    bl_idname = "object.bevel_w_weight"
-    bl_label = "Bevel with weight"
-
-    @classmethod
-    def poll(cls, context):
-        if bpy.context.object == None:
-            return False
-        else:
-            current_mode = bpy.context.object.mode
-            return current_mode == "OBJECT"
-
-    def execute(self, context):
-        bpy.ops.object.modifier_add(type="BEVEL")
-        bpy.context.object.modifiers["Bevel"].limit_method = "ANGLE"
-        return {'FINISHED'}
-
-
-class SetBevelEdgeAll(Operator):
-    """Adds bevel modifier with weight setting and all edge weights to 1 and all sharp edges marked"""
-    bl_idname = "edge.set_bevel_sharp"
-    bl_label = "Set All Bevel Edge"
-    bl_context = "editmode"
-
-    @classmethod
-    def poll(cls, context):
-        if bpy.context.object == None:
-            return False
-        else:
-            current_mode = bpy.context.object.mode
-            return current_mode == "OBJECT"
-
-    def execute(self, context):
-        # Add bevel modifier with weight setting then set all sharp edge weights to 1 furthermore go into edit mode and make
-        # all sharp edges marked sharp
-        # Add modifier
-        obj = bpy.context.object
-
-        if not obj.modifiers:
-            bpy.ops.object.modifier_add(type="BEVEL")
-            bpy.context.object.modifiers["Bevel"].limit_method = "WEIGHT"
-            bpy.context.object.modifiers["Bevel"].segments = 3
-            bpy.context.object.modifiers["Bevel"].use_clamp_overlap = False
-            bpy.context.object.modifiers["Bevel"].width = 0.05
-            ob = bpy.context.object
-            me = ob.data
-            me.use_customdata_edge_bevel = True
-            bpy.ops.object.editmode_toggle()
-            bpy.ops.mesh.select_all(action="DESELECT")
-            bpy.ops.mesh.edges_select_sharp()
-            bpy.ops.mesh.mark_sharp()
-            bpy.ops.object.editmode_toggle()
-            for e in me.edges:
-                if e.use_edge_sharp:
-                    e.bevel_weight = 1
-                else:
-                    pass
-            return {'FINISHED'}
-        else:
-            bevel = False
-            for modifier in obj.modifiers:
-                if modifier.type == "BEVEL":
-                    bevel = True
-                    me = obj.data
-                    me.use_customdata_edge_bevel = True
-                    bpy.ops.object.editmode_toggle()
-                    bpy.ops.mesh.select_all(action="DESELECT")
-                    bpy.ops.mesh.edges_select_sharp()
-                    bpy.ops.mesh.mark_sharp()
-                    bpy.ops.object.editmode_toggle()
-                    for e in me.edges:
-                        if e.use_edge_sharp:
-                            e.bevel_weight = 1
-            if bevel is True:
-                pass
-            else:
-                bpy.ops.object.modifier_add(type="BEVEL")
-                bpy.context.object.modifiers["Bevel"].limit_method = "WEIGHT"
-                bpy.context.object.modifiers["Bevel"].segments = 3
-                bpy.context.object.modifiers["Bevel"].use_clamp_overlap = False
-                bpy.context.object.modifiers["Bevel"].width = 0.05
-                ob = bpy.context.object
-                me = ob.data
-                me.use_customdata_edge_bevel = True
-                bpy.ops.object.editmode_toggle()
-                bpy.ops.mesh.select_all(action="DESELECT")
-                bpy.ops.mesh.edges_select_sharp()
-                bpy.ops.mesh.mark_sharp()
-                bpy.ops.object.editmode_toggle()
-                for e in me.edges:
-                    if e.use_edge_sharp:
-                        e.bevel_weight = 1
-                    else:
-                        pass
-            return {"FINISHED"}
-        # bpy.ops.object.modifier_add(type="BEVEL")
-        # Set limit to weight
-        # bpy.context.object.modifiers["Bevel"].limit_method = "WEIGHT"
-
-
-class BlackSlice(Operator):
-    bl_idname = "object.black_slice"
-    bl_label = "Bool Split"
-
-    cutter_object = ""
-    cutter_duplicate_object = ""
-    difference_object = ""
-    intersect_object = ""
-
-    @classmethod
-    def poll(cls, context):
-        if bpy.context.object == None:
-            return False
-        else:
-            current_mode = bpy.context.object.mode
-            return current_mode == "OBJECT"
-
-    def execute(self, context):
-        # cutter_object = bpy.context.object.
-        selection_names = [obj.name for obj in bpy.context.selected_objects]
-        bpy.ops.object.make_single_user(object=True, obdata=True)
-        bpy.ops.object.convert(target='MESH')
-        bpy.ops.object.editmode_toggle()
-        bpy.ops.mesh.reveal()
-        bpy.ops.mesh.select_all(action='DESELECT')
-        bpy.ops.object.editmode_toggle()
-        bpy.ops.object.editmode_toggle()
-        bpy.ops.mesh.reveal()
-        bpy.ops.mesh.select_all(action='SELECT')
-        bpy.ops.object.editmode_toggle()
-        bpy.ops.object.modifier_apply(modifier="Auto Boolean")
-        bpy.ops.object.modifier_apply(modifier="Auto Boolean")
-        bpy.ops.btool.auto_slice(solver='BMESH')
-        bpy.data.objects[selection_names[1]].select = True
-        bpy.ops.object.join()
-        return {"FINISHED"}
-
-
-class ClearNotSharp(Operator):
-    bl_idname = "object.clear_not_sharp"
-    bl_label = "Clear Not Sharp"
-
-    @classmethod
-    def poll(cls, context):
-        if bpy.context.object == None:
-            return False
-        else:
-            current_mode = bpy.context.object.mode
-            return current_mode == "OBJECT"
-
-    def execute(self, context):
-        # Add bevel modifier with weight setting then set all sharp edge weights to 1 furthermore go into edit mode and make
-        # all sharp edges marked sharp
-        # Add modifier
-        obj = bpy.context.object
-        for modifier in obj.modifiers:
-            if modifier.type == "BEVEL":
-                ob = bpy.context.object
-                me = ob.data
-                me.use_customdata_edge_bevel = True
-                bpy.ops.object.editmode_toggle()
-                bpy.ops.mesh.select_all(action="DESELECT")
-                bpy.ops.mesh.select_mode(use_extend=False, use_expand=False, type='EDGE')
-                bpy.ops.mesh.edges_select_sharp()
-                bpy.ops.mesh.select_all(action="INVERT")
-                bpy.ops.mesh.mark_sharp(clear=True)
-                bpy.ops.mesh.select_all(action="DESELECT")
-                bpy.ops.object.editmode_toggle()
-                for e in me.edges:
-                    if e.use_edge_sharp:
-                        e.bevel_weight = 1
-                    else:
-                        e.bevel_weight = 0
-                return {'FINISHED'}
-            else:
-                ob = bpy.context.object
-                me = ob.data
-                me.use_customdata_edge_bevel = True
-                bpy.ops.object.editmode_toggle()
-                bpy.ops.mesh.select_all(action="DESELECT")
-                bpy.ops.mesh.select_mode(use_extend=False, use_expand=False, type='EDGE')
-                bpy.ops.mesh.edges_select_sharp()
-                bpy.ops.mesh.select_all(action="INVERT")
-                bpy.ops.mesh.mark_sharp(clear=True)
-                bpy.ops.mesh.select_all(action="DESELECT")
-                bpy.ops.object.editmode_toggle()
-                for e in me.edges:
-                    if e.use_edge_sharp:
-                        e.bevel_weight = 1
-                    else:
-                        e.bevel_weight = 0
-                return {"FINISHED"}
-
-
-class CircleArray(Operator):
-    bl_idname = "object.circle_array"
-    bl_label = "Circle Array"
-
-    @classmethod
-    def poll(cls, context):
-        if bpy.context.object == None:
-            return False
-        else:
-            current_mode = bpy.context.object.mode
-            return current_mode == "OBJECT"
-
-    def execute(self, context):
-        bpy.ops.object.modifier_add(type="ARRAY")
-        circle_array_object = bpy.context.object.name
-        bpy.context.object.modifiers["Array"].count = 8
-        bpy.context.object.modifiers["Array"].use_relative_offset = False
-        bpy.context.object.modifiers["Array"].use_object_offset = True
-        bpy.ops.object.empty_add(type='PLAIN_AXES')
-        bpy.ops.transform.rotate(value=0.7854, axis=(0, 0, 1), constraint_axis=(False, False, True),
-                                 constraint_orientation='GLOBAL', mirror=False, proportional='DISABLED',
-                                 proportional_edit_falloff='SMOOTH', proportional_size=1)
-        empty_name = bpy.context.object.name
-        bpy.data.objects[empty_name].select = False
-        # bpy.data.objects[empty_name].select = True
-        # bpy.context.scene.objects.active = bpy.data.objects[empty_name]
-        bpy.data.objects[circle_array_object].select = True
-        bpy.context.scene.objects.active = bpy.data.objects[circle_array_object]
-        bpy.context.object.modifiers["Array"].offset_object = bpy.data.objects[empty_name]
-        bpy.ops.object.origin_set(type='ORIGIN_CURSOR')
-        # bpy.data.objects[empty_name].select = True
-        # bpy.context.scene.objects.active = bpy.data.objects[empty_name]
-        # bpy.ops.transform.rotate(value=1.5708, axis=(0, 0, 1), constraint_axis=(False, False, True),
-        #                          constraint_orientation='GLOBAL', mirror=False, proportional='DISABLED',
-        #                          proportional_edit_falloff='SMOOTH', proportional_size=1)
-        # bpy.context.object.modifiers["Array"].offset_object = bpy.data.object[empty_name]
-
-        # empty_rotation = bpy.context.scene.objects.modifiers["Array"].count
-
-        return {"FINISHED"}
-
-
-class CurveArray(Operator):
-    bl_idname = "object.curve_array"
-    bl_label = "Curve Array"
-
-    @classmethod
-    def poll(cls, context):
-        if bpy.context.object == None:
-            return False
-        else:
-            current_mode = bpy.context.object.mode
-            return current_mode == "OBJECT"
-
-    def execute(self, context):
-        bpy.ops.object.modifier_add(type="ARRAY")
-        curve_array_object = bpy.context.object.name
-        bpy.context.object.modifiers["Array"].count = 4
-        bpy.context.object.modifiers["Array"].use_relative_offset = False
-        bpy.context.object.modifiers["Array"].use_object_offset = True
-        bpy.ops.curve.primitive_bezier_curve_add(view_align=False, enter_editmode=False, location=(0, 0, 0), layers=(
-            True, False, False, False, False, False, False, False, False, False, False, False, False, False, False,
-            False,
-            False, False, False, False))
-        curve_name = bpy.context.object.name
-        bpy.data.objects[curve_name].select = False
-        bpy.data.objects[curve_array_object].select = True
-        bpy.context.scene.objects.active = bpy.data.objects[curve_array_object]
-        bpy.context.object.modifiers["Array"].offset_object = bpy.data.objects[curve_name]
-        bpy.ops.object.modifier_add(type='CURVE')
-        bpy.context.object.modifiers["Curve"].object = bpy.data.objects[curve_name]
-        return {"FINISHED"}
-
+# =======================================================================
+# Blend Ops Operator Classes
+# Blend Primitive Operators
 
 class BlackPlane(Operator):
+    """Adds a half plane which is mirrored and bevelled"""
     bl_idname = "mesh.black_plane"
     bl_label = "Blend Plane Add"
 
     @classmethod
     def poll(cls, context):
-        if bpy.context.object == None:
+        if bpy.context.object is None:
             return True
         else:
             current_mode = bpy.context.object.mode
@@ -1119,12 +810,13 @@ class BlackPlane(Operator):
 
 
 class BlackCube(Operator):
+    """Adds a half cube which is mirrored and bevelled"""
     bl_label = "Blend Cube Add"
     bl_idname = "mesh.black_cube"
 
     @classmethod
     def poll(cls, context):
-        if bpy.context.object == None:
+        if bpy.context.object is None:
             return True
         else:
             current_mode = bpy.context.object.mode
@@ -1190,12 +882,13 @@ class BlackCube(Operator):
 
 
 class OneCylinder(Operator):
+    """Adds a half 8-sided cylinder which is mirrored and bevelled"""
     bl_idname = "mesh.def_eight"
     bl_label = "Defined Cylinder Add"
 
     @classmethod
     def poll(cls, context):
-        if bpy.context.object == None:
+        if bpy.context.object is None:
             return True
         else:
             current_mode = bpy.context.object.mode
@@ -1266,12 +959,13 @@ class OneCylinder(Operator):
 
 
 class TwoCylinder(Operator):
+    """Adds a half 16-sided cylinder which is mirrored and bevelled"""
     bl_idname = "mesh.def_sixteen"
     bl_label = "Defined Cylinder Add"
 
     @classmethod
     def poll(cls, context):
-        if bpy.context.object == None:
+        if bpy.context.object is None:
             return True
         else:
             current_mode = bpy.context.object.mode
@@ -1354,12 +1048,13 @@ class TwoCylinder(Operator):
 
 
 class ThreeCylinder(Operator):
+    """Adds a half 32-sided cylinder which is mirrored and bevelled"""
     bl_idname = "mesh.def_thirty_two"
     bl_label = "Defined Cylinder Add"
 
     @classmethod
     def poll(cls, context):
-        if bpy.context.object == None:
+        if bpy.context.object is None:
             return True
         else:
             current_mode = bpy.context.object.mode
@@ -1466,13 +1161,14 @@ class ThreeCylinder(Operator):
 
 
 class OneSphere(Operator):
+    """Adds a half cube-sphere with one subdivision which is mirrored and bevelled"""
     bl_idname = "mesh.def_sphere_two"
     bl_label = "Defined Sphere Add"
 
     @classmethod
     def poll(cls, context):
         # Variable for storing current mode
-        if bpy.context.object == None:
+        if bpy.context.object is None:
             return True
         else:
             current_mode = bpy.context.object.mode
@@ -1491,13 +1187,14 @@ class OneSphere(Operator):
 
 
 class TwoSphere(Operator):
+    """Adds a half cube-sphere with three subdivision which is mirrored and bevelled"""
     bl_idname = "mesh.def_sphere_four"
     bl_label = "Defined Cylinder Add"
 
     @classmethod
     def poll(cls, context):
         # Variable for storing current mode
-        if bpy.context.object == None:
+        if bpy.context.object is None:
             return True
         else:
             current_mode = bpy.context.object.mode
@@ -1516,13 +1213,14 @@ class TwoSphere(Operator):
 
 
 class ThreeSphere(Operator):
+    """Adds a half cube-sphere with seven subdivision which is mirrored and bevelled"""
     bl_idname = "mesh.def_sphere_eight"
     bl_label = "Defined Cylinder Add"
 
     @classmethod
     def poll(cls, context):
         # Variable for storing current mode
-        if bpy.context.object == None:
+        if bpy.context.object is None:
             return True
         else:
             current_mode = bpy.context.object.mode
@@ -1540,7 +1238,329 @@ class ThreeSphere(Operator):
         return {"FINISHED"}
 
 
+# =======================================================================
+# Blend Ops Operator Classes
+
+class SharpShading(Operator):
+    """Shade smooth with auto smooth enabled"""
+    bl_idname = "object.shade_sharp"
+    bl_label = "Sharp Shade"
+
+    @classmethod
+    def poll(cls, context):
+        # Variable for storing current mode
+        if bpy.context.object == None:
+            return False
+        else:
+            current_mode = bpy.context.object.mode
+            return current_mode == "OBJECT"
+
+    # Function section for sharp shading
+    def execute(self, context):
+        bpy.ops.object.shade_smooth()
+        bpy.context.object.data.use_auto_smooth = True
+        bpy.context.object.data.auto_smooth_angle = 0.610865
+        return {'FINISHED'}
+
+
+# =======================================================================
+# Blend Ops Modifier Operators
+
+class OriginMirror(Operator):
+    """Origin to 3D cursor, mirror on x axis with clipping"""
+    bl_idname = "object.origin_mirror"
+    bl_label = "Origin Mirror"
+
+    @classmethod
+    def poll(cls, context):
+        if bpy.context.object == None:
+            return False
+        else:
+            current_mode = bpy.context.object.mode
+            return current_mode == "OBJECT"
+
+    def execute(self, context):
+        bpy.ops.object.origin_set(type="ORIGIN_CURSOR")
+        bpy.ops.object.modifier_add(type="MIRROR")
+        bpy.context.object.modifiers["Mirror"].use_clip = True
+        return {'FINISHED'}
+
+
+class BevelWeight(Operator):
+    """Adds a bevel modifier with angle limit method"""
+    bl_idname = "object.bevel_w_weight"
+    bl_label = "Bevel with weight"
+
+    @classmethod
+    def poll(cls, context):
+        if bpy.context.object == None:
+            return False
+        else:
+            current_mode = bpy.context.object.mode
+            return current_mode == "OBJECT"
+
+    def execute(self, context):
+        bpy.ops.object.modifier_add(type="BEVEL")
+        bpy.context.object.modifiers["Bevel"].limit_method = "ANGLE"
+        return {'FINISHED'}
+
+
+class SetBevelEdgeAll(Operator):
+    """Adds bevel modifier with weight limit method, marks all sharp edges and sets their bevel weight to 1"""
+    bl_idname = "edge.set_bevel_sharp"
+    bl_label = "Set All Bevel Edge"
+    bl_context = "editmode"
+
+    @classmethod
+    def poll(cls, context):
+        if bpy.context.object == None:
+            return False
+        else:
+            current_mode = bpy.context.object.mode
+            return current_mode == "OBJECT"
+
+    def execute(self, context):
+        # Add bevel modifier with weight setting then set all sharp edge weights to 1 furthermore go into edit mode and make
+        # all sharp edges marked sharp
+        # Add modifier
+        obj = bpy.context.object
+
+        if not obj.modifiers:
+            bpy.ops.object.modifier_add(type="BEVEL")
+            bpy.context.object.modifiers["Bevel"].limit_method = "WEIGHT"
+            bpy.context.object.modifiers["Bevel"].segments = 3
+            bpy.context.object.modifiers["Bevel"].use_clamp_overlap = False
+            bpy.context.object.modifiers["Bevel"].width = 0.05
+            ob = bpy.context.object
+            me = ob.data
+            me.use_customdata_edge_bevel = True
+            bpy.ops.object.editmode_toggle()
+            bpy.ops.mesh.select_all(action="DESELECT")
+            bpy.ops.mesh.edges_select_sharp()
+            bpy.ops.mesh.mark_sharp()
+            bpy.ops.object.editmode_toggle()
+            for e in me.edges:
+                if e.use_edge_sharp:
+                    e.bevel_weight = 1
+                else:
+                    pass
+            return {'FINISHED'}
+        else:
+            bevel = False
+            for modifier in obj.modifiers:
+                if modifier.type == "BEVEL":
+                    bevel = True
+                    me = obj.data
+                    me.use_customdata_edge_bevel = True
+                    bpy.ops.object.editmode_toggle()
+                    bpy.ops.mesh.select_all(action="DESELECT")
+                    bpy.ops.mesh.edges_select_sharp()
+                    bpy.ops.mesh.mark_sharp()
+                    bpy.ops.object.editmode_toggle()
+                    for e in me.edges:
+                        if e.use_edge_sharp:
+                            e.bevel_weight = 1
+            if bevel is True:
+                pass
+            else:
+                bpy.ops.object.modifier_add(type="BEVEL")
+                bpy.context.object.modifiers["Bevel"].limit_method = "WEIGHT"
+                bpy.context.object.modifiers["Bevel"].segments = 3
+                bpy.context.object.modifiers["Bevel"].use_clamp_overlap = False
+                bpy.context.object.modifiers["Bevel"].width = 0.05
+                ob = bpy.context.object
+                me = ob.data
+                me.use_customdata_edge_bevel = True
+                bpy.ops.object.editmode_toggle()
+                bpy.ops.mesh.select_all(action="DESELECT")
+                bpy.ops.mesh.edges_select_sharp()
+                bpy.ops.mesh.mark_sharp()
+                bpy.ops.object.editmode_toggle()
+                for e in me.edges:
+                    if e.use_edge_sharp:
+                        e.bevel_weight = 1
+                    else:
+                        pass
+            return {"FINISHED"}
+        # bpy.ops.object.modifier_add(type="BEVEL")
+        # Set limit to weight
+        # bpy.context.object.modifiers["Bevel"].limit_method = "WEIGHT"
+
+
+class BlackSlice(Operator):
+    """Boolean operation that slices the mesh but leaves one object"""
+    bl_idname = "object.black_slice"
+    bl_label = "Bool Split"
+
+    cutter_object = ""
+    cutter_duplicate_object = ""
+    difference_object = ""
+    intersect_object = ""
+
+    @classmethod
+    def poll(cls, context):
+        if bpy.context.object == None:
+            return False
+        else:
+            current_mode = bpy.context.object.mode
+            return current_mode == "OBJECT"
+
+    def execute(self, context):
+        # cutter_object = bpy.context.object.
+        selection_names = [obj.name for obj in bpy.context.selected_objects]
+        bpy.ops.object.make_single_user(object=True, obdata=True)
+        bpy.ops.object.convert(target='MESH')
+        bpy.ops.object.editmode_toggle()
+        bpy.ops.mesh.reveal()
+        bpy.ops.mesh.select_all(action='DESELECT')
+        bpy.ops.object.editmode_toggle()
+        bpy.ops.object.editmode_toggle()
+        bpy.ops.mesh.reveal()
+        bpy.ops.mesh.select_all(action='SELECT')
+        bpy.ops.object.editmode_toggle()
+        bpy.ops.object.modifier_apply(modifier="Auto Boolean")
+        bpy.ops.object.modifier_apply(modifier="Auto Boolean")
+        bpy.ops.btool.auto_slice(solver='BMESH')
+        bpy.data.objects[selection_names[1]].select = True
+        bpy.ops.object.join()
+        return {"FINISHED"}
+
+
+class ClearNotSharp(Operator):
+    """Checks whether marked edges are really sharp and unmarks the ones that aren't, setting their bevel weight to 0"""
+    bl_idname = "object.clear_not_sharp"
+    bl_label = "Clear Not Sharp"
+
+    @classmethod
+    def poll(cls, context):
+        if bpy.context.object == None:
+            return False
+        else:
+            current_mode = bpy.context.object.mode
+            return current_mode == "OBJECT"
+
+    def execute(self, context):
+        # Add bevel modifier with weight setting then set all sharp edge weights to 1 furthermore go into edit mode and make
+        # all sharp edges marked sharp
+        # Add modifier
+        obj = bpy.context.object
+        for modifier in obj.modifiers:
+            if modifier.type == "BEVEL":
+                ob = bpy.context.object
+                me = ob.data
+                me.use_customdata_edge_bevel = True
+                bpy.ops.object.editmode_toggle()
+                bpy.ops.mesh.select_all(action="DESELECT")
+                bpy.ops.mesh.select_mode(use_extend=False, use_expand=False, type='EDGE')
+                bpy.ops.mesh.edges_select_sharp()
+                bpy.ops.mesh.select_all(action="INVERT")
+                bpy.ops.mesh.mark_sharp(clear=True)
+                bpy.ops.mesh.select_all(action="DESELECT")
+                bpy.ops.object.editmode_toggle()
+                for e in me.edges:
+                    if e.use_edge_sharp:
+                        e.bevel_weight = 1
+                    else:
+                        e.bevel_weight = 0
+                return {'FINISHED'}
+            else:
+                ob = bpy.context.object
+                me = ob.data
+                me.use_customdata_edge_bevel = True
+                bpy.ops.object.editmode_toggle()
+                bpy.ops.mesh.select_all(action="DESELECT")
+                bpy.ops.mesh.select_mode(use_extend=False, use_expand=False, type='EDGE')
+                bpy.ops.mesh.edges_select_sharp()
+                bpy.ops.mesh.select_all(action="INVERT")
+                bpy.ops.mesh.mark_sharp(clear=True)
+                bpy.ops.mesh.select_all(action="DESELECT")
+                bpy.ops.object.editmode_toggle()
+                for e in me.edges:
+                    if e.use_edge_sharp:
+                        e.bevel_weight = 1
+                    else:
+                        e.bevel_weight = 0
+                return {"FINISHED"}
+
+
+class CircleArray(Operator):
+    """Automatically creates an centre empty object and arrays the selected object in circle"""
+    bl_idname = "object.circle_array"
+    bl_label = "Circle Array"
+
+    @classmethod
+    def poll(cls, context):
+        if bpy.context.object is None:
+            return False
+        else:
+            current_mode = bpy.context.object.mode
+            return current_mode == "OBJECT"
+
+    def execute(self, context):
+        bpy.ops.object.modifier_add(type="ARRAY")
+        circle_array_object = bpy.context.object.name
+        bpy.context.object.modifiers["Array"].count = 8
+        bpy.context.object.modifiers["Array"].use_relative_offset = False
+        bpy.context.object.modifiers["Array"].use_object_offset = True
+        bpy.ops.object.empty_add(type='PLAIN_AXES')
+        bpy.ops.transform.rotate(value=0.7854, axis=(0, 0, 1), constraint_axis=(False, False, True),
+                                 constraint_orientation='GLOBAL', mirror=False, proportional='DISABLED',
+                                 proportional_edit_falloff='SMOOTH', proportional_size=1)
+        empty_name = bpy.context.object.name
+        bpy.data.objects[empty_name].select = False
+        # bpy.data.objects[empty_name].select = True
+        # bpy.context.scene.objects.active = bpy.data.objects[empty_name]
+        bpy.data.objects[circle_array_object].select = True
+        bpy.context.scene.objects.active = bpy.data.objects[circle_array_object]
+        bpy.context.object.modifiers["Array"].offset_object = bpy.data.objects[empty_name]
+        bpy.ops.object.origin_set(type='ORIGIN_CURSOR')
+        # bpy.data.objects[empty_name].select = True
+        # bpy.context.scene.objects.active = bpy.data.objects[empty_name]
+        # bpy.ops.transform.rotate(value=1.5708, axis=(0, 0, 1), constraint_axis=(False, False, True),
+        #                          constraint_orientation='GLOBAL', mirror=False, proportional='DISABLED',
+        #                          proportional_edit_falloff='SMOOTH', proportional_size=1)
+        # bpy.context.object.modifiers["Array"].offset_object = bpy.data.object[empty_name]
+
+        # empty_rotation = bpy.context.scene.objects.modifiers["Array"].count
+
+        return {"FINISHED"}
+
+
+class CurveArray(Operator):
+    """Creates a curve and arrays the selected object along it"""
+    bl_idname = "object.curve_array"
+    bl_label = "Curve Array"
+
+    @classmethod
+    def poll(cls, context):
+        if bpy.context.object is None:
+            return False
+        else:
+            current_mode = bpy.context.object.mode
+            return current_mode == "OBJECT"
+
+    def execute(self, context):
+        bpy.ops.object.modifier_add(type="ARRAY")
+        curve_array_object = bpy.context.object.name
+        bpy.context.object.modifiers["Array"].count = 4
+        bpy.context.object.modifiers["Array"].use_relative_offset = False
+        bpy.context.object.modifiers["Array"].use_object_offset = True
+        bpy.ops.curve.primitive_bezier_curve_add(view_align=False, enter_editmode=False, location=(0, 0, 0), layers=(
+            True, False, False, False, False, False, False, False, False, False, False, False, False, False, False,
+            False,
+            False, False, False, False))
+        curve_name = bpy.context.object.name
+        bpy.data.objects[curve_name].select = False
+        bpy.data.objects[curve_array_object].select = True
+        bpy.context.scene.objects.active = bpy.data.objects[curve_array_object]
+        bpy.context.object.modifiers["Array"].offset_object = bpy.data.objects[curve_name]
+        bpy.ops.object.modifier_add(type='CURVE')
+        bpy.context.object.modifiers["Curve"].object = bpy.data.objects[curve_name]
+        return {"FINISHED"}
+
+
 class BooleanMode(Operator):
+    """Allows object to be boolean'd without disrupting the modifiers, click exit boolean mode when finished"""
     bl_idname = "object.boolean_mode"
     bl_label = "Enter Boolean Mode"
 
@@ -1551,7 +1571,7 @@ class BooleanMode(Operator):
     @classmethod
     def poll(cls, context):
         # Variable for storing current mode
-        if bpy.context.object == None:
+        if bpy.context.object is None:
             return False
         else:
             current_mode = bpy.context.object.mode
@@ -1577,6 +1597,7 @@ class BooleanMode(Operator):
 
 
 class ExitBooleanMode(Operator):
+    """Returns modifiers to object that was changed in boolean mode"""
     bl_idname = "object.exit_boolean_mode"
     bl_label = "Exit Boolean Mode"
 
@@ -1584,7 +1605,7 @@ class ExitBooleanMode(Operator):
     def poll(cls, context):
         # Variable for storing current mode
         mode = BooleanMode.boolean_mode
-        if bpy.context.object == None:
+        if bpy.context.object is None:
             return False
         else:
             current_mode = bpy.context.object.mode
@@ -1629,12 +1650,13 @@ class ExitBooleanMode(Operator):
 
 
 class ApplyMods(Operator):
+    """Applies all modifiers on the object"""
     bl_idname = "object.mod_apply"
     bl_label = "Apply Modifiers"
 
     @classmethod
     def poll(cls, context):
-        if bpy.context.object == None:
+        if bpy.context.object is None:
             return False
         else:
             current_mode = bpy.context.object.mode
@@ -1646,13 +1668,13 @@ class ApplyMods(Operator):
 
 
 class ApplyModsAll(Operator):
+    """Applies all modifiers on all objects in the scene MOVE NON MESH OBJECTS TO OTHER LAYER BEFORE USING!"""
     bl_idname = "object.mod_apply_all"
     bl_label = "Apply Modifiers to All"
 
     @classmethod
     def poll(cls, context):
-        # Variable for storing current mode
-        if bpy.context.object == None:
+        if bpy.context.object is None:
             return False
         else:
             current_mode = bpy.context.object.mode
@@ -1664,37 +1686,21 @@ class ApplyModsAll(Operator):
             if obj.type == "MESH":
                 obj.select = True
         bpy.ops.object.convert(target="MESH")
-        #scene = bpy.context.scene
-        #scene.objects.active = bpy.data.objects["template"]
-        #for obj in scene.objects:
-        #    if obj.type == "MESH":
-        #        obj.select = True
-        #bpy.ops.object.convert(target="MESH")
-        #mat = bpy.data.materials.get("Material")
-        #for ob in bpy.data.objects:
-            #ob.data.object.convert(target="MESH")
-            #self.report({"INFO"}, ob.name)
-            #mat = bpy.data.materials.new(name=ob.name + " test material")
-            #ob.data.materials.append(mat)
-            #ob.data.materials.append(mat)
-            #ob.data.materials.material_slot_remove()
-            #ob.data.materials.new(name=ob.name + " TestMat")
-            #self.report({"INFO"}, "Removed material from " + ob.name)
-        #Converts object to mesh which has a side effect of applying all modifiers
-        #bpy.ops.material.new()
-        #for ob in bpy.data.objects:
-        #    bpy.ops.ob.convert(target="MESH")
         return {"FINISHED"}
 
 
+# =======================================================================
+# UV Unwrap Operators
+
 class PackUnwrap(Operator):
+    """Conventionally unwraps object then packs it's UV map"""
     bl_idname = "object.pack_unwrap"
     bl_label = "Pack Unwrap"
 
     @classmethod
     def poll(cls, context):
         # Variable for storing current mode
-        if bpy.context.object == None:
+        if bpy.context.object is None:
             return False
         else:
             current_mode = bpy.context.object.mode
@@ -1713,13 +1719,14 @@ class PackUnwrap(Operator):
 
 
 class SharpUnwrap(Operator):
+    """Marks seams on sharp edges then pack unwraps the object"""
     bl_idname = "object.sharp_unwrap"
     bl_label = "Sharp Unwrap"
 
     @classmethod
     def poll(cls, context):
         # Variable for storing current mode
-        if bpy.context.object == None:
+        if bpy.context.object is None:
             return False
         else:
             current_mode = bpy.context.object.mode
@@ -1738,13 +1745,14 @@ class SharpUnwrap(Operator):
 
 
 class CubeUnwrap(Operator):
+    """Unwraps with cube projection then packs the UV map"""
     bl_idname = "object.cube_unwrap"
     bl_label = "Cube Unwrap"
 
     @classmethod
     def poll(cls, context):
         # Variable for storing current mode
-        if bpy.context.object == None:
+        if bpy.context.object is None:
             return False
         else:
             current_mode = bpy.context.object.mode
@@ -1760,6 +1768,9 @@ class CubeUnwrap(Operator):
         return {"FINISHED"}
 
 
+# =======================================================================
+# Substance Integration Operators
+
 class CreateId(Operator):
     """Creates unique ID color on each discrete object in scene (which will bake in Susbtance Painter). Use BEFORE joining for texture sets"""
     bl_idname = "object.id_create"
@@ -1767,7 +1778,7 @@ class CreateId(Operator):
 
     @classmethod
     def poll(cls, context):
-        if bpy.context.object == None:
+        if bpy.context.object is None:
             return False
         else:
             current_mode = bpy.context.object.mode
@@ -1800,12 +1811,13 @@ class CreateId(Operator):
 
 
 class CreateTexSet(Operator):
+    """Joins selected objects and gives them a unique texture material. Do not use in conjunction with 'Create Material Sets'"""
     bl_idname = "object.create_tex_set"
     bl_label = "Create Texture Set"
 
     @classmethod
     def poll(cls, context):
-        if bpy.context.object == None:
+        if bpy.context.object is None:
             return False
         else:
             current_mode = bpy.context.object.mode
@@ -1831,6 +1843,7 @@ class CreateTexSet(Operator):
 
 
 class CreateMaterialSets(Operator):
+    """Creates and assigns unique material for each object with a substance node found in the startup file"""
     bl_idname = "scene.create_mat_sets"
     bl_label = "Create Material Sets"
 
@@ -1862,12 +1875,13 @@ class CreateMaterialSets(Operator):
 
 
 class ClearMaterials(Operator):
+    """Clears first material on all objects in scene"""
     bl_idname = "scene.clear_mat_sets"
     bl_label = "Clear Material Sets"
 
     @classmethod
     def poll(cls, context):
-        if bpy.context.object == None:
+        if bpy.context.object is None:
             return False
         else:
             current_mode = bpy.context.object.mode
@@ -1883,12 +1897,13 @@ class ClearMaterials(Operator):
 
 
 class SubstanceExport(Operator):
+    """Quick exports FBX and checks if scene satisfies Substance Painter scene criteria"""
     bl_idname = "scene.substance_export"
     bl_label = "Substance Export"
 
     @classmethod
-    def poll(self, context):
-        if bpy.context.object == None:
+    def poll(cls, context):
+        if bpy.context.object is None:
             return False
         else:
             current_mode = bpy.context.object.mode
@@ -1916,20 +1931,21 @@ class SubstanceExport(Operator):
                 blendpath = bpy.path.abspath("//")
                 filename = os.path.splitext(filename)[0]
                 bpy.ops.export_scene.fbx(filepath=blendpath + filename + ".fbx", use_selection=True, axis_forward='-Z',
-                                                  axis_up='Y')
+                                         axis_up='Y')
+
                 def warning(self, context):
                     self.layout.label("Scene Exported.")
                 bpy.context.window_manager.popup_menu(warning, title="Info", icon='INFO')
             bpy.ops.object.select_all(action="DESELECT")
         else:
             def warning(self, context):
-                 self.layout.label("Blend file is not saved!")
+                self.layout.label("Blend file is not saved!")
             bpy.context.window_manager.popup_menu(warning, title="Error", icon='ERROR')
         return {"FINISHED"}
 
 
-#=======================================================================
-
+# =======================================================================
+# Modifier Pop-up Misc.
 
 def set_modifier_collection_items():
     """This is to be called on loading a new file or reloading addons
@@ -1945,23 +1961,11 @@ def set_modifier_collection_items():
 
 
 @persistent
-def on_file_load(dummy):
+def on_file_load():
     set_modifier_collection_items()
 
-
-# classes = (
-#     Preferences,
-#     AllModifiersCollection,
-#     OBJECT_MT_mpp_add_modifier_menu,
-#     OBJECT_UL_modifier_list,
-#     OBJECT_OT_mpp_modifier_move_up,
-#     OBJECT_OT_mpp_modifier_move_down,
-#     OBJECT_OT_mpp_modifier_remove,
-#     OBJECT_OT_mpp_modifier_add,
-#     OBJECT_OT_mpp_modifier_apply,
-#     OBJECT_OT_mpp_modifier_copy,
-#     VIEW_3D_PT_modifier_popup,
-# )
+# =======================================================================
+# Add-on Registration
 
 addon_keymaps = []
 
@@ -1969,9 +1973,9 @@ preview_collections = {}
 
 
 def register():
-    #for cls in classes:
-    #    bpy.utils.register_class(cls)
+    # So we dont have to bother with every class
     bpy.utils.register_module(__name__)
+
     bpy.types.Object.modifier_active_index = IntProperty()
 
     # Use Window Manager for storing modifier search property
@@ -2024,14 +2028,13 @@ def unregister():
         km.keymap_items.remove(kmi)
     addon_keymaps.clear()
 
+    # So we dont have to bother with every class
     bpy.utils.unregister_module(__name__)
-    #for cls in classes:
-    #    bpy.utils.unregister_class(cls)
 
     bpy.app.handlers.load_post.remove(on_file_load)
 
     del bpy.types.Object.modifier_active_index
 
+
 if __name__ == "__main__":
     register()
-
