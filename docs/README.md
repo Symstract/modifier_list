@@ -42,3 +42,4 @@ Default hotkeys are **Q** and **Ctrl+Shift+Alt+B**. Which are free by default, b
 
 - List doesn't remember it's size when it's resized. Popups are not really ment for this kind of stuff, so that's a restriction of Blender.
 - Modifier search and modifier menu always display all modifiers, even when all of them are not applicable to the type of the active object. Maybe I will change that in a future release.
+- BlendOps Split Boolean does not work in boolean mode (Works with booltools slice)
