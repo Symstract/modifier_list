@@ -1,3 +1,4 @@
 /local_backups_and_tests
 /.vscode
-/__pycache__
+__pycache__/
+*.pyc
