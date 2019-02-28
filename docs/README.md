@@ -13,8 +13,7 @@
 
 ## Hotkey
 
-Default hotkey is **space**. That's not free by default, but you can easily set your own hotkey in addon preferences.
-
+Default hotkey is **alt + space**. In keymap editor, you can find it under 3D View -> 3D View (Global) -> Modifier Popup Panel.
 ## Installation
 
 1. Go to Edit menu (File menu in 2.79) and open user preferences
