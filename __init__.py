@@ -23,7 +23,7 @@ bl_info = {
     "author": "Antti Tikka",
     "version": (1, 0, 1),
     "blender": (2, 80, 0),
-    "location": "Spacebar",
+    "location": "View 3D -> Alt + Spacebar",
     "description": "A handy popup panel for showing modifiers in 3D view",
     "warning": "",
     "wiki_url": "https://github.com/Symstract/Modifier-Popup-Panel/tree/2.8",
