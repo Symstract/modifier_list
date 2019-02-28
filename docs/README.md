@@ -34,9 +34,9 @@ Default hotkeys are **Q** and **Alt+Spacebar**. Which are free by default, but y
 ## Future ideas
 
 - Add tabs and add useful modifier related tools inside them? [Use blend ops menu for now]
-- Make radial arrays easier to create and edit [Possible in the blend ops menu]
 - Import substance textures automatically and auto assign to materials based on name
 - Get background images and insert them in desired view with one click (and navigation of the file menu)
+- Same popup functionality and style but with materials for quick access
 
 ## Known issues and restrictions
 
