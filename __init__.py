@@ -661,7 +661,7 @@ class BlackOpsMeshMenu(Menu):
     """Menu containing all the custom primitive operators"""
     bl_label = "Add Blend Ops Mesh"
     bl_idname = "view3d.black_ops.sub_menu"
-
+    # Draw function with operators and icons for the 'blend' primitives
     def draw(self, context):
         layout = self.layout
 
@@ -689,19 +689,20 @@ class BlackOps(Menu):
     bl_label = "Blend Ops Menu"
     bl_idname = "view3d.black_ops"
 
-    # Function that creates the dropdown menu
+    # Function that creates the drop-down menu
     def draw(self, context):
         layout = self.layout
-
+        # Reference to the blend primitives menu class
         layout.menu(BlackOpsMeshMenu.bl_idname, icon="MESH_GRID")
+        # Reference to background images add menu which will be implemented later
         # layout.menu(BlackOpsBackgroundMenu.bl_idname, icon="FILE_IMAGE")
 
         layout.separator()
-
+        # Sharp shade option
         layout.operator("object.shade_sharp", text="Sharp Shade", icon="FACESEL")
 
         layout.separator()
-
+        # Modifier labels and options
         layout.label(text="Modifiers Pop-Up  [Shift Ctrl Alt B]", icon="MODIFIER")
         layout.operator("object.origin_mirror", text="Origin Mirror", icon="MOD_MIRROR")
         # layout.operator("object.remove_mirror", text="Unmirror Object", icon="GROUP")
@@ -715,7 +716,7 @@ class BlackOps(Menu):
         # layout.operator("object.remove_bevel", text="Unbevel Object", icon = "SNAP_VOLUME")
 
         layout.separator()
-
+        # Misc. boolean options
         layout.operator("object.boolean_mode", text="Boolean Mode", icon="MOD_BOOLEAN")
         layout.operator("object.exit_boolean_mode", text="Exit Boolean Mode", icon="X")
 
@@ -723,20 +724,20 @@ class BlackOps(Menu):
         layout.operator("object.mod_apply_all", text="Apply Modifiers to All", icon="MODIFIER")
 
         layout.separator()
-
+        # Unwrap options
         layout.operator("object.pack_unwrap", text="Pack Unwrap", icon="UV_ISLANDSEL")
         layout.operator("object.sharp_unwrap", text="Sharp Unwrap", icon="UV_EDGESEL")
         layout.operator("object.cube_unwrap", text="Cube Unwrap", icon="UV_FACESEL")
 
         layout.separator()
-
+        # Substance Painter preparation options
         layout.operator("object.create_tex_set", text="Create Texture Set", icon="POTATO")
         layout.operator("scene.create_mat_sets", text="Create Material Sets", icon="SMOOTH")
         layout.operator("scene.clear_mat_sets", text="Clear Material Sets", icon="SOLID")
         layout.operator("object.id_create", text="Create Scene ID Map", icon="SEQ_CHROMA_SCOPE")
 
         layout.separator()
-
+        # Substance Painter import/export options
         layout.operator("object.sharpShade", text="Import Substance", icon="IMPORT")
         layout.operator("scene.substance_export", text="Export Scene for Substance", icon="EXPORT")
 
@@ -757,7 +758,7 @@ class BlackPlane(Operator):
         else:
             current_mode = bpy.context.object.mode
             return current_mode == "OBJECT"
-
+    # Function that draws a half-plane then mirrors it with a bevel modifier
     def execute(self, context):
         verts = [
             (0, 1, 0),
@@ -821,7 +822,7 @@ class BlackCube(Operator):
         else:
             current_mode = bpy.context.object.mode
             return current_mode == "OBJECT"
-
+    # Draws a half cube then mirrors it with a bevel modifier
     def execute(self, context):
         verts = [
             (0, 1, -1),
@@ -893,7 +894,7 @@ class OneCylinder(Operator):
         else:
             current_mode = bpy.context.object.mode
             return current_mode == "OBJECT"
-
+    # Draws a half cylinder with 8 sides, then mirrors it with a bevel modifier
     def execute(self, context):
         # bpy.ops.mesh.primitive_cylinder_add(vertices=8)
         verts = [
@@ -970,7 +971,7 @@ class TwoCylinder(Operator):
         else:
             current_mode = bpy.context.object.mode
             return current_mode == "OBJECT"
-
+    # Draws a half cylinder with 16 sides, mirrored with a bevel modifier
     def execute(self, context):
         # bpy.ops.mesh.primitive_cylinder_add(vertices=16)
         verts = [
@@ -1059,7 +1060,7 @@ class ThreeCylinder(Operator):
         else:
             current_mode = bpy.context.object.mode
             return current_mode == "OBJECT"
-
+    # Same as previous two class executes but with 32 sides
     def execute(self, context):
         # bpy.ops.mesh.primitive_cylinder_add(vertices=32)
         verts = [
@@ -1173,7 +1174,7 @@ class OneSphere(Operator):
         else:
             current_mode = bpy.context.object.mode
             return current_mode == "OBJECT"
-
+    # Creates a half-cube with one subdivision, transforms it to sphere, no modifiers
     def execute(self, context):
         bpy.ops.mesh.primitive_cube_add()
         bpy.context.object.name = "Black 2 Sphere"
@@ -1199,7 +1200,7 @@ class TwoSphere(Operator):
         else:
             current_mode = bpy.context.object.mode
             return current_mode == "OBJECT"
-
+    # Creates a half-cube with three subdivisions, transforms it to sphere, no modifiers
     def execute(self, context):
         bpy.ops.mesh.primitive_cube_add()
         bpy.context.object.name = "Black 4 Sphere"
@@ -1225,7 +1226,7 @@ class ThreeSphere(Operator):
         else:
             current_mode = bpy.context.object.mode
             return current_mode == "OBJECT"
-
+    # Creates a half-cube with seven subdivisions, transforms it to sphere, no modifiers
     def execute(self, context):
         bpy.ops.mesh.primitive_cube_add()
         bpy.context.object.name = "Black 8 Sphere"
@@ -1255,7 +1256,7 @@ class SharpShading(Operator):
             current_mode = bpy.context.object.mode
             return current_mode == "OBJECT"
 
-    # Function section for sharp shading
+    # Simply smooth shades the selected object then enables auto-smooth at 35 degrees
     def execute(self, context):
         bpy.ops.object.shade_smooth()
         bpy.context.object.data.use_auto_smooth = True
@@ -1278,7 +1279,7 @@ class OriginMirror(Operator):
         else:
             current_mode = bpy.context.object.mode
             return current_mode == "OBJECT"
-
+    # Same as tooltip
     def execute(self, context):
         bpy.ops.object.origin_set(type="ORIGIN_CURSOR")
         bpy.ops.object.modifier_add(type="MIRROR")
@@ -1286,7 +1287,7 @@ class OriginMirror(Operator):
         return {'FINISHED'}
 
 
-class BevelWeight(Operator):
+class BevelAngle(Operator):
     """Adds a bevel modifier with angle limit method"""
     bl_idname = "object.bevel_w_weight"
     bl_label = "Bevel with weight"
@@ -1298,18 +1299,17 @@ class BevelWeight(Operator):
         else:
             current_mode = bpy.context.object.mode
             return current_mode == "OBJECT"
-
+    # Same as tooltip
     def execute(self, context):
         bpy.ops.object.modifier_add(type="BEVEL")
         bpy.context.object.modifiers["Bevel"].limit_method = "ANGLE"
         return {'FINISHED'}
 
 
-class SetBevelEdgeAll(Operator):
+class BevelSharp(Operator):
     """Adds bevel modifier with weight limit method, marks all sharp edges and sets their bevel weight to 1"""
     bl_idname = "edge.set_bevel_sharp"
     bl_label = "Set All Bevel Edge"
-    bl_context = "editmode"
 
     @classmethod
     def poll(cls, context):
@@ -1318,7 +1318,7 @@ class SetBevelEdgeAll(Operator):
         else:
             current_mode = bpy.context.object.mode
             return current_mode == "OBJECT"
-
+    # Same as tooltip
     def execute(self, context):
         # Add bevel modifier with weight setting then set all sharp edge weights to 1 furthermore go into edit mode and make
         # all sharp edges marked sharp
@@ -1404,7 +1404,7 @@ class BlackSlice(Operator):
         else:
             current_mode = bpy.context.object.mode
             return current_mode == "OBJECT"
-
+    # Stores names of all selected objects executes BoolTools slice code, then joins the two objects into one mesh
     def execute(self, context):
         # cutter_object = bpy.context.object.
         selection_names = [obj.name for obj in bpy.context.selected_objects]
@@ -1438,7 +1438,7 @@ class ClearNotSharp(Operator):
         else:
             current_mode = bpy.context.object.mode
             return current_mode == "OBJECT"
-
+    # Same as tooltip
     def execute(self, context):
         # Add bevel modifier with weight setting then set all sharp edge weights to 1 furthermore go into edit mode and make
         # all sharp edges marked sharp
@@ -1495,7 +1495,7 @@ class CircleArray(Operator):
         else:
             current_mode = bpy.context.object.mode
             return current_mode == "OBJECT"
-
+    # Creates an array with 4 object instances in a circle around a default plain axes empty object
     def execute(self, context):
         bpy.ops.object.modifier_add(type="ARRAY")
         circle_array_object = bpy.context.object.name
@@ -1538,7 +1538,7 @@ class CurveArray(Operator):
         else:
             current_mode = bpy.context.object.mode
             return current_mode == "OBJECT"
-
+    # Creates an array with 4 object instances along a default bezier curve
     def execute(self, context):
         bpy.ops.object.modifier_add(type="ARRAY")
         curve_array_object = bpy.context.object.name
@@ -1576,7 +1576,7 @@ class BooleanMode(Operator):
         else:
             current_mode = bpy.context.object.mode
             return current_mode == "OBJECT"
-
+    # Duplicates object, stores both names, moves duplicate to layer where original does not exist, then clears original's modifiers
     def execute(self, context):
         self.__class__.boolean_mode = True
         self.__class__.initial_name = bpy.context.object.name
@@ -1616,7 +1616,7 @@ class ExitBooleanMode(Operator):
                     return False
             else:
                 return False
-
+    # Marks sharp edges as sharp and sets weight to 1, links modifiers to duplicate, then sharp shades the final object
     def execute(self, context):
         # global duplicate_name
         # global initial_name
@@ -1661,7 +1661,7 @@ class ApplyMods(Operator):
         else:
             current_mode = bpy.context.object.mode
             return current_mode == "OBJECT"
-
+    # Same as tooltip
     def execute(self, context):
         bpy.ops.object.convert(target="MESH")
         return {"FINISHED"}
@@ -1679,7 +1679,7 @@ class ApplyModsAll(Operator):
         else:
             current_mode = bpy.context.object.mode
             return current_mode == "OBJECT"
-
+    # Same as tooltip
     def execute(self, context):
         bpy.ops.object.select_all(action="DESELECT")
         for obj in bpy.data.objects:
@@ -1707,10 +1707,8 @@ class PackUnwrap(Operator):
             return current_mode == "OBJECT"
 
     def execute(self, context):
+        # Simply unwraps, then packs the new UV map
         bpy.ops.object.editmode_toggle()
-        bpy.ops.mesh.select_all(action="DESELECT")
-        bpy.ops.mesh.edges_select_sharp()
-        bpy.ops.mesh.mark_seam(clear=False)
         bpy.ops.mesh.select_all(action="SELECT")
         bpy.ops.uv.unwrap(method='ANGLE_BASED', margin=0.001)
         bpy.ops.uv.pack_islands(margin=0.001)
@@ -1731,7 +1729,7 @@ class SharpUnwrap(Operator):
         else:
             current_mode = bpy.context.object.mode
             return current_mode == "OBJECT"
-
+    # Selects sharp edges, marks seams, angle based unwraps then leaves edit mode
     def execute(self, context):
         bpy.ops.object.editmode_toggle()
         bpy.ops.mesh.select_all(action="DESELECT")
@@ -1757,7 +1755,7 @@ class CubeUnwrap(Operator):
         else:
             current_mode = bpy.context.object.mode
             return current_mode == "OBJECT"
-
+    # Does a cube projection unwrap then packs the UV islands
     def execute(self, context):
         bpy.ops.object.editmode_toggle()
         bpy.ops.mesh.select_all(action="DESELECT")
@@ -1785,6 +1783,7 @@ class CreateId(Operator):
             return current_mode == "OBJECT"
 
     def execute(self, context):
+        # Callable function to generate a random vertex color and apply to the entire mesh
         def random_color(obj):
             import random
             r = random.random
@@ -1800,7 +1799,7 @@ class CreateId(Operator):
             for poly in mesh.polygons:
                 for loop_index in poly.loop_indices:
                     vcol_layer.data[loop_index].color = random_color
-
+        # For loop to find every mesh in the current scene and paint it with a random vertex color
         for obj in bpy.data.objects:
             if obj.type == 'MESH':
                 bpy.context.scene.objects.active = obj
@@ -1824,6 +1823,7 @@ class CreateTexSet(Operator):
             return current_mode == "OBJECT"
 
     def execute(self, context):
+        # Joins selected objects, creates a new material with the 'Substance' node group and appends it to the new object
         for ob in bpy.context.selected_editable_objects:
             bpy.ops.object.convert(target="MESH")
             bpy.ops.object.join()
@@ -1856,6 +1856,7 @@ class CreateMaterialSets(Operator):
             return current_mode == "OBJECT"
 
     def execute(self, context):
+        # Every object in the scene is given a unique 'Substance' material based on the object name
         bpy.ops.object.select_all(action="SELECT")
         for ob in bpy.context.selected_editable_objects:
             mat = bpy.data.materials.new(name=ob.name + " Texture Set")
@@ -1886,6 +1887,7 @@ class ClearMaterials(Operator):
         else:
             current_mode = bpy.context.object.mode
             return current_mode == "OBJECT"
+    # Removes material in the first slot of every object in the scene
     def execute(self, context):
         bpy.ops.object.select_all(action="SELECT")
         for ob in bpy.context.selected_editable_objects:
@@ -1910,9 +1912,11 @@ class SubstanceExport(Operator):
             return current_mode == "OBJECT"
 
     def execute(self, context):
+        # Check if the blend file is saved, throw an error if not
         if bpy.data.is_saved:
             i = 0
             bpy.ops.object.select_all(action="DESELECT")
+            # Conditionals to check if there are UVs and Texture sets on all the exported objects, if not, cease export
             for ob in bpy.data.objects:
                 if ob.type == "MESH":
                     if len(ob.data.uv_layers) == 0:
@@ -1973,7 +1977,7 @@ preview_collections = {}
 
 
 def register():
-    # So we dont have to bother with every class
+    # So we dont have to bother registering every class
     bpy.utils.register_module(__name__)
 
     bpy.types.Object.modifier_active_index = IntProperty()
@@ -1995,7 +1999,7 @@ def register():
 
     if wm.keyconfigs.addon:
         km = wm.keyconfigs.addon.keymaps.new(name='3D View', space_type='VIEW_3D')
-        kmi = km.keymap_items.new(VIEW_3D_PT_modifier_popup.bl_idname, 'B', 'PRESS', shift=True, ctrl=True, alt=True)
+        kmi = km.keymap_items.new(VIEW_3D_PT_modifier_popup.bl_idname, 'SPACEBAR', 'PRESS', alt=True)
         kmi.active = True
         kmim = km.keymap_items.new("wm.call_menu", "Q", "PRESS")
         kmim.properties.name = BlackOps.bl_idname
@@ -2028,7 +2032,7 @@ def unregister():
         km.keymap_items.remove(kmi)
     addon_keymaps.clear()
 
-    # So we dont have to bother with every class
+    # So we dont have to bother unregistering every class
     bpy.utils.unregister_module(__name__)
 
     bpy.app.handlers.load_post.remove(on_file_load)
