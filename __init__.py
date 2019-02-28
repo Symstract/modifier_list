@@ -21,7 +21,7 @@
 bl_info = {
     "name": "Modifier Popup Panel",
     "author": "Antti Tikka",
-    "version": (1, 0, 0),
+    "version": (1, 0, 1),
     "blender": (2, 80, 0),
     "location": "Spacebar",
     "description": "A handy popup panel for showing modifiers in 3D view",
