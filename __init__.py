@@ -103,16 +103,17 @@ class Preferences(AddonPreferences):
         layout.separator()
 
         # === Hotkey ===
-        layout.label(text="Hotkey:")
+        # Disabled for now because of a bug in 2.8.
+        # layout.label(text="Hotkey:")
 
-        col = layout.column()
-        kc = bpy.context.window_manager.keyconfigs.addon
-        for km, kmi in addon_keymaps:
-            km = km.active()
-            col.context_pointer_set("keymap", km)
-            rna_keymap_ui.draw_kmi([], kc, km, kmi, col, 0)
+        # col = layout.column()
+        # kc = bpy.context.window_manager.keyconfigs.addon
+        # for km, kmi in addon_keymaps:
+        #     km = km.active()
+        #     col.context_pointer_set("keymap", km)
+        #     rna_keymap_ui.draw_kmi([], kc, km, kmi, col, 0)
 
-        layout.separator()
+        # layout.separator()
 
         # === Info ===
         is_loaded, is_enabled = addon_utils.check("space_view3d_modifier_tools")
@@ -709,7 +710,7 @@ def register():
 
     if wm.keyconfigs.addon:
         km = wm.keyconfigs.addon.keymaps.new(name='3D View', space_type='VIEW_3D')
-        kmi = km.keymap_items.new(VIEW_3D_PT_modifier_popup.bl_idname, 'SPACE', 'PRESS')
+        kmi = km.keymap_items.new(VIEW_3D_PT_modifier_popup.bl_idname, 'SPACE', 'PRESS', alt=True)
         kmi.active = True
         addon_keymaps.append((km, kmi))
 
