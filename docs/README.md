@@ -19,7 +19,7 @@
 
 ## Hotkey
 
-Default hotkeys are **Q** and **Alt+Spacebar**. Which are free by default, but you can easily set your own hotkey in addon preferences.
+Default hotkeys are **Q** and **Alt+Spacebar**. In factory blender, Alt+Space is 'Set Orientation' but you can easily set your own hotkey in addon preferences.
 
 ## Installation
 
