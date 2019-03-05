@@ -1,6 +1,7 @@
 import math
 import numpy as np
 
+import addon_utils
 from bl_ui.properties_data_modifier import DATA_PT_modifiers
 import bpy
 from bpy.props import *
@@ -11,10 +12,15 @@ from bpy.types import (
     UIList
 )
 
+# from ... import (
+#     bl_info,
+#     preview_collections
+# )
+
 
 def get_pref_mod_attr_value():
     """List of the names of favourite modifiers"""
-    prefs = bpy.context.preferences.addons[__name__].preferences
+    prefs = bpy.context.preferences.addons[bl_info["name"]].preferences
     # get correct class attributes and then their values
     attr_list = [attr for attr in dir(prefs) if "modifier_" in attr]
     attr_value_list = [getattr(prefs, attr) for attr in attr_list]
@@ -230,7 +236,7 @@ class OBJECT_UL_modifier_list(UIList):
             layout.label(text="", icon_value=icon)
 
 
-class ModifierListActions(Operator):
+class ModifierListActions:
     """Base operator for list actions."""
 
     bl_options = {'REGISTER', 'INTERNAL', 'UNDO'}
@@ -261,7 +267,7 @@ class ModifierListActions(Operator):
         return {'FINISHED'}
 
 
-class OBJECT_OT_mpp_modifier_move_up(ModifierListActions):
+class OBJECT_OT_mpp_modifier_move_up(Operator, ModifierListActions):
     bl_idname = "object.mpp_modifier_move_up"
     bl_label = "Move modifier up"
     bl_description = "Move modifier up in the stack"
@@ -269,7 +275,7 @@ class OBJECT_OT_mpp_modifier_move_up(ModifierListActions):
     action = 'UP'
 
 
-class OBJECT_OT_mpp_modifier_move_down(ModifierListActions):
+class OBJECT_OT_mpp_modifier_move_down(Operator, ModifierListActions):
     bl_idname = "object.mpp_modifier_move_down"
     bl_label = "Move modifier down"
     bl_description = "Move modifier down in the stack"
@@ -277,7 +283,7 @@ class OBJECT_OT_mpp_modifier_move_down(ModifierListActions):
     action = 'DOWN'
 
 
-class OBJECT_OT_mpp_modifier_remove(ModifierListActions):
+class OBJECT_OT_mpp_modifier_remove(Operator, ModifierListActions):
     bl_idname = "object.mpp_modifier_remove"
     bl_label = "Remove Modifier"
     bl_description = "Remove modifier from the active object"
@@ -367,7 +373,7 @@ class OBJECT_OT_mpp_modifier_copy(Operator):
 #=======================================================================
 
 
-def ui_modifiers(layout):
+def ui_modifiers(context, layout):
     ob = context.object
 
     if not ob:
@@ -409,7 +415,7 @@ def ui_modifiers(layout):
         # === Modifier list ===
         ob = context.object
 
-        prefs = bpy.context.preferences.addons[__name__].preferences
+        prefs = bpy.context.preferences.addons[bl_info["name"]].preferences
         num_of_rows = prefs.mod_list_def_len
         layout.template_list("OBJECT_UL_modifier_list", "", ob, "modifiers",
                                 ob, "modifier_active_index", rows=num_of_rows)

@@ -1,6 +1,5 @@
 from bpy.types import Operator
-
-from .modifiers import ui_modifiers
+from .modifiers.modifiers_ui import ui_modifiers
 
 
 class VIEW_3D_PT_modifier_popup(Operator):
@@ -19,4 +18,4 @@ class VIEW_3D_PT_modifier_popup(Operator):
     def draw(self, context):
         layout = self.layout
         col = layout.column()
-        ui_modifiers(col)
+        ui_modifiers(context, layout)

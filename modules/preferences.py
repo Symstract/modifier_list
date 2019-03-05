@@ -1,12 +1,16 @@
+import math
+
 import addon_utils
 import bpy
 from bpy.props import *
 from bpy.types import AddonPreferences
 import rna_keymap_ui
 
+# from .. import bl_info
+
 
 class Preferences(AddonPreferences):
-    bl_idname = __name__
+    bl_idname = bl_info["name"]
 
     modifier_01: StringProperty()
     modifier_02: StringProperty()
@@ -57,17 +61,18 @@ class Preferences(AddonPreferences):
 
         layout.separator()
 
-        # === Hotkey ===
-        layout.label(text="Hotkey:")
+        # Disabled for now because of a bug in 2.8.
+        # # === Hotkey ===
+        # layout.label(text="Hotkey:")
 
-        col = layout.column()
-        kc = bpy.context.window_manager.keyconfigs.addon
-        for km, kmi in addon_keymaps:
-            km = km.active()
-            col.context_pointer_set("keymap", km)
-            rna_keymap_ui.draw_kmi([], kc, km, kmi, col, 0)
+        # col = layout.column()
+        # kc = bpy.context.window_manager.keyconfigs.addon
+        # for km, kmi in addon_keymaps:
+        #     km = km.active()
+        #     col.context_pointer_set("keymap", km)
+        #     rna_keymap_ui.draw_kmi([], kc, km, kmi, col, 0)
 
-        layout.separator()
+        # layout.separator()
 
         # === Info ===
         is_loaded, is_enabled = addon_utils.check("space_view3d_modifier_tools")
