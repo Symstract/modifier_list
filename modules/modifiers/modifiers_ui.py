@@ -4,6 +4,7 @@ import numpy as np
 import addon_utils
 from bl_ui.properties_data_modifier import DATA_PT_modifiers
 import bpy
+from bpy.app.handlers import persistent
 from bpy.props import *
 from bpy.types import (
     Menu,
@@ -12,10 +13,9 @@ from bpy.types import (
     UIList
 )
 
-# from ... import (
-#     bl_info,
-#     preview_collections
-# )
+from ... import bl_info
+from ..icons import preview_collections
+
 
 
 def get_pref_mod_attr_value():
@@ -374,143 +374,180 @@ class OBJECT_OT_mpp_modifier_copy(Operator):
 
 
 def ui_modifiers(context, layout):
+    # === Favourite modifiers ===
+    col = layout.column(align=True)
+
+    # Check if an item or the next item in fav_name_icon_type has a value
+    # and add rows and buttons accordingly (two buttons per row).
+    fav_name_icon_type_iter = fav_name_icon_type()
+
+    for name, icon, mod in fav_name_icon_type_iter:
+        next_mod = next(fav_name_icon_type_iter)
+        if name or next_mod[0] is not None:
+            row = col.split(factor=0.5, align=True)
+
+            if name is not None:
+                add_modifer = row.operator("object.mpp_modifier_add", text=name,
+                                            icon=icon).modifier_type = mod
+            else:
+                row.label(text="")
+
+            if next_mod[0] is not None:
+                row.operator("object.mpp_modifier_add", text=next_mod[0],
+                                icon=next_mod[1]).modifier_type = next_mod[2]
+            else:
+                row.label(text="")
+
+    # === Modifier search and menu ===
+    col = layout.column()
+    row = col.split(factor=0.59)
+    wm = bpy.context.window_manager
+    row.prop_search(wm, "mod_to_add", wm, "all_modifiers", text="", icon='MODIFIER')
+    row.menu("OBJECT_MT_mpp_add_modifier_menu")
+
+    # === Modifier list ===
     ob = context.object
 
-    if not ob:
-        layout.label(text="No active object")
-    elif ob.type not in {'MESH', 'CURVE', 'SURFACE', 'FONT', 'LATTICE'}:
-        layout.label(text="Wrong object type")
-    else:
-        # === Favourite modifiers ===
-        col = layout.column(align=True)
+    prefs = bpy.context.preferences.addons[bl_info["name"]].preferences
+    num_of_rows = prefs.mod_list_def_len
+    layout.template_list("OBJECT_UL_modifier_list", "", ob, "modifiers",
+                            ob, "modifier_active_index", rows=num_of_rows)
 
-        # Check if an item or the next item in fav_name_icon_type has a value
-        # and add rows and buttons accordingly (two buttons per row).
-        fav_name_icon_type_iter = fav_name_icon_type()
+    row = layout.row()
 
-        for name, icon, mod in fav_name_icon_type_iter:
-            next_mod = next(fav_name_icon_type_iter)
-            if name or next_mod[0] is not None:
-                row = col.split(factor=0.5, align=True)
-
-                if name is not None:
-                    add_modifer = row.operator("object.mpp_modifier_add", text=name,
-                                                icon=icon).modifier_type = mod
-                else:
-                    row.label(text="")
-
-                if next_mod[0] is not None:
-                    row.operator("object.mpp_modifier_add", text=next_mod[0],
-                                    icon=next_mod[1]).modifier_type = next_mod[2]
-                else:
-                    row.label(text="")
-
-        # === Modifier search and menu ===
-        col = layout.column()
-        row = col.split(factor=0.59)
-        wm = bpy.context.window_manager
-        row.prop_search(wm, "mod_to_add", wm, "all_modifiers", text="", icon='MODIFIER')
-        row.menu("OBJECT_MT_mpp_add_modifier_menu")
-
-        # === Modifier list ===
-        ob = context.object
-
-        prefs = bpy.context.preferences.addons[bl_info["name"]].preferences
-        num_of_rows = prefs.mod_list_def_len
-        layout.template_list("OBJECT_UL_modifier_list", "", ob, "modifiers",
-                                ob, "modifier_active_index", rows=num_of_rows)
-
-        row = layout.row()
-
-        # === Modifier tools (from the addon) ===
-        is_loaded, is_enabled = addon_utils.check("space_view3d_modifier_tools")
-        if is_loaded and is_enabled:
-            sub = row.row(align=True)
-            # Note: In 2.79, this is what scale 2.0 looks like. Here 2.0 causes list ordering
-            # buttons to get tiny. 2.8 Bug?
-            sub.scale_x = 1.5
-
-            pcoll = preview_collections["main"]
-
-            icon = pcoll['TOGGLE_ALL_MODIFIERS_VISIBILITY']
-            sub.operator("object.toggle_apply_modifiers_view", icon_value=icon.icon_id, text="")
-
-            icon = pcoll['APPLY_ALL_MODIFIERS']
-            sub.operator("object.apply_all_modifiers", icon_value=icon.icon_id, text="")
-
-            icon = pcoll['DELETE_ALL_MODIFIERS']
-            sub.operator("object.delete_all_modifiers", icon_value=icon.icon_id, text="")
-
-        # === List manipulation ===
+    # === Modifier tools (from the addon) ===
+    is_loaded, is_enabled = addon_utils.check("space_view3d_modifier_tools")
+    if is_loaded and is_enabled:
         sub = row.row(align=True)
-        #  Note: In 2.79, this is what scale 2.0 looks like. Here 2.0 causes list ordering
+        # Note: In 2.79, this is what scale 2.0 looks like. Here 2.0 causes list ordering
         # buttons to get tiny. 2.8 Bug?
         sub.scale_x = 1.5
-        sub.alignment = 'RIGHT'
-        sub.operator(OBJECT_OT_mpp_modifier_move_up.bl_idname, icon='TRIA_UP', text="")
-        sub.operator(OBJECT_OT_mpp_modifier_move_down.bl_idname, icon='TRIA_DOWN', text="")
-        sub.operator(OBJECT_OT_mpp_modifier_remove.bl_idname, icon='REMOVE', text="")
 
-        # === Modifier settings ===
-        ob = context.object
+        pcoll = preview_collections["main"]
 
-        if ob:
-            if ob.modifiers:
-                active_mod_index = ob.modifier_active_index
-                active_mod = ob.modifiers[active_mod_index]
+        icon = pcoll['TOGGLE_ALL_MODIFIERS_VISIBILITY']
+        sub.operator("object.toggle_apply_modifiers_view", icon_value=icon.icon_id, text="")
 
-                active_mod_icon = [icon for name, icon, mod in all_name_icon_type()
-                                    if mod == active_mod.type].pop()
+        icon = pcoll['APPLY_ALL_MODIFIERS']
+        sub.operator("object.apply_all_modifiers", icon_value=icon.icon_id, text="")
 
-                col = layout.column(align=True)
+        icon = pcoll['DELETE_ALL_MODIFIERS']
+        sub.operator("object.delete_all_modifiers", icon_value=icon.icon_id, text="")
 
-                # === General settings ===
-                box = col.box()
-                row = box.row()
-                sub = row.row()
-                sub.label(text="", icon=active_mod_icon)
-                sub.prop(active_mod, "name", text="")
+    # === List manipulation ===
+    sub = row.row(align=True)
+    #  Note: In 2.79, this is what scale 2.0 looks like. Here 2.0 causes list ordering
+    # buttons to get tiny. 2.8 Bug?
+    sub.scale_x = 1.5
+    sub.alignment = 'RIGHT'
+    sub.operator(OBJECT_OT_mpp_modifier_move_up.bl_idname, icon='TRIA_UP', text="")
+    sub.operator(OBJECT_OT_mpp_modifier_move_down.bl_idname, icon='TRIA_DOWN', text="")
+    sub.operator(OBJECT_OT_mpp_modifier_remove.bl_idname, icon='REMOVE', text="")
 
-                sub = row.row(align=True)
-                sub_sub = sub.row(align=True)
-                sub_sub.scale_x = 1.1
-                # Hide visibility toggles for collision modifier as they are not used
-                # in the regular UI either (apparently can cause problems in some scenes).
-                if active_mod.type != 'COLLISION':
-                    sub_sub.prop(active_mod, "show_render", text="")
-                    sub_sub.prop(active_mod, "show_viewport", text="")
-                mod_show_editmode_and_cage(active_mod, sub, scale_x=1.1)
+    # === Modifier settings ===
+    ob = context.object
 
-                row = box.row()
-                row.operator("object.mpp_modifier_apply",
-                                text="Apply").modifier = active_mod.name
+    if ob:
+        if ob.modifiers:
+            active_mod_index = ob.modifier_active_index
+            active_mod = ob.modifiers[active_mod_index]
 
-                sub = row.row()
-                # Cloth and Soft Body have "Apply As Shape Key" but no "Copy Modifier" .
-                # In those cases "Apply As Shape Key" doesn't need to be scaled up.
-                if active_mod.type not in {'CLOTH', 'SOFT_BODY'}:
-                    sub.scale_x = 1.3
-                deform_mods = {mod for name, icon, mod in all_name_icon_type()[26:42]}
-                other_shape_key_mods = {'CLOTH', 'SOFT_BODY', 'MESH_CACHE'}
-                has_shape_key = deform_mods.union(other_shape_key_mods)
-                if active_mod.type in has_shape_key:
-                    apply_as_shape_key = sub.operator("object.mpp_modifier_apply",
-                                                        text="Apply as Shape Key")
-                    apply_as_shape_key.modifier=active_mod.name
-                    apply_as_shape_key.apply_as='SHAPE'
+            active_mod_icon = [icon for name, icon, mod in all_name_icon_type()
+                                if mod == active_mod.type].pop()
 
-                has_no_copy = {
-                    'CLOTH', 'COLLISION', 'DYNAMIC_PAINT', 'FLUID_SIMULATION',
-                    'PARTICLE_SYSTEM', 'SMOKE', 'SOFT_BODY'
-                }
-                if active_mod.type not in has_no_copy:
-                    row.operator("object.mpp_modifier_copy",
-                                    text="Copy").modifier = active_mod.name
+            col = layout.column(align=True)
 
-                # === Modifier specific settings ===
-                box = col.box()
-                # A column is needed here to keep the layout more compact,
-                # because in a box separators give an unnecessarily big space.
-                col = box.column()
-                mp = DATA_PT_modifiers(context)
-                getattr(mp, active_mod.type)(col, ob, active_mod)
+            # === General settings ===
+            box = col.box()
+            row = box.row()
+            sub = row.row()
+            sub.label(text="", icon=active_mod_icon)
+            sub.prop(active_mod, "name", text="")
+
+            sub = row.row(align=True)
+            sub_sub = sub.row(align=True)
+            sub_sub.scale_x = 1.1
+            # Hide visibility toggles for collision modifier as they are not used
+            # in the regular UI either (apparently can cause problems in some scenes).
+            if active_mod.type != 'COLLISION':
+                sub_sub.prop(active_mod, "show_render", text="")
+                sub_sub.prop(active_mod, "show_viewport", text="")
+            mod_show_editmode_and_cage(active_mod, sub, scale_x=1.1)
+
+            row = box.row()
+            row.operator("object.mpp_modifier_apply",
+                            text="Apply").modifier = active_mod.name
+
+            sub = row.row()
+            # Cloth and Soft Body have "Apply As Shape Key" but no "Copy Modifier" .
+            # In those cases "Apply As Shape Key" doesn't need to be scaled up.
+            if active_mod.type not in {'CLOTH', 'SOFT_BODY'}:
+                sub.scale_x = 1.3
+            deform_mods = {mod for name, icon, mod in all_name_icon_type()[26:42]}
+            other_shape_key_mods = {'CLOTH', 'SOFT_BODY', 'MESH_CACHE'}
+            has_shape_key = deform_mods.union(other_shape_key_mods)
+            if active_mod.type in has_shape_key:
+                apply_as_shape_key = sub.operator("object.mpp_modifier_apply",
+                                                    text="Apply as Shape Key")
+                apply_as_shape_key.modifier=active_mod.name
+                apply_as_shape_key.apply_as='SHAPE'
+
+            has_no_copy = {
+                'CLOTH', 'COLLISION', 'DYNAMIC_PAINT', 'FLUID_SIMULATION',
+                'PARTICLE_SYSTEM', 'SMOKE', 'SOFT_BODY'
+            }
+            if active_mod.type not in has_no_copy:
+                row.operator("object.mpp_modifier_copy",
+                                text="Copy").modifier = active_mod.name
+
+            # === Modifier specific settings ===
+            box = col.box()
+            # A column is needed here to keep the layout more compact,
+            # because in a box separators give an unnecessarily big space.
+            col = box.column()
+            mp = DATA_PT_modifiers(context)
+            getattr(mp, active_mod.type)(col, ob, active_mod)
+
+
+#=======================================================================
+
+
+def set_modifier_collection_items():
+    """This is to be called on loading a new file or reloading addons
+    to make modifiers available in search.
+    """
+    all_modifiers = bpy.context.window_manager.all_modifiers
+
+    if not all_modifiers:
+        for name, icon, mod in all_name_icon_type():
+            item = all_modifiers.add()
+            item.name = name
+            item.value = mod
+
+
+@persistent
+def on_file_load(dummy):
+    set_modifier_collection_items()
+
+
+def register():
+    # === Properties ===
+    bpy.types.Object.modifier_active_index = IntProperty()
+
+    # Use Window Manager for storing modifier search property
+    # and modifier collection because it can be accessed on
+    # registering and it's not scene specific.
+    wm = bpy.types.WindowManager
+    wm.mod_to_add = StringProperty(name="Modifier to add", update=add_modifier,
+                                   description="Search for a modifier and add it to the stack")
+    wm.all_modifiers = CollectionProperty(type=AllModifiersCollection)
+
+    bpy.app.handlers.load_post.append(on_file_load)
+
+    set_modifier_collection_items()
+
+
+def unregister():
+    bpy.app.handlers.load_post.remove(on_file_load)
+
+    del bpy.types.Object.modifier_active_index
