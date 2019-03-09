@@ -1,4 +1,4 @@
-from .modifiers.modifiers_ui import ui_modifiers
+from .modifiers.modifiers_ui import modifiers_ui
 
 def wip():
     pass

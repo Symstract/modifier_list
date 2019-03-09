@@ -1,24 +1,19 @@
 import bpy
 from bpy.props import *
 from bpy.types import Operator
-from .modifiers.modifiers_ui import ui_modifiers
+
+from .modifiers.modifiers_ui import modifiers_ui
+from .vertex_groups_ui import vertex_groups_ui
 
 
 panel_width = 300
 tabs_width = 26
 overall_width = panel_width + tabs_width
 
+
 class VIEW_3D_PT_modifier_popup(Operator):
     bl_idname = "view3d.modifier_popup"
     bl_label = "Modifier Pop-up Panel"
-
-    popup_tabs_items = [
-        ("MODIFIERS", "Modifiers", "Modifiers", 'MODIFIER', 1),
-        ("OBJECT_DATA", "Object Data", "Object Data", 'MESH_DATA', 2),
-    ]
-
-    popup_tab: EnumProperty(items=popup_tabs_items, name="Popup Tabs", default='MODIFIERS')
-
 
     def execute(self, context):
         return {'FINISHED'}
@@ -44,13 +39,28 @@ class VIEW_3D_PT_modifier_popup(Operator):
 
             # === Content ===
             col = split.column()
+            wm = bpy.context.window_manager
+            popup_tab = wm.popup_active_tab
 
-            if self.popup_tab == 'MODIFIERS':
-                ui_modifiers(context, col)
-            elif self.popup_tab == 'OBJECT_DATA':
-                col.label(text="Coming soon")
+            if popup_tab == 'MODIFIERS':
+                modifiers_ui(context, col)
+            elif popup_tab == 'OBJECT_DATA':
+                vertex_groups_ui(context, col)
 
             # === Tabs ===
             col = split.column(align=True)
             col.scale_y = 1.3
-            col.prop_tabs_enum(self, "popup_tab", icon_only=True)
+            col.prop_tabs_enum(wm, "popup_active_tab", icon_only=True)
+
+
+def register():
+    popup_tabs_items = [
+        ("MODIFIERS", "Modifiers", "Modifiers", 'MODIFIER', 1),
+        ("OBJECT_DATA", "Object Data", "Object Data", 'MESH_DATA', 2),
+    ]
+
+    wm = bpy.types.WindowManager
+    wm.popup_active_tab = EnumProperty(items=popup_tabs_items, name="Popup Tabs", default='MODIFIERS')
+
+
+

@@ -14,7 +14,7 @@ from bpy.types import (
 )
 
 from ... import bl_info
-from ..icons import preview_collections
+from .. import icons
 
 
 
@@ -83,7 +83,7 @@ def mod_show_editmode_and_cage(modifier, layout, scale_x=1.0, use_in_list=False)
     }
     has_show_on_cage = deform_mods.union(other_show_on_cage_mods)
 
-    pcoll = preview_collections["main"]
+    pcoll = icons.preview_collections["main"]
 
     # === show_in_editmode ===
     sub = layout.row(align=True)
@@ -373,7 +373,7 @@ class OBJECT_OT_mpp_modifier_copy(Operator):
 #=======================================================================
 
 
-def ui_modifiers(context, layout):
+def modifiers_ui(context, layout):
     # === Favourite modifiers ===
     col = layout.column(align=True)
 
@@ -423,7 +423,7 @@ def ui_modifiers(context, layout):
         # buttons to get tiny. 2.8 Bug?
         sub.scale_x = 1.5
 
-        pcoll = preview_collections["main"]
+        pcoll = icons.preview_collections["main"]
 
         icon = pcoll['TOGGLE_ALL_MODIFIERS_VISIBILITY']
         sub.operator("object.toggle_apply_modifiers_view", icon_value=icon.icon_id, text="")

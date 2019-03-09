@@ -1,3 +1,5 @@
+"""Utility module for registering classes and properties"""
+
 import importlib
 import inspect
 import os
@@ -10,18 +12,21 @@ addon_classes = []
 # Finding and importing modules and finding classes
 # ======================================================================
 
-def _find_addon_modules(root_dir, dirs_ignore=None):
-    """Finds all modules in a given directory and returns a set of them"""
+def _find_addon_modules(root_dir):
+    """Finds all modules in a given directory and returns a set of them.
+
+    Directories that have "__" in their name are ignored.
+    """
     current_directory = os.path.dirname(__file__)
     root_directory = os.path.join(current_directory, root_dir)
+
     if not os.path.exists(root_directory):
         raise FileNotFoundError("root_dir doesn't exist")
 
     addon_module_names = set()
 
     for root, dirs, files in os.walk(root_directory):
-        if dirs_ignore:
-            dirs[:] = [d for d in dirs if d not in dirs_ignore]
+        dirs[:] = [d for d in dirs if "__" not in d]
 
         relative_root = os.path.relpath(root, current_directory)
 
@@ -38,27 +43,28 @@ def _find_addon_modules(root_dir, dirs_ignore=None):
 
 first_call = True
 
-def _import_addon_modules(root_dir, dirs_ignore=None):
+def _import_addon_modules(root_dir):
     """Imports or reloads all add-on modules and stores them in a global
     list.
     """
     global first_call
     global addon_modules
 
-    addon_modules = []
+    addon_modules.clear()
 
-    for mod in _find_addon_modules(root_dir, dirs_ignore):
+    for mod in _find_addon_modules(root_dir):
         if first_call:
             module = importlib.import_module("." + mod, package=__package__)
         else:
             module = importlib.import_module("." + mod, package=__package__)
             module = importlib.reload(module)
+
         addon_modules.append(module)
 
     first_call = False
 
 
-def _find_bl_classes(root_dir, dirs_ignore=None):
+def _find_bl_classes(root_dir):
     """Finds all add-on classes from modules in the global
     addon module list and stores them in a global list.
     """
@@ -66,24 +72,16 @@ def _find_bl_classes(root_dir, dirs_ignore=None):
 
     global addon_classes
 
-    addon_classes = []
+    addon_classes.clear()
 
-    _import_addon_modules(root_dir, dirs_ignore)
+    _import_addon_modules(root_dir)
 
-    for mod, modname in zip(addon_modules, _find_addon_modules(root_dir, dirs_ignore)): # Confusing!!!
+    for mod, modname in zip(addon_modules, _find_addon_modules(root_dir)): # Confusing!!!
         module_path = os.path.basename(os.path.dirname(__file__)) + "." + modname
         classmembers = [m[1] for m in inspect.getmembers(mod, inspect.isclass)
                         if m[1].__module__ == module_path]
         bpy_subclasses = [cm for cm in classmembers if issubclass(cm, bpy_struct)]
         addon_classes.extend(bpy_subclasses)
-
-    # print("ADDON CLASSES:")
-    # for cls in addon_classes:
-    #     print(cls)
-    #     print(cls.__bases__)
-    #     print(cls.__subclasses__())
-    #     print(cls.__module__)
-    #     print("")
 
 
 def _sort_classes_topologically(classes):
@@ -105,19 +103,18 @@ def _sort_classes_topologically(classes):
 # Registering classes
 # ======================================================================
 
-def register_bl_classes(root_dir, dirs_ignore=None, addon_name_for_counter=None):
+def register_bl_classes(root_dir, addon_name_for_counter=None):
     """Register all add-on classes that inherit from bpy_struct from all
     modules.
 
     root_dir: root directory to search in
-    dirs_ignore: an iteratable of directories to be ignored from search
     unregister: unregister classes
     addon_name_for_counter: specify this if you want to print out the
                             number of registered classes
 
-    Modules that have "__" in their name are ignored.
+    Modules and packages that have "__" in their name are ignored.
     """
-    _find_bl_classes(root_dir, dirs_ignore)
+    _find_bl_classes(root_dir)
 
     from bpy.utils import register_class
 
@@ -148,14 +145,14 @@ def unregister_bl_classes(addon_name_for_counter=None):
 # Calling register
 # ======================================================================
 
-def call_register(root_dir, dirs_ignore=None):
+def call_register(root_dir):
     """Call register from all add-on modules"""
     for mod in addon_modules:
         if hasattr(mod, "register"):
             mod.register()
 
 
-def call_unregister(root_dir, dirs_ignore=None):
+def call_unregister(root_dir):
     """Call unregister from all add-on modules"""
     for mod in addon_modules:
         if hasattr(mod, "unregister"):
