@@ -17,6 +17,8 @@ from ... import bl_info
 from .. import icons
 
 
+# Favourite modifiers and name + icon + type iteratables
+#=======================================================================
 
 def get_pref_mod_attr_value():
     """List of the names of favourite modifiers"""
@@ -51,6 +53,9 @@ def fav_name_icon_type():
     fav_mods_iter = iter(fav_mods_list)
     return fav_mods_iter
 
+
+# show_in_editmode and show_on_cage buttons
+#=======================================================================
 
 def mod_show_editmode_and_cage(modifier, layout, scale_x=1.0, use_in_list=False):
     """This handles showing, hiding and activating/deactivating
@@ -146,6 +151,7 @@ def mod_show_editmode_and_cage(modifier, layout, scale_x=1.0, use_in_list=False)
             sub.prop(modifier, "show_on_cage", text="", icon_value=icon, emboss=not use_in_list)
 
 
+# Modifier list and operator classes etc.
 #=======================================================================
 
 
@@ -370,6 +376,7 @@ class OBJECT_OT_mpp_modifier_copy(Operator):
         return {'FINISHED'}
 
 
+# UI
 #=======================================================================
 
 
@@ -507,6 +514,7 @@ def modifiers_ui(context, layout, num_of_rows=False):
             getattr(mp, active_mod.type)(col, ob, active_mod)
 
 
+# Registering
 #=======================================================================
 
 
