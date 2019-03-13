@@ -373,7 +373,7 @@ class OBJECT_OT_mpp_modifier_copy(Operator):
 #=======================================================================
 
 
-def modifiers_ui(context, layout):
+def modifiers_ui(context, layout, num_of_rows=False):
     # === Favourite modifiers ===
     col = layout.column(align=True)
 
@@ -408,8 +408,6 @@ def modifiers_ui(context, layout):
     # === Modifier list ===
     ob = context.object
 
-    prefs = bpy.context.preferences.addons[bl_info["name"]].preferences
-    num_of_rows = prefs.mod_list_def_len
     layout.template_list("OBJECT_UL_modifier_list", "", ob, "modifiers",
                             ob, "modifier_active_index", rows=num_of_rows)
 
