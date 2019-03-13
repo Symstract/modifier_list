@@ -12,18 +12,18 @@ from .. import bl_info
 class Preferences(AddonPreferences):
     bl_idname = bl_info["name"]
 
-    modifier_01: StringProperty()
-    modifier_02: StringProperty()
-    modifier_03: StringProperty()
-    modifier_04: StringProperty()
-    modifier_05: StringProperty()
-    modifier_06: StringProperty()
-    modifier_07: StringProperty()
-    modifier_08: StringProperty()
-    modifier_09: StringProperty()
-    modifier_10: StringProperty()
-    modifier_11: StringProperty()
-    modifier_12: StringProperty()
+    modifier_01: StringProperty(description="Add a favourite modifier")
+    modifier_02: StringProperty(description="Add a favourite modifier")
+    modifier_03: StringProperty(description="Add a favourite modifier")
+    modifier_04: StringProperty(description="Add a favourite modifier")
+    modifier_05: StringProperty(description="Add a favourite modifier")
+    modifier_06: StringProperty(description="Add a favourite modifier")
+    modifier_07: StringProperty(description="Add a favourite modifier")
+    modifier_08: StringProperty(description="Add a favourite modifier")
+    modifier_09: StringProperty(description="Add a favourite modifier")
+    modifier_10: StringProperty(description="Add a favourite modifier")
+    modifier_11: StringProperty(description="Add a favourite modifier")
+    modifier_12: StringProperty(description="Add a favourite modifier")
 
     mod_list_def_len: IntProperty(name="",
                                   description="Default/min number of rows to display in the modifier list in popup",
