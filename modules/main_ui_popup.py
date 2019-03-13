@@ -14,7 +14,7 @@ overall_width = panel_width + tabs_width
 
 class VIEW_3D_PT_modifier_popup(Operator):
     bl_idname = "view3d.modifier_popup"
-    bl_label = "Modifier Pop-up Panel"
+    bl_label = "Modifier Popup Panel"
 
     def execute(self, context):
         return {'FINISHED'}
