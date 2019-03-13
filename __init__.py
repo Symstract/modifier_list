@@ -34,13 +34,19 @@ bl_info = {
 import bpy
 
 
+panel_order = (
+    "VIEW3D_PT_Modifiers",
+    "VIEW3D_PT_Vertex_groups",
+)
+
+
 addon_keymaps = []
 
 
 def register():
     from .addon_registration import register_bl_classes, call_register
 
-    register_bl_classes("modules", addon_name_for_counter=bl_info["name"])
+    register_bl_classes("modules", panel_order=panel_order, addon_name_for_counter=bl_info["name"])
 
     call_register("modules")
 

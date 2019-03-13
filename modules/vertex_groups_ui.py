@@ -5,45 +5,45 @@ from bl_ui.properties_data_mesh import (
 
 
 def vertex_groups_ui(context, layout):
-        # Copy-paste from Blender
+    # Copy-paste from Blender
 
-        ob = context.object
-        group = ob.vertex_groups.active
+    ob = context.object
+    group = ob.vertex_groups.active
 
-        rows = 7
-        # if group:
-        #     rows = 5
+    rows = 7
+    # if group:
+    #     rows = 5
 
-        row = layout.row()
-        row.template_list("MESH_UL_vgroups", "", ob, "vertex_groups", ob.vertex_groups, "active_index", rows=rows)
+    row = layout.row()
+    row.template_list("MESH_UL_vgroups", "", ob, "vertex_groups", ob.vertex_groups, "active_index", rows=rows)
 
-        col = row.column(align=True)
+    col = row.column(align=True)
 
-        col.operator("object.vertex_group_add", icon='ADD', text="")
-        props = col.operator("object.vertex_group_remove", icon='REMOVE', text="")
-        props.all_unlocked = props.all = False
+    col.operator("object.vertex_group_add", icon='ADD', text="")
+    props = col.operator("object.vertex_group_remove", icon='REMOVE', text="")
+    props.all_unlocked = props.all = False
 
+    col.separator()
+
+    col.menu("MESH_MT_vertex_group_specials", icon='DOWNARROW_HLT', text="")
+
+    if group:
         col.separator()
+        col.operator("object.vertex_group_move", icon='TRIA_UP', text="").direction = 'UP'
+        col.operator("object.vertex_group_move", icon='TRIA_DOWN', text="").direction = 'DOWN'
 
-        col.menu("MESH_MT_vertex_group_specials", icon='DOWNARROW_HLT', text="")
+    if ob.vertex_groups and (ob.mode == 'EDIT' or (ob.mode == 'WEIGHT_PAINT' and ob.type == 'MESH' and ob.data.use_paint_mask_vertex)):
+        row = layout.row()
 
-        if group:
-            col.separator()
-            col.operator("object.vertex_group_move", icon='TRIA_UP', text="").direction = 'UP'
-            col.operator("object.vertex_group_move", icon='TRIA_DOWN', text="").direction = 'DOWN'
+        sub = row.row(align=True)
+        sub.operator("object.vertex_group_assign", text="Assign")
+        sub.operator("object.vertex_group_remove_from", text="Remove")
 
-        if ob.vertex_groups and (ob.mode == 'EDIT' or (ob.mode == 'WEIGHT_PAINT' and ob.type == 'MESH' and ob.data.use_paint_mask_vertex)):
-            row = layout.row()
+        sub = row.row(align=True)
+        sub.operator("object.vertex_group_select", text="Select")
+        sub.operator("object.vertex_group_deselect", text="Deselect")
 
-            sub = row.row(align=True)
-            sub.operator("object.vertex_group_assign", text="Assign")
-            sub.operator("object.vertex_group_remove_from", text="Remove")
-
-            sub = row.row(align=True)
-            sub.operator("object.vertex_group_select", text="Select")
-            sub.operator("object.vertex_group_deselect", text="Deselect")
-
-            layout.prop(context.tool_settings, "vertex_group_weight", text="Weight")
+        layout.prop(context.tool_settings, "vertex_group_weight", text="Weight")
 
 
 
