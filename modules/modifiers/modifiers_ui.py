@@ -387,7 +387,7 @@ def modifiers_ui(context, layout, num_of_rows=False):
             row = col.split(factor=0.5, align=True)
 
             if name is not None:
-                add_modifer = row.operator("object.mpp_modifier_add", text=name,
+                row.operator("object.mpp_modifier_add", text=name,
                                             icon=icon).modifier_type = mod
             else:
                 row.label(text="")
