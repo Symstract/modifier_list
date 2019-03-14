@@ -27,7 +27,7 @@ class Preferences(AddonPreferences):
     modifier_12: StringProperty(description="Add a favourite modifier")
 
     mod_list_def_len: IntProperty(name="",
-                                  description="Default/min number of rows to display in the modifier list in popup",
+                                  description="Default/min number of rows to display in the modifier list in the popup",
                                   default=7)
 
     def draw(self, context):
@@ -40,7 +40,7 @@ class Preferences(AddonPreferences):
         layout.separator()
 
         # === Favourite modifiers selection ===
-        layout.label(text="Favourite modifiers:")
+        layout.label(text="Favourite Modifiers:")
 
         col = layout.column(align=True)
 
@@ -60,11 +60,9 @@ class Preferences(AddonPreferences):
         layout.separator()
 
         # === Number of rows in the modifier list ===
-        layout.label(text="Default/min number of rows to display in the modifier list in popup:")
-
         row = layout.row()
-        split = row.split(factor=0.5)
-        split.prop(self, "mod_list_def_len")
+        row.label(text="Modifier List Default/Min Height in Popup")
+        row.prop(self, "mod_list_def_len")
 
         layout.separator()
 
