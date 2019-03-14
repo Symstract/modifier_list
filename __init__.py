@@ -23,8 +23,8 @@ bl_info = {
     "author": "Antti Tikka",
     "version": (1, 1, 0),
     "blender": (2, 80, 0),
-    "location": "View 3D -> Alt + Spacebar",
-    "description": "A handy popup panel for showing modifiers in 3D view",
+    "location": "View3D > Alt + Spacebar & View3D > Sidebar",
+    "description": "Popup + Sidebar tab for showing modifiers in the viewport",
     "warning": "1.1 development version",
     "wiki_url": "https://github.com/Symstract/Modifier-Popup-Panel/tree/2.8",
     "category": "3D View"
