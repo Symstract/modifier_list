@@ -1,3 +1,4 @@
+import bpy
 from bpy.types import Panel
 
 from .modifiers.modifiers_ui import modifiers_ui
@@ -9,6 +10,13 @@ class BasePanel:
     bl_region_type = 'UI'
     bl_category = "Modifier List"
 
+    @classmethod
+    def use_sidebar(cls):
+        prefs = bpy.context.preferences.addons["Modifier List"].preferences
+        use_sidebar = prefs.use_sidebar
+        return use_sidebar
+
+
 
 class VIEW3D_PT_Modifiers(Panel, BasePanel):
     bl_idname = "view3d.ml_modifiers"
@@ -16,6 +24,8 @@ class VIEW3D_PT_Modifiers(Panel, BasePanel):
 
     @classmethod
     def poll(cls, context):
+        if not cls.use_sidebar():
+            return False
         if context.object is not None:
             return context.object.type in {'MESH', 'CURVE', 'SURFACE', 'FONT', 'LATTICE'}
         return False
@@ -32,6 +42,8 @@ class VIEW3D_PT_Vertex_groups(Panel, BasePanel):
 
     @classmethod
     def poll(cls, context):
+        if not cls.use_sidebar():
+            return False
         if context.object is not None:
             return context.object.type in {'MESH', 'LATTICE'}
         return False

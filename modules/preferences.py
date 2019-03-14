@@ -10,6 +10,9 @@ import rna_keymap_ui
 class Preferences(AddonPreferences):
     bl_idname = "Modifier List"
 
+    use_sidebar: BoolProperty(name="Sidebar Tab", description="Enable/disable sidebar tab",
+                              default=True)
+
     modifier_01: StringProperty(description="Add a favourite modifier")
     modifier_02: StringProperty(description="Add a favourite modifier")
     modifier_03: StringProperty(description="Add a favourite modifier")
@@ -29,6 +32,12 @@ class Preferences(AddonPreferences):
 
     def draw(self, context):
         layout = self.layout
+
+        # === Enable/disable popup and sidebar
+        row = layout.row()
+        row.prop(self, "use_sidebar")
+
+        layout.separator()
 
         # === Favourite modifiers selection ===
         layout.label(text="Favourite modifiers:")
