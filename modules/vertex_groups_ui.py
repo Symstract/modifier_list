@@ -4,18 +4,14 @@ from bl_ui.properties_data_mesh import (
 )
 
 
-def vertex_groups_ui(context, layout):
+def vertex_groups_ui(context, layout, num_of_rows=5):
     # Copy-paste from Blender
 
     ob = context.object
     group = ob.vertex_groups.active
 
-    rows = 7
-    # if group:
-    #     rows = 5
-
     row = layout.row()
-    row.template_list("MESH_UL_vgroups", "", ob, "vertex_groups", ob.vertex_groups, "active_index", rows=rows)
+    row.template_list("MESH_UL_vgroups", "", ob, "vertex_groups", ob.vertex_groups, "active_index", rows=num_of_rows)
 
     col = row.column(align=True)
 

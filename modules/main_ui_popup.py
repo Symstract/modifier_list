@@ -47,7 +47,7 @@ class VIEW_3D_PT_modifier_popup(Operator):
                 num_of_rows = prefs.mod_list_def_len
                 modifiers_ui(context, col, num_of_rows=num_of_rows)
             elif popup_tab == 'OBJECT_DATA':
-                vertex_groups_ui(context, col)
+                vertex_groups_ui(context, col, num_of_rows=7)
 
             # === Tabs ===
             col = split.column(align=True)
