@@ -7,11 +7,11 @@ from .vertex_groups_ui import vertex_groups_ui
 class BasePanel:
     bl_space_type = 'VIEW_3D'
     bl_region_type = 'UI'
-    bl_category = 'MPP'
+    bl_category = "Modifier List"
 
 
 class VIEW3D_PT_Modifiers(Panel, BasePanel):
-    bl_idname = "view3d.modifiers"
+    bl_idname = "view3d.ml_modifiers"
     bl_label = "Modifiers"
 
     @classmethod
@@ -26,7 +26,7 @@ class VIEW3D_PT_Modifiers(Panel, BasePanel):
 
 
 class VIEW3D_PT_Vertex_groups(Panel, BasePanel):
-    bl_idname = "view3d.vertex_groups"
+    bl_idname = "view3d.ml_vertex_groups"
     bl_label = "Vertex Groups"
     bl_options = {'DEFAULT_CLOSED'}
 

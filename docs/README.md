@@ -1,4 +1,5 @@
-# Modifier Popup Panel
+# Modifier List
+*(previously called Modifier Popup Panel)*
 
 ![](panel.png)
 

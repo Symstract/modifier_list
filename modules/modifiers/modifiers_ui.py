@@ -13,7 +13,6 @@ from bpy.types import (
     UIList
 )
 
-from ... import bl_info
 from .. import icons
 
 
@@ -22,7 +21,7 @@ from .. import icons
 
 def get_pref_mod_attr_value():
     """List of the names of favourite modifiers"""
-    prefs = bpy.context.preferences.addons[bl_info["name"]].preferences
+    prefs = bpy.context.preferences.addons["Modifier List"].preferences
     # get correct class attributes and then their values
     attr_list = [attr for attr in dir(prefs) if "modifier_" in attr]
     attr_value_list = [getattr(prefs, attr) for attr in attr_list]
@@ -190,9 +189,9 @@ def add_modifier(self, context):
     bpy.ops.ed.undo_push(message="Add Modifier")
 
 
-class OBJECT_MT_mpp_add_modifier_menu(Menu):
+class OBJECT_MT_ml_add_modifier_menu(Menu):
     bl_label = "Add Modifier"
-    bl_idname = "OBJECT_MT_mpp_add_modifier_menu"
+    bl_idname = "OBJECT_MT_ml_add_modifier_menu"
     bl_description = "Add a procedural operation/effect to the active object"
 
     def draw(self, context):
@@ -205,25 +204,25 @@ class OBJECT_MT_mpp_add_modifier_menu(Menu):
         col.label(text="Modify")
         col.separator(factor=0.3)
         for name, icon, mod in all_name_icon_type()[0:10]:
-            col.operator("object.mpp_modifier_add", text=name, icon=icon).modifier_type = mod
+            col.operator("object.ml_modifier_add", text=name, icon=icon).modifier_type = mod
 
         col = row.column()
         col.label(text="Generate")
         col.separator(factor=0.3)
         for name, icon, mod in all_name_icon_type()[10:26]:
-            col.operator("object.mpp_modifier_add", text=name, icon=icon).modifier_type = mod
+            col.operator("object.ml_modifier_add", text=name, icon=icon).modifier_type = mod
 
         col = row.column()
         col.label(text="Deform")
         col.separator(factor=0.3)
         for name, icon, mod in all_name_icon_type()[26:42]:
-            col.operator("object.mpp_modifier_add", text=name, icon=icon).modifier_type = mod
+            col.operator("object.ml_modifier_add", text=name, icon=icon).modifier_type = mod
 
         col = row.column()
         col.label(text="Simulate")
         col.separator(factor=0.3)
         for name, icon, mod in all_name_icon_type()[42:52]:
-            col.operator("object.mpp_modifier_add", text=name, icon=icon).modifier_type = mod
+            col.operator("object.ml_modifier_add", text=name, icon=icon).modifier_type = mod
 
 
 class OBJECT_UL_modifier_list(UIList):
@@ -283,32 +282,32 @@ class ModifierListActions:
         return {'FINISHED'}
 
 
-class OBJECT_OT_mpp_modifier_move_up(Operator, ModifierListActions):
-    bl_idname = "object.mpp_modifier_move_up"
+class OBJECT_OT_ml_modifier_move_up(Operator, ModifierListActions):
+    bl_idname = "object.ml_modifier_move_up"
     bl_label = "Move modifier up"
     bl_description = "Move modifier up in the stack"
 
     action = 'UP'
 
 
-class OBJECT_OT_mpp_modifier_move_down(Operator, ModifierListActions):
-    bl_idname = "object.mpp_modifier_move_down"
+class OBJECT_OT_ml_modifier_move_down(Operator, ModifierListActions):
+    bl_idname = "object.ml_modifier_move_down"
     bl_label = "Move modifier down"
     bl_description = "Move modifier down in the stack"
 
     action = 'DOWN'
 
 
-class OBJECT_OT_mpp_modifier_remove(Operator, ModifierListActions):
-    bl_idname = "object.mpp_modifier_remove"
+class OBJECT_OT_ml_modifier_remove(Operator, ModifierListActions):
+    bl_idname = "object.ml_modifier_remove"
     bl_label = "Remove Modifier"
     bl_description = "Remove modifier from the active object"
 
     action = 'REMOVE'
 
 
-class OBJECT_OT_mpp_modifier_add(Operator):
-    bl_idname = "object.mpp_modifier_add"
+class OBJECT_OT_ml_modifier_add(Operator):
+    bl_idname = "object.ml_modifier_add"
     bl_label = "Add Modifier"
     bl_description = "Add a procedural operation/effect to the active object"
     bl_options = {'REGISTER', 'INTERNAL', 'UNDO'}
@@ -328,8 +327,8 @@ class OBJECT_OT_mpp_modifier_add(Operator):
 
 
 
-class OBJECT_OT_mpp_modifier_apply(Operator):
-    bl_idname = "object.mpp_modifier_apply"
+class OBJECT_OT_ml_modifier_apply(Operator):
+    bl_idname = "object.ml_modifier_apply"
     bl_label = "Apply Modifier"
     bl_description = "Apply modifier and remove from the stack"
     bl_options = {'REGISTER', 'INTERNAL', 'UNDO'}
@@ -367,8 +366,8 @@ class OBJECT_OT_mpp_modifier_apply(Operator):
         return {'FINISHED'}
 
 
-class OBJECT_OT_mpp_modifier_copy(Operator):
-    bl_idname = "object.mpp_modifier_copy"
+class OBJECT_OT_ml_modifier_copy(Operator):
+    bl_idname = "object.ml_modifier_copy"
     bl_label = "Copy Modifier"
     bl_description = "Duplicate modifier at the same position in the stack"
     bl_options = {'REGISTER', 'INTERNAL', 'UNDO'}
@@ -404,13 +403,13 @@ def modifiers_ui(context, layout, num_of_rows=False):
             row = col.split(factor=0.5, align=True)
 
             if name is not None:
-                row.operator("object.mpp_modifier_add", text=name,
+                row.operator("object.ml_modifier_add", text=name,
                                             icon=icon).modifier_type = mod
             else:
                 row.label(text="")
 
             if next_mod[0] is not None:
-                row.operator("object.mpp_modifier_add", text=next_mod[0],
+                row.operator("object.ml_modifier_add", text=next_mod[0],
                                 icon=next_mod[1]).modifier_type = next_mod[2]
             else:
                 row.label(text="")
@@ -420,7 +419,7 @@ def modifiers_ui(context, layout, num_of_rows=False):
     row = col.split(factor=0.59)
     wm = bpy.context.window_manager
     row.prop_search(wm, "mod_to_add", wm, "all_modifiers", text="", icon='MODIFIER')
-    row.menu("OBJECT_MT_mpp_add_modifier_menu")
+    row.menu("OBJECT_MT_ml_add_modifier_menu")
 
     # === Modifier list ===
     ob = context.object
@@ -455,9 +454,9 @@ def modifiers_ui(context, layout, num_of_rows=False):
     # buttons to get tiny. 2.8 Bug?
     sub.scale_x = 1.5
     sub.alignment = 'RIGHT'
-    sub.operator(OBJECT_OT_mpp_modifier_move_up.bl_idname, icon='TRIA_UP', text="")
-    sub.operator(OBJECT_OT_mpp_modifier_move_down.bl_idname, icon='TRIA_DOWN', text="")
-    sub.operator(OBJECT_OT_mpp_modifier_remove.bl_idname, icon='REMOVE', text="")
+    sub.operator(OBJECT_OT_ml_modifier_move_up.bl_idname, icon='TRIA_UP', text="")
+    sub.operator(OBJECT_OT_ml_modifier_move_down.bl_idname, icon='TRIA_DOWN', text="")
+    sub.operator(OBJECT_OT_ml_modifier_remove.bl_idname, icon='REMOVE', text="")
 
     # === Modifier settings ===
     ob = context.object
@@ -490,7 +489,7 @@ def modifiers_ui(context, layout, num_of_rows=False):
             mod_show_editmode_and_cage(active_mod, sub, scale_x=1.1)
 
             row = box.row()
-            row.operator("object.mpp_modifier_apply",
+            row.operator("object.ml_modifier_apply",
                             text="Apply").modifier = active_mod.name
 
             sub = row.row()
@@ -502,7 +501,7 @@ def modifiers_ui(context, layout, num_of_rows=False):
             other_shape_key_mods = {'CLOTH', 'SOFT_BODY', 'MESH_CACHE'}
             has_shape_key = deform_mods.union(other_shape_key_mods)
             if active_mod.type in has_shape_key:
-                apply_as_shape_key = sub.operator("object.mpp_modifier_apply",
+                apply_as_shape_key = sub.operator("object.ml_modifier_apply",
                                                     text="Apply as Shape Key")
                 apply_as_shape_key.modifier=active_mod.name
                 apply_as_shape_key.apply_as='SHAPE'
@@ -512,7 +511,7 @@ def modifiers_ui(context, layout, num_of_rows=False):
                 'PARTICLE_SYSTEM', 'SMOKE', 'SOFT_BODY'
             }
             if active_mod.type not in has_no_copy:
-                row.operator("object.mpp_modifier_copy",
+                row.operator("object.ml_modifier_copy",
                                 text="Copy").modifier = active_mod.name
 
             # === Modifier specific settings ===

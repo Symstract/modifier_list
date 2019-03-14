@@ -6,11 +6,9 @@ from bpy.props import *
 from bpy.types import AddonPreferences
 import rna_keymap_ui
 
-from .. import bl_info
-
 
 class Preferences(AddonPreferences):
-    bl_idname = bl_info["name"]
+    bl_idname = "Modifier List"
 
     modifier_01: StringProperty(description="Add a favourite modifier")
     modifier_02: StringProperty(description="Add a favourite modifier")

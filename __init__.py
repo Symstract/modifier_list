@@ -19,7 +19,7 @@
 
 
 bl_info = {
-    "name": "Modifier Popup Panel",
+    "name": "Modifier List",
     "author": "Antti Tikka",
     "version": (1, 1, 0),
     "blender": (2, 80, 0),

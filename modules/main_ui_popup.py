@@ -4,7 +4,6 @@ from bpy.types import Operator
 
 from .modifiers.modifiers_ui import modifiers_ui
 from .vertex_groups_ui import vertex_groups_ui
-from .. import bl_info
 
 
 panel_width = 300
@@ -44,7 +43,7 @@ class VIEW_3D_PT_modifier_popup(Operator):
             popup_tab = wm.popup_active_tab
 
             if popup_tab == 'MODIFIERS':
-                prefs = bpy.context.preferences.addons[bl_info["name"]].preferences
+                prefs = bpy.context.preferences.addons["Modifier List"].preferences
                 num_of_rows = prefs.mod_list_def_len
                 modifiers_ui(context, col, num_of_rows=num_of_rows)
             elif popup_tab == 'OBJECT_DATA':
