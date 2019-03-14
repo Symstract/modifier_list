@@ -108,6 +108,11 @@ def mod_show_editmode_and_cage(modifier, layout, scale_x=1.0, use_in_list=False)
         icon = show_in_editmode_on.icon_id if modifier.show_in_editmode else show_in_editmode_off.icon_id
         sub.prop(modifier, "show_in_editmode", text="", icon_value=icon,
                  emboss=not use_in_list)
+    else:
+        # Make icons align nicely
+        empy_icon = pcoll['EMPTY_SPACE']
+        sub.label(text="", translate=False, icon_value=empy_icon.icon_id)
+
 
     # === show_on_cage ===
     if modifier.type in has_show_on_cage:
@@ -149,7 +154,14 @@ def mod_show_editmode_and_cage(modifier, layout, scale_x=1.0, use_in_list=False)
                     show_on_cage_on = pcoll['SHOW_ON_CAGE_ON_INACTIVE_BUTTON']
             icon = show_on_cage_on.icon_id if modifier.show_on_cage else show_on_cage_off.icon_id
             sub.prop(modifier, "show_on_cage", text="", icon_value=icon, emboss=not use_in_list)
-
+        else:
+            # Make icons align nicely
+            empy_icon = pcoll['EMPTY_SPACE']
+            sub.label(text="", translate=False, icon_value=empy_icon.icon_id)
+    else:
+        # Make icons align nicely
+        empy_icon = pcoll['EMPTY_SPACE']
+        sub.label(text="", translate=False, icon_value=empy_icon.icon_id)
 
 # Modifier list and operator classes etc.
 #=======================================================================
@@ -221,19 +233,17 @@ class OBJECT_UL_modifier_list(UIList):
 
         if self.layout_type in {'DEFAULT', 'COMPACT'}:
             if mod:
-                col = layout.column()
-                row = col.split(factor=0.70)
-                sub = row.row(align=True)
-                sub.label(text="", translate=False, icon_value=layout.icon(mod))
-                sub.prop(mod, "name", text="", emboss=False, icon_value=icon)
+                layout.label(text="", translate=False, icon_value=layout.icon(mod))
+                layout.prop(mod, "name", text="", emboss=False, icon_value=icon)
 
                 # Hide visibility toggles for collision modifier as they are not used
                 # in the regular UI either (apparently can cause problems in some scenes).
                 if mod.type != 'COLLISION':
-                    sub = row.row(align=True)
-                    sub.prop(mod, "show_render", text="", emboss=False)
-                    sub.prop(mod, "show_viewport", text="", emboss=False)
-                    mod_show_editmode_and_cage(mod, sub, use_in_list=True)
+                    row = layout.row(align=True)
+                    row.alignment = 'RIGHT'
+                    row.prop(mod, "show_render", text="", emboss=False)
+                    row.prop(mod, "show_viewport", text="", emboss=False)
+                    mod_show_editmode_and_cage(mod, row, use_in_list=True)
             else:
                 layout.label(text="", translate=False, icon_value=icon)
 
