@@ -1,6 +1,6 @@
 from bl_ui.properties_data_mesh import (
     MESH_UL_vgroups,
-    MESH_MT_vertex_group_specials
+    MESH_MT_vertex_group_context_menu
 )
 
 
@@ -21,7 +21,7 @@ def vertex_groups_ui(context, layout, num_of_rows=5):
 
     col.separator()
 
-    col.menu("MESH_MT_vertex_group_specials", icon='DOWNARROW_HLT', text="")
+    col.menu("MESH_MT_vertex_group_context_menu", icon='DOWNARROW_HLT', text="")
 
     if group:
         col.separator()
