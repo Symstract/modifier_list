@@ -58,7 +58,6 @@ def register():
     if wm.keyconfigs.addon:
         km = wm.keyconfigs.addon.keymaps.new(name='3D View', space_type='VIEW_3D')
         kmi = km.keymap_items.new(main_ui_popup.VIEW_3D_PT_modifier_popup.bl_idname, 'SPACE', 'PRESS', alt=True)
-        kmi.active = True
         addon_keymaps.append((km, kmi))
 
 

@@ -10,6 +10,9 @@ import rna_keymap_ui
 class Preferences(AddonPreferences):
     bl_idname = "Modifier List"
 
+    use_popup: BoolProperty(name="Popup", description="Enable/disable popup",
+                              default=True)
+
     use_sidebar: BoolProperty(name="Sidebar Tab", description="Enable/disable sidebar tab",
                               default=True)
 
@@ -35,6 +38,16 @@ class Preferences(AddonPreferences):
 
         # === Enable/disable popup and sidebar
         row = layout.row()
+
+        # Disabled for now because of a bug in 2.8.
+        # https://developer.blender.org/T60766
+        # row.prop(self, "use_popup")
+
+        # wm = bpy.context.window_manager
+        # km = wm.keyconfigs.addon.keymaps['3D View']
+        # kmi = km.keymap_items["view3d.modifier_popup"]
+        # kmi.active = self.use_popup
+
         row.prop(self, "use_sidebar")
 
         layout.separator()
