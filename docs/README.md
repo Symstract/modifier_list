@@ -1,20 +1,26 @@
 # Modifier List
 *(previously called Modifier Popup Panel)*
 
-![](panel.png)
+### Popup + Sidebar tab for showing modifiers in the viewport
+
+![](popup.png)
+
+![](sidebar.png)
 
 ## Features
 
-- **List view of modifiers.** Default list size can be set in addon preferences.
+- **List view of modifiers.** Popup's default list size can be set in addon preferences.
 - **Modifier search**
 - **Modifier menu**
 - **Favourite modifiers** which can be set in addon preferences
 - **Ability to apply modifiers in edit mode (kind of).** The apply operator acts as a macro when used in edit mode and automatically switches to object mode, applies the modifier and switches back to edit mode.
 - **Modifier batch operators from built-in Modifier Tools add-on** (when that addon is enabled)
+- **Vertex group list**
+- **Option for disabling sidebar tab.** (Option for popup will be added later.)
 
-## Hotkey
+## Popup Hotkey
 
-Default hotkey is **space**. That's not free by default, but you can easily set your own hotkey in addon preferences.
+Default hotkey is **alt + space**. In the keymap editor, you can find it under 3D View > 3D View (Global) > Modifier Popup Panel.
 
 ## Installation
 
@@ -25,12 +31,13 @@ Default hotkey is **space**. That's not free by default, but you can easily set 
 5. (Optional) Search for Modifier Tools add-on and enable it to get modifier batch operators under the modifier list
 6. Save user preferences
 
-## Future ideas
+## Future Ideas
 
-- Add tabs and add useful modifier related tools inside them?
 - Make radial arrays easier to create and edit
+- One click way to add control empty for any modifier
 
-## Known issues and restrictions
+## Known Issues and Limitations
 
-- List doesn't remember it's size when it's resized. Popups are not really ment for this kind of stuff, so that's a restriction of Blender.
+- In the popup, lists don't remember their sizes when they are resized. Popups are not really ment for this kind of stuff, so that's a limitation of Blender.
 - Modifier search and modifier menu always display all modifiers, even when all of them are not applicable to the type of the active object. Maybe I will change that in a future release.
+- Using the popup, picking an object from viewport is not possible. A limitation of popups. Hopefully that could be possible at some point because that applies also to the driver editor popup. We’ll see.
