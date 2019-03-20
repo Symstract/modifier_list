@@ -3,6 +3,14 @@
 
 ### Popup + Sidebar tab for showing modifiers in the viewport
 
+[Download the latest release from here](https://github.com/Symstract/Modifier-List/releases)
+
+[Changelog](/CHANGELOG.md)
+
+[Blender Artists Thread](https://blenderartists.org/t/modifier-popup-panel-list-view-search-favourites/1147752)
+
+---
+
 ![](popup.png)
 
 ![](sidebar.png)
