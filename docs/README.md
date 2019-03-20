@@ -3,6 +3,8 @@
 
 ### Popup + Sidebar tab for showing modifiers in the viewport
 
+---
+
 [Download the latest release from here](https://github.com/Symstract/Modifier-List/releases)
 
 [Changelog](/CHANGELOG.md)
