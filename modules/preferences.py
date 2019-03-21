@@ -8,7 +8,7 @@ import rna_keymap_ui
 
 
 class Preferences(AddonPreferences):
-    bl_idname = "Modifier List"
+    bl_idname = "modifier_list"
 
     use_popup: BoolProperty(name="Popup", description="Enable/disable popup",
                               default=True)

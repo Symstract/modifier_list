@@ -21,7 +21,7 @@ from .. import icons
 
 def get_pref_mod_attr_value():
     """List of the names of favourite modifiers"""
-    prefs = bpy.context.preferences.addons["Modifier List"].preferences
+    prefs = bpy.context.preferences.addons["modifier_list"].preferences
     # get correct class attributes and then their values
     attr_list = [attr for attr in dir(prefs) if "modifier_" in attr]
     attr_value_list = [getattr(prefs, attr) for attr in attr_list]
