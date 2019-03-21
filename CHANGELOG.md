@@ -1,6 +1,6 @@
 # Changelog
 
-## 1.1 - Unreleased
+## 1.1 - 21.3.2019
 
 Only Blender 2.8 is supported from now on. Also, the name is changed from Modifier Popup Panel to Modifier List since this addon now also has a tab in  the sidebar. Because of that, when you install this new version, you need to remove the old version and add your favourite modifiers again.
 
