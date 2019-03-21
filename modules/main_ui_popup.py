@@ -43,7 +43,7 @@ class VIEW_3D_PT_modifier_popup(Operator):
             popup_tab = wm.popup_active_tab
 
             if popup_tab == 'MODIFIERS':
-                prefs = bpy.context.preferences.addons["Modifier List"].preferences
+                prefs = bpy.context.preferences.addons["modifier_list"].preferences
                 num_of_rows = prefs.mod_list_def_len
                 modifiers_ui(context, col, num_of_rows=num_of_rows)
             elif popup_tab == 'OBJECT_DATA':

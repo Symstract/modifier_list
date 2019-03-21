@@ -12,7 +12,7 @@ class BasePanel:
 
     @classmethod
     def use_sidebar(cls):
-        prefs = bpy.context.preferences.addons["Modifier List"].preferences
+        prefs = bpy.context.preferences.addons["modifier_list"].preferences
         use_sidebar = prefs.use_sidebar
         return use_sidebar
 
