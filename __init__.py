@@ -21,7 +21,7 @@
 bl_info = {
     "name": "Modifier List",
     "author": "Antti Tikka",
-    "version": (1, 1, 0),
+    "version": (1, 2, 0),
     "blender": (2, 80, 0),
     "location": "View3D > Alt + Spacebar & View3D > Sidebar",
     "description": "Popup + Sidebar tab for showing modifiers in the viewport",
