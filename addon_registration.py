@@ -35,7 +35,7 @@ def _find_modules(root_dir):
         for f in files:
             if f.endswith(".py") and "__" not in f:
                 joined = os.path.join(relative_root, f[:-3])
-                modules.add(joined.replace("\\", "."))
+                modules.add(joined.replace(os.path.sep, "."))
 
     return modules
 
@@ -103,7 +103,7 @@ def _find_bl_classes(modules):
     for mod in modules:
         full_module_path = mod.__file__
         module_path_from_cur_dir = full_module_path.replace(cur_dir_path, cur_dir_basename)
-        formatted_module_path = module_path_from_cur_dir.replace("\\", ".")[:-3]
+        formatted_module_path = module_path_from_cur_dir.replace(os.path.sep, ".")[:-3]
 
         classmembers = [m[1] for m in inspect.getmembers(mod, inspect.isclass)
                         if m[1].__module__ == formatted_module_path]
