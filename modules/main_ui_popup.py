@@ -19,6 +19,11 @@ class VIEW_3D_PT_modifier_popup(Operator):
         return {'FINISHED'}
 
     def invoke(self, context, event):
+        prefs = bpy.context.preferences.addons["modifier_list"].preferences
+
+        if prefs.use_props_dialog:
+            return context.window_manager.invoke_props_dialog(self, width=overall_width)
+
         return context.window_manager.invoke_popup(self, width=overall_width)
 
     def check(self, context):

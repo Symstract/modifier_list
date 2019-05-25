@@ -33,6 +33,9 @@ class Preferences(AddonPreferences):
                                   description="Default/min number of rows to display in the modifier list in the popup",
                                   default=7)
 
+    use_props_dialog: BoolProperty(name="Use Dialog Type Popup",
+        description="Use a dialog type popup which doesn't close when you are not hovering over it")
+
     def draw(self, context):
         layout = self.layout
 
@@ -72,10 +75,13 @@ class Preferences(AddonPreferences):
 
         layout.separator()
 
-        # === Number of rows in the modifier list ===
+        # === Popup settings ===
         row = layout.row()
         row.label(text="Modifier List Default/Min Height in Popup")
         row.prop(self, "mod_list_def_len")
+
+        row = layout.row()
+        row.prop(self, "use_props_dialog")
 
         layout.separator()
 
