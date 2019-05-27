@@ -11,7 +11,7 @@ tabs_width = 26
 overall_width = panel_width + tabs_width
 
 
-class VIEW_3D_PT_modifier_popup(Operator):
+class VIEW3D_OT_ml_modifier_popup(Operator):
     bl_idname = "view3d.modifier_popup"
     bl_label = "Modifier Popup Panel"
     bl_options = {'INTERNAL'}
