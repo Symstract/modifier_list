@@ -19,7 +19,6 @@ class BasePanel:
 
 
 class VIEW3D_PT_Modifiers(Panel, BasePanel):
-    bl_idname = "view3d.ml_modifiers"
     bl_label = "Modifiers"
 
     @classmethod
@@ -36,7 +35,6 @@ class VIEW3D_PT_Modifiers(Panel, BasePanel):
 
 
 class VIEW3D_PT_Vertex_groups(Panel, BasePanel):
-    bl_idname = "view3d.ml_vertex_groups"
     bl_label = "Vertex Groups"
     bl_options = {'DEFAULT_CLOSED'}
 
