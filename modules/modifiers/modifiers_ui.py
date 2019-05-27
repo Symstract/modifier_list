@@ -190,7 +190,6 @@ def add_modifier(self, context):
 
 class OBJECT_MT_ml_add_modifier_menu(Menu):
     bl_label = "Add Modifier"
-    bl_idname = "OBJECT_MT_ml_add_modifier_menu"
     bl_description = "Add a procedural operation/effect to the active object"
 
     def draw(self, context):
