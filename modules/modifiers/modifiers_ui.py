@@ -1,9 +1,9 @@
 import math
 import numpy as np
 
+import bpy
 import addon_utils
 from bl_ui.properties_data_modifier import DATA_PT_modifiers
-import bpy
 from bpy.app.handlers import persistent
 from bpy.props import *
 from bpy.types import (

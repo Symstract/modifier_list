@@ -1,10 +1,10 @@
 import math
 
-import addon_utils
 import bpy
+import addon_utils
+import rna_keymap_ui
 from bpy.props import *
 from bpy.types import AddonPreferences
-import rna_keymap_ui
 
 
 class Preferences(AddonPreferences):

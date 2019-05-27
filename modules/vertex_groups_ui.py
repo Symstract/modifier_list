@@ -1,6 +1,6 @@
 from bl_ui.properties_data_mesh import (
-    MESH_UL_vgroups,
-    MESH_MT_vertex_group_context_menu
+    MESH_MT_vertex_group_context_menu,
+    MESH_UL_vgroups
 )
 
 
