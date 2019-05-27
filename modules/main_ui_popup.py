@@ -46,7 +46,7 @@ class VIEW3D_OT_ml_modifier_popup(Operator):
             # === Content ===
             col = split.column()
             wm = bpy.context.window_manager
-            popup_tab = wm.popup_active_tab
+            popup_tab = wm.ml_popup_active_tab
 
             if popup_tab == 'MODIFIERS':
                 prefs = bpy.context.preferences.addons["modifier_list"].preferences
@@ -58,7 +58,7 @@ class VIEW3D_OT_ml_modifier_popup(Operator):
             # === Tabs ===
             col = split.column(align=True)
             col.scale_y = 1.3
-            col.prop_tabs_enum(wm, "popup_active_tab", icon_only=True)
+            col.prop_tabs_enum(wm, "ml_popup_active_tab", icon_only=True)
 
 
 def register():
@@ -68,7 +68,7 @@ def register():
     ]
 
     wm = bpy.types.WindowManager
-    wm.popup_active_tab = EnumProperty(items=popup_tabs_items, name="Popup Tabs", default='MODIFIERS')
+    wm.ml_popup_active_tab = EnumProperty(items=popup_tabs_items, name="Popup Tabs", default='MODIFIERS')
 
 
 

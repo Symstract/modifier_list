@@ -173,15 +173,15 @@ class AllModifiersCollection(PropertyGroup):
 def add_modifier(self, context):
     # Add modifier
     wm = bpy.context.window_manager
-    mod_name = wm.mod_to_add
-    mod_type = wm.all_modifiers[mod_name].value
+    mod_name = wm.ml_mod_to_add
+    mod_type = wm.ml_all_modifiers[mod_name].value
     bpy.ops.object.modifier_add(type=mod_type)
 
     # Set correct active_mod index
     ob = context.object
     mods = ob.modifiers
     mods_len = len(mods) - 1
-    ob.modifier_active_index = mods_len
+    ob.ml_modifier_active_index = mods_len
 
     # Executing an operator via a function doesn't create an undo event,
     # so it needs to be added manually.
@@ -260,7 +260,7 @@ class ModifierListActions:
         ob = context.object
         mods = ob.modifiers
         mods_len = len(mods) - 1
-        active_mod_index = ob.modifier_active_index
+        active_mod_index = ob.ml_modifier_active_index
         active_mod_index_up = np.clip(active_mod_index - 1, 0, mods_len)
         active_mod_index_down = np.clip(active_mod_index + 1, 0, mods_len)
 
@@ -269,13 +269,13 @@ class ModifierListActions:
 
             if self.action == 'UP':
                 bpy.ops.object.modifier_move_up(modifier=active_mod_name)
-                ob.modifier_active_index = active_mod_index_up
+                ob.ml_modifier_active_index = active_mod_index_up
             elif self.action == 'DOWN':
                 bpy.ops.object.modifier_move_down(modifier=active_mod_name)
-                ob.modifier_active_index = active_mod_index_down
+                ob.ml_modifier_active_index = active_mod_index_down
             elif self.action == 'REMOVE':
                 bpy.ops.object.modifier_remove(modifier=active_mod_name)
-                ob.modifier_active_index = active_mod_index_up
+                ob.ml_modifier_active_index = active_mod_index_up
 
         return {'FINISHED'}
 
@@ -319,7 +319,7 @@ class OBJECT_OT_ml_modifier_add(Operator):
         ob = context.object
         mods = ob.modifiers
         mods_len = len(mods) - 1
-        ob.modifier_active_index = mods_len
+        ob.ml_modifier_active_index = mods_len
 
         return {'FINISHED'}
 
@@ -353,9 +353,9 @@ class OBJECT_OT_ml_modifier_apply(Operator):
         # Set correct active_mod index in case the applied modifier is
         # not the first in modifier stack.
         ob = context.object
-        current_active_mod_index = ob.modifier_active_index
+        current_active_mod_index = ob.ml_modifier_active_index
         new_active_mod_index = np.clip(current_active_mod_index - 1, 0, 99)
-        ob.modifier_active_index = new_active_mod_index
+        ob.ml_modifier_active_index = new_active_mod_index
 
         if current_active_mod_index != 0:
             self.report({'INFO'}, "Applied modifier was not first, result may not be as expected")
@@ -376,8 +376,8 @@ class OBJECT_OT_ml_modifier_copy(Operator):
 
         # Set correct active_mod index
         ob = context.object
-        active_index = ob.modifier_active_index
-        ob.modifier_active_index = active_index + 1
+        active_index = ob.ml_modifier_active_index
+        ob.ml_modifier_active_index = active_index + 1
 
         return {'FINISHED'}
 
@@ -413,14 +413,14 @@ def modifiers_ui(context, layout, num_of_rows=False):
     col = layout.column()
     row = col.split(factor=0.59)
     wm = bpy.context.window_manager
-    row.prop_search(wm, "mod_to_add", wm, "all_modifiers", text="", icon='MODIFIER')
+    row.prop_search(wm, "ml_mod_to_add", wm, "ml_all_modifiers", text="", icon='MODIFIER')
     row.menu("OBJECT_MT_ml_add_modifier_menu")
 
     # === Modifier list ===
     ob = context.object
 
     layout.template_list("OBJECT_UL_modifier_list", "", ob, "modifiers",
-                            ob, "modifier_active_index", rows=num_of_rows)
+                            ob, "ml_modifier_active_index", rows=num_of_rows)
 
     row = layout.row()
 
@@ -458,7 +458,7 @@ def modifiers_ui(context, layout, num_of_rows=False):
 
     if ob:
         if ob.modifiers:
-            active_mod_index = ob.modifier_active_index
+            active_mod_index = ob.ml_modifier_active_index
             active_mod = ob.modifiers[active_mod_index]
 
             active_mod_icon = [icon for name, icon, mod in all_name_icon_type()
@@ -525,7 +525,7 @@ def set_modifier_collection_items():
     """This is to be called on loading a new file or reloading addons
     to make modifiers available in search.
     """
-    all_modifiers = bpy.context.window_manager.all_modifiers
+    all_modifiers = bpy.context.window_manager.ml_all_modifiers
 
     if not all_modifiers:
         for name, icon, mod in all_name_icon_type():
@@ -541,15 +541,15 @@ def on_file_load(dummy):
 
 def register():
     # === Properties ===
-    bpy.types.Object.modifier_active_index = IntProperty()
+    bpy.types.Object.ml_modifier_active_index = IntProperty()
 
     # Use Window Manager for storing modifier search property
     # and modifier collection because it can be accessed on
     # registering and it's not scene specific.
     wm = bpy.types.WindowManager
-    wm.mod_to_add = StringProperty(name="Modifier to add", update=add_modifier,
+    wm.ml_mod_to_add = StringProperty(name="Modifier to add", update=add_modifier,
                                    description="Search for a modifier and add it to the stack")
-    wm.all_modifiers = CollectionProperty(type=AllModifiersCollection)
+    wm.ml_all_modifiers = CollectionProperty(type=AllModifiersCollection)
 
     bpy.app.handlers.load_post.append(on_file_load)
 
@@ -559,4 +559,4 @@ def register():
 def unregister():
     bpy.app.handlers.load_post.remove(on_file_load)
 
-    del bpy.types.Object.modifier_active_index
+    del bpy.types.Object.ml_modifier_active_index
