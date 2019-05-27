@@ -17,7 +17,6 @@ class BasePanel:
         return use_sidebar
 
 
-
 class VIEW3D_PT_Modifiers(Panel, BasePanel):
     bl_label = "Modifiers"
 

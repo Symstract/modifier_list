@@ -112,7 +112,6 @@ def mod_show_editmode_and_cage(modifier, layout, scale_x=1.0, use_in_list=False)
         empy_icon = pcoll['EMPTY_SPACE']
         sub.label(text="", translate=False, icon_value=empy_icon.icon_id)
 
-
     # === show_on_cage ===
     if modifier.type in has_show_on_cage:
         ob = bpy.context.object
@@ -162,9 +161,9 @@ def mod_show_editmode_and_cage(modifier, layout, scale_x=1.0, use_in_list=False)
         empy_icon = pcoll['EMPTY_SPACE']
         sub.label(text="", translate=False, icon_value=empy_icon.icon_id)
 
+
 # Modifier list and operator classes etc.
 #=======================================================================
-
 
 class AllModifiersCollection(PropertyGroup):
     # Collection Property for search
@@ -326,7 +325,6 @@ class OBJECT_OT_ml_modifier_add(Operator):
         return {'FINISHED'}
 
 
-
 class OBJECT_OT_ml_modifier_apply(Operator):
     bl_idname = "object.ml_modifier_apply"
     bl_label = "Apply Modifier"
@@ -388,7 +386,6 @@ class OBJECT_OT_ml_modifier_copy(Operator):
 # UI
 #=======================================================================
 
-
 def modifiers_ui(context, layout, num_of_rows=False):
     # === Favourite modifiers ===
     col = layout.column(align=True)
@@ -403,14 +400,13 @@ def modifiers_ui(context, layout, num_of_rows=False):
             row = col.split(factor=0.5, align=True)
 
             if name is not None:
-                row.operator("object.ml_modifier_add", text=name,
-                                            icon=icon).modifier_type = mod
+                row.operator("object.ml_modifier_add", text=name, icon=icon).modifier_type = mod
             else:
                 row.label(text="")
 
             if next_mod[0] is not None:
                 row.operator("object.ml_modifier_add", text=next_mod[0],
-                                icon=next_mod[1]).modifier_type = next_mod[2]
+                             icon=next_mod[1]).modifier_type = next_mod[2]
             else:
                 row.label(text="")
 
@@ -525,7 +521,6 @@ def modifiers_ui(context, layout, num_of_rows=False):
 
 # Registering
 #=======================================================================
-
 
 def set_modifier_collection_items():
     """This is to be called on loading a new file or reloading addons

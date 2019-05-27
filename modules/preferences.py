@@ -10,11 +10,10 @@ import rna_keymap_ui
 class Preferences(AddonPreferences):
     bl_idname = "modifier_list"
 
-    use_popup: BoolProperty(name="Popup", description="Enable/disable popup",
-                              default=True)
+    use_popup: BoolProperty(name="Popup", description="Enable/disable popup", default=True)
 
-    use_sidebar: BoolProperty(name="Sidebar Tab", description="Enable/disable sidebar tab",
-                              default=True)
+    use_sidebar: BoolProperty(name="Sidebar Tab",
+                              description="Enable/disable sidebar tab", default=True)
 
     modifier_01: StringProperty(description="Add a favourite modifier")
     modifier_02: StringProperty(description="Add a favourite modifier")
@@ -29,11 +28,13 @@ class Preferences(AddonPreferences):
     modifier_11: StringProperty(description="Add a favourite modifier")
     modifier_12: StringProperty(description="Add a favourite modifier")
 
-    mod_list_def_len: IntProperty(name="",
-                                  description="Default/min number of rows to display in the modifier list in the popup",
-                                  default=7)
+    mod_list_def_len: IntProperty(
+        name="",
+        description="Default/min number of rows to display in the modifier list in the popup",
+        default=7)
 
-    use_props_dialog: BoolProperty(name="Use Dialog Type Popup",
+    use_props_dialog: BoolProperty(
+        name="Use Dialog Type Popup",
         description="Use a dialog type popup which doesn't close when you are not hovering over it")
 
     def draw(self, context):
@@ -101,7 +102,8 @@ class Preferences(AddonPreferences):
         # === Info ===
         is_loaded, is_enabled = addon_utils.check("space_view3d_modifier_tools")
         if not is_enabled:
-            layout.label(icon='INFO', text="Enable Modifier Tools addon for modifier batch operators.")
+            layout.label(icon='INFO',
+                         text="Enable Modifier Tools addon for modifier batch operators.")
 
 
 def get_pref_mod_attr_name():
