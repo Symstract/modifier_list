@@ -61,9 +61,6 @@ class Preferences(AddonPreferences):
 
         col = layout.column(align=True)
 
-        num_of_mods = len(get_pref_mod_attr_name())
-        num_of_rows = math.ceil(num_of_mods / 2)
-
         attr_iter = iter(get_pref_mod_attr_name())
 
         wm = bpy.context.window_manager
@@ -100,7 +97,7 @@ class Preferences(AddonPreferences):
         # layout.separator()
 
         # === Info ===
-        is_loaded, is_enabled = addon_utils.check("space_view3d_modifier_tools")
+        _, is_enabled = addon_utils.check("space_view3d_modifier_tools")
         if not is_enabled:
             layout.label(icon='INFO',
                          text="Enable Modifier Tools addon for modifier batch operators.")
