@@ -420,7 +420,7 @@ def modifiers_ui(context, layout, num_of_rows=False):
     ob = context.object
 
     layout.template_list("OBJECT_UL_modifier_list", "", ob, "modifiers",
-                            ob, "ml_modifier_active_index", rows=num_of_rows)
+                         ob, "ml_modifier_active_index", rows=num_of_rows)
 
     row = layout.row()
 
@@ -462,7 +462,7 @@ def modifiers_ui(context, layout, num_of_rows=False):
             active_mod = ob.modifiers[active_mod_index]
 
             active_mod_icon = [icon for name, icon, mod in all_name_icon_type()
-                                if mod == active_mod.type].pop()
+                               if mod == active_mod.type].pop()
 
             col = layout.column(align=True)
 
@@ -485,7 +485,7 @@ def modifiers_ui(context, layout, num_of_rows=False):
 
             row = box.row()
             row.operator("object.ml_modifier_apply",
-                            text="Apply").modifier = active_mod.name
+                         text="Apply").modifier = active_mod.name
 
             sub = row.row()
             # Cloth and Soft Body have "Apply As Shape Key" but no "Copy Modifier" .
@@ -507,7 +507,7 @@ def modifiers_ui(context, layout, num_of_rows=False):
             }
             if active_mod.type not in has_no_copy:
                 row.operator("object.ml_modifier_copy",
-                                text="Copy").modifier = active_mod.name
+                             text="Copy").modifier = active_mod.name
 
             # === Modifier specific settings ===
             box = col.box()
@@ -548,7 +548,7 @@ def register():
     # registering and it's not scene specific.
     wm = bpy.types.WindowManager
     wm.ml_mod_to_add = StringProperty(name="Modifier to add", update=add_modifier,
-                                   description="Search for a modifier and add it to the stack")
+                                      description="Search for a modifier and add it to the stack")
     wm.ml_all_modifiers = CollectionProperty(type=AllModifiersCollection)
 
     bpy.app.handlers.load_post.append(on_file_load)
