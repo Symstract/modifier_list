@@ -13,7 +13,7 @@ overall_width = panel_width + tabs_width
 
 class VIEW3D_OT_ml_modifier_popup(Operator):
     bl_idname = "view3d.modifier_popup"
-    bl_label = "Modifier Popup Panel"
+    bl_label = "Modifier Popup"
     bl_options = {'INTERNAL'}
 
     def execute(self, context):
@@ -40,13 +40,6 @@ class VIEW3D_OT_ml_modifier_popup(Operator):
         elif ob.type not in {'MESH', 'CURVE', 'SURFACE', 'FONT', 'LATTICE'}:
             layout.label(text="Wrong object type")
         else:
-            split_factor = panel_width / overall_width
-            split = layout.split(factor=split_factor)
-
-
-            # === Content ===
-            col = split.column()
-
             wm = bpy.context.window_manager
             popup_tab = wm.ml_popup_active_tab
 
@@ -54,16 +47,18 @@ class VIEW3D_OT_ml_modifier_popup(Operator):
 
             # Don't add a label when props_dialog is used, avoiding
             # wasting space.
-            use_label = not prefs.use_props_dialog
+            if not prefs.use_props_dialog:
+                layout.label(text="Modifier Popup")
 
+            split_factor = panel_width / overall_width
+            split = layout.split(factor=split_factor)
+
+            # === Content ===
+            col = split.column()
             if popup_tab == 'MODIFIERS':
                 num_of_rows = prefs.mod_list_def_len
-                if use_label:
-                    col.label(text="Modifiers")
                 modifiers_ui(context, col, num_of_rows=num_of_rows)
             elif popup_tab == 'OBJECT_DATA':
-                if use_label:
-                    col.label(text="Vertex Groups")
                 vertex_groups_ui(context, col, num_of_rows=7)
 
             # === Tabs ===
