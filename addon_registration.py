@@ -161,6 +161,24 @@ def _sort_panel_classes(classes, panel_order):
     return sorted_classes
 
 
+def _filter_ignored_classes(classes, ignored_classes):
+    """Filters out classes that should be ignored.
+
+    Args:
+        classes: an iteratable of classes
+        ignored_classes: an iteratable of the names of the
+            classes that should be ignored
+    """
+
+    classes_to_register = classes[:]
+
+    for cls in classes_to_register:
+        if cls.__name__ in ignored_classes:
+            classes_to_register.remove(cls)
+
+    return classes_to_register
+
+
 def _store_classes_globally(modules):
     global sorted_classes
 
@@ -202,12 +220,14 @@ def _unregister_classes(classes, addon_name_for_counter=None):
 # Public functions
 # ======================================================================
 
-def register_bl_classes(root_dir, panel_order=None, addon_name_for_counter=None):
+def register_bl_classes(root_dir, ignored_classes=None, panel_order=None, addon_name_for_counter=None):
     """Register all add-on classes that inherit from bpy_struct from all
     modules.
 
     Args:
         root_dir: root directory to search in
+        ignored_classes: an iteratable of the names of the
+            classes that should be ignored
         panel_order: an iteratable of panel class names
         addon_name_for_counter: specify this if you want to print out
             the number of registered classes
@@ -224,6 +244,8 @@ def register_bl_classes(root_dir, panel_order=None, addon_name_for_counter=None)
 
     classes = _find_bl_classes(modules)
     classes = _sort_classes_topologically(classes)
+    if ignored_classes:
+        classes = _filter_ignored_classes(classes, ignored_classes)
     if panel_order:
         classes = _sort_panel_classes(classes, panel_order)
     _store_classes_globally(classes)
