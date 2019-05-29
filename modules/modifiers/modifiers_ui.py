@@ -167,7 +167,7 @@ def mod_show_editmode_and_cage(modifier, layout, scale_x=1.0, use_in_list=False)
 
 class AllModifiersCollection(PropertyGroup):
     # Collection Property for search
-    value: StringProperty(name="my modifier")
+    value: StringProperty(name="Type")
 
 
 def add_modifier(self, context):
