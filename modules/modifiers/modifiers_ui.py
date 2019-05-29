@@ -13,6 +13,7 @@ from bpy.types import (
     UIList
 )
 
+from . import ml_modifier_layouts
 from .. import icons
 
 
@@ -528,8 +529,17 @@ def modifiers_ui(context, layout, num_of_rows=False):
             # A column is needed here to keep the layout more compact,
             # because in a box separators give an unnecessarily big space.
             col = box.column()
-            mp = DATA_PT_modifiers(context)
-            getattr(mp, active_mod.type)(col, ob, active_mod)
+            # Custom layouts for laplacian deform, mesh deform and
+            # surface deform because bind button doesn't work otherwise.
+            if active_mod.type == 'LAPLACIANDEFORM':
+                ml_modifier_layouts.LAPLACIANDEFORM(col, ob, active_mod)
+            elif active_mod.type == 'MESH_DEFORM':
+                ml_modifier_layouts.MESH_DEFORM(col, ob, active_mod)
+            elif active_mod.type =='SURFACE_DEFORM':
+                ml_modifier_layouts.SURFACE_DEFORM(col, ob, active_mod)
+            else:
+                mp = DATA_PT_modifiers(context)
+                getattr(mp, active_mod.type)(col, ob, active_mod)
 
 
 # Registering
