@@ -177,8 +177,13 @@ def add_modifier(self, context):
     mod_type = wm.ml_all_modifiers[mod_name].value
     bpy.ops.object.modifier_add(type=mod_type)
 
-    # Set correct active_mod index
     ob = context.object
+
+    # Enable auto smooth if modifier is weighted normal
+    if mod_type == 'WEIGHTED_NORMAL':
+        ob.data.use_auto_smooth = True
+
+    # Set correct active_mod index
     mods = ob.modifiers
     mods_len = len(mods) - 1
     ob.ml_modifier_active_index = mods_len
@@ -315,8 +320,13 @@ class OBJECT_OT_ml_modifier_add(Operator):
     def execute(self, context):
         bpy.ops.object.modifier_add(type=self.modifier_type)
 
-        # Set correct active_mod index
         ob = context.object
+
+        # Enable auto smooth if modifier is weighted normal
+        if self.modifier_type == 'WEIGHTED_NORMAL':
+            ob.data.use_auto_smooth = True
+
+        # Set correct active_mod index
         mods = ob.modifiers
         mods_len = len(mods) - 1
         ob.ml_modifier_active_index = mods_len
