@@ -174,6 +174,10 @@ def add_modifier(self, context):
     # Add modifier
     wm = bpy.context.window_manager
     mod_name = wm.ml_mod_to_add
+
+    if mod_name == "":
+        return None
+
     mod_type = wm.ml_all_modifiers[mod_name].value
     bpy.ops.object.modifier_add(type=mod_type)
 
