@@ -20,8 +20,8 @@ from .. import icons
 # Favourite modifiers and name + icon + type iteratables
 #=======================================================================
 
-def get_pref_mod_attr_value():
-    """List of the names of favourite modifiers"""
+def get_favourite_modifiers_names():
+    """List of the names of the favourite modifiers"""
     prefs = bpy.context.preferences.addons["modifier_list"].preferences
     # get correct class attributes and then their values
     attr_list = [attr for attr in dir(prefs) if "modifier_" in attr]
@@ -29,7 +29,7 @@ def get_pref_mod_attr_value():
     return attr_value_list
 
 
-def all_name_icon_type():
+def all_modifier_names_icons_types():
     """List of tuples of the names, icons and types of all modifiers."""
     mods_enum = bpy.types.Modifier.bl_rna.properties['type'].enum_items
 
@@ -41,15 +41,15 @@ def all_name_icon_type():
     return all_mods_zipped
 
 
-def fav_name_icon_type():
-    """Iterator of tuples of the names, icons and types of favourite
+def favourite_modifiers_names_icons_types():
+    """Iterator of tuples of the names, icons and types of the favourite
     modifiers.
     """
     mods_enum = bpy.types.Modifier.bl_rna.properties['type'].enum_items
     all_mod_names = [modifier.name for modifier in mods_enum]
-    all_mods_dict = dict(zip(all_mod_names, all_name_icon_type()))
+    all_mods_dict = dict(zip(all_mod_names, all_modifier_names_icons_types()))
     fav_mods_list = [all_mods_dict[mod] if mod in all_mods_dict else (None, None, None)
-                     for mod in get_pref_mod_attr_value()]
+                     for mod in get_favourite_modifiers_names()]
     fav_mods_iter = iter(fav_mods_list)
     return fav_mods_iter
 
@@ -80,7 +80,7 @@ def mod_show_editmode_and_cage(modifier, layout, scale_x=1.0, use_in_list=False)
         'DYNAMIC_PAINT','EXPLODE', 'FLUID_SIMULATION', 'PARTICLE_SYSTEM','SMOKE', 'SOFT_BODY'
     }
 
-    deform_mods = {mod for name, icon, mod in all_name_icon_type()[25:41]}
+    deform_mods = {mod for name, icon, mod in all_modifier_names_icons_types()[25:41]}
     other_show_on_cage_mods = {
         'DATA_TRANSFER', 'NORMAL_EDIT', 'WEIGHTED_NORMAL', 'UV_PROJECT','VERTEX_WEIGHT_EDIT',
         'VERTEX_WEIGHT_MIX', 'VERTEX_WEIGHT_PROXIMITY', 'ARRAY', 'EDGE_SPLIT', 'MASK', 'MIRROR',
@@ -286,25 +286,25 @@ class OBJECT_MT_ml_add_modifier_menu(Menu):
         col = row.column()
         col.label(text="Modify")
         col.separator(factor=0.3)
-        for name, icon, mod in all_name_icon_type()[0:10]:
+        for name, icon, mod in all_modifier_names_icons_types()[0:10]:
             col.operator("object.ml_modifier_add", text=name, icon=icon).modifier_type = mod
 
         col = row.column()
         col.label(text="Generate")
         col.separator(factor=0.3)
-        for name, icon, mod in all_name_icon_type()[10:26]:
+        for name, icon, mod in all_modifier_names_icons_types()[10:26]:
             col.operator("object.ml_modifier_add", text=name, icon=icon).modifier_type = mod
 
         col = row.column()
         col.label(text="Deform")
         col.separator(factor=0.3)
-        for name, icon, mod in all_name_icon_type()[26:42]:
+        for name, icon, mod in all_modifier_names_icons_types()[26:42]:
             col.operator("object.ml_modifier_add", text=name, icon=icon).modifier_type = mod
 
         col = row.column()
         col.label(text="Simulate")
         col.separator(factor=0.3)
-        for name, icon, mod in all_name_icon_type()[42:52]:
+        for name, icon, mod in all_modifier_names_icons_types()[42:52]:
             col.operator("object.ml_modifier_add", text=name, icon=icon).modifier_type = mod
 
 
@@ -501,12 +501,13 @@ def modifiers_ui(context, layout, num_of_rows=False):
     # === Favourite modifiers ===
     col = layout.column(align=True)
 
-    # Check if an item or the next item in fav_name_icon_type has a value
-    # and add rows and buttons accordingly (two buttons per row).
-    fav_name_icon_type_iter = fav_name_icon_type()
+    # Check if an item or the next item in
+    # favourite_modifiers_names_icons_types has a value and add rows
+    # and buttons accordingly (two buttons per row).
+    fav_names_icons_types_iter = favourite_modifiers_names_icons_types()
 
-    for name, icon, mod in fav_name_icon_type_iter:
-        next_mod = next(fav_name_icon_type_iter)
+    for name, icon, mod in fav_names_icons_types_iter:
+        next_mod = next(fav_names_icons_types_iter)
         if name or next_mod[0] is not None:
             row = col.split(factor=0.5, align=True)
 
@@ -573,7 +574,7 @@ def modifiers_ui(context, layout, num_of_rows=False):
             active_mod_index = ob.ml_modifier_active_index
             active_mod = ob.modifiers[active_mod_index]
 
-            active_mod_icon = [icon for name, icon, mod in all_name_icon_type()
+            active_mod_icon = [icon for name, icon, mod in all_modifier_names_icons_types()
                                if mod == active_mod.type].pop()
 
             col = layout.column(align=True)
@@ -604,7 +605,7 @@ def modifiers_ui(context, layout, num_of_rows=False):
             # In those cases "Apply As Shape Key" doesn't need to be scaled up.
             if active_mod.type not in {'CLOTH', 'SOFT_BODY'}:
                 sub.scale_x = 1.3
-            deform_mods = {mod for name, icon, mod in all_name_icon_type()[26:42]}
+            deform_mods = {mod for name, icon, mod in all_modifier_names_icons_types()[26:42]}
             other_shape_key_mods = {'CLOTH', 'SOFT_BODY', 'MESH_CACHE'}
             has_shape_key = deform_mods.union(other_shape_key_mods)
             if active_mod.type in has_shape_key:
@@ -656,7 +657,7 @@ def set_modifier_collection_items():
     all_modifiers = bpy.context.window_manager.ml_all_modifiers
 
     if not all_modifiers:
-        for name, _, mod in all_name_icon_type():
+        for name, _, mod in all_modifier_names_icons_types():
             item = all_modifiers.add()
             item.name = name
             item.value = mod
