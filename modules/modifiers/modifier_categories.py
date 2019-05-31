@@ -1,3 +1,67 @@
+import bpy
+
+
+def all_modifier_names_icons_types():
+    """List of tuples of the names, icons and types of all modifiers."""
+    mods_enum = bpy.types.Modifier.bl_rna.properties['type'].enum_items
+
+    all_mod_names = [modifier.name for modifier in mods_enum]
+    all_mod_icons = [modifier.icon for modifier in mods_enum]
+    all_mod_types = [modifier.identifier for modifier in mods_enum]
+
+    all_mods_zipped = list(zip(all_mod_names, all_mod_icons, all_mod_types))
+    return all_mods_zipped
+
+
+def get_favourite_modifiers_names():
+    """List of the names of the favourite modifiers"""
+    prefs = bpy.context.preferences.addons["modifier_list"].preferences
+    # get correct class attributes and then their values
+    attr_list = [attr for attr in dir(prefs) if "modifier_" in attr]
+    attr_value_list = [getattr(prefs, attr) for attr in attr_list]
+    return attr_value_list
+
+
+def favourite_modifiers_names_icons_types():
+    """Iterator of tuples of the names, icons and types of the favourite
+    modifiers.
+    """
+    mods_enum = bpy.types.Modifier.bl_rna.properties['type'].enum_items
+    all_mod_names = [modifier.name for modifier in mods_enum]
+    all_mods_dict = dict(zip(all_mod_names, all_modifier_names_icons_types()))
+    fav_mods_list = [all_mods_dict[mod] if mod in all_mods_dict else (None, None, None)
+                     for mod in get_favourite_modifiers_names()]
+    fav_mods_iter = iter(fav_mods_list)
+    return fav_mods_iter
+
+
+# === Don't support show_in_editmode ===
+dont_support_show_in_editmode = {
+    'MESH_SEQUENCE_CACHE', 'BUILD', 'DECIMATE', 'MULTIRES', 'CLOTH', 'COLLISION',
+    'DYNAMIC_PAINT','EXPLODE', 'FLUID_SIMULATION', 'PARTICLE_SYSTEM','SMOKE', 'SOFT_BODY'
+}
+
+# === Support show_on_cage ===
+deform_mods = {mod for _, _, mod in all_modifier_names_icons_types()[25:41]}
+other_show_on_cage_mods = {
+    'DATA_TRANSFER', 'NORMAL_EDIT', 'WEIGHTED_NORMAL', 'UV_PROJECT','VERTEX_WEIGHT_EDIT',
+    'VERTEX_WEIGHT_MIX', 'VERTEX_WEIGHT_PROXIMITY', 'ARRAY', 'EDGE_SPLIT', 'MASK', 'MIRROR',
+    'SOLIDIFY', 'SUBSURF', 'TRIANGULATE'
+}
+support_show_on_cage = deform_mods.union(other_show_on_cage_mods)
+
+# === Support apply_as_shape_key ===
+deform_mods = {mod for name, icon, mod in all_modifier_names_icons_types()[26:42]}
+other_shape_key_mods = {'CLOTH', 'SOFT_BODY', 'MESH_CACHE'}
+support_apply_as_shape_key = deform_mods.union(other_shape_key_mods)
+
+# === Don't support copy ===
+dont_support_copy = {
+    'CLOTH', 'COLLISION', 'DYNAMIC_PAINT', 'FLUID_SIMULATION',
+    'PARTICLE_SYSTEM', 'SMOKE', 'SOFT_BODY'
+}
+
+# === Have the ability to use an object to define the center of the effect ===
 have_gizmo_property = {
     'NORMAL_EDIT': "target",
     'VERTEX_WEIGHT_PROXIMITY': "target",

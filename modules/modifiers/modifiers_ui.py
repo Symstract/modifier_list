@@ -17,43 +17,6 @@ from . import ml_modifier_layouts, modifier_categories
 from .. import icons
 
 
-# Favourite modifiers and name + icon + type iteratables
-#=======================================================================
-
-def get_favourite_modifiers_names():
-    """List of the names of the favourite modifiers"""
-    prefs = bpy.context.preferences.addons["modifier_list"].preferences
-    # get correct class attributes and then their values
-    attr_list = [attr for attr in dir(prefs) if "modifier_" in attr]
-    attr_value_list = [getattr(prefs, attr) for attr in attr_list]
-    return attr_value_list
-
-
-def all_modifier_names_icons_types():
-    """List of tuples of the names, icons and types of all modifiers."""
-    mods_enum = bpy.types.Modifier.bl_rna.properties['type'].enum_items
-
-    all_mod_names = [modifier.name for modifier in mods_enum]
-    all_mod_icons = [modifier.icon for modifier in mods_enum]
-    all_mod_types = [modifier.identifier for modifier in mods_enum]
-
-    all_mods_zipped = list(zip(all_mod_names, all_mod_icons, all_mod_types))
-    return all_mods_zipped
-
-
-def favourite_modifiers_names_icons_types():
-    """Iterator of tuples of the names, icons and types of the favourite
-    modifiers.
-    """
-    mods_enum = bpy.types.Modifier.bl_rna.properties['type'].enum_items
-    all_mod_names = [modifier.name for modifier in mods_enum]
-    all_mods_dict = dict(zip(all_mod_names, all_modifier_names_icons_types()))
-    fav_mods_list = [all_mods_dict[mod] if mod in all_mods_dict else (None, None, None)
-                     for mod in get_favourite_modifiers_names()]
-    fav_mods_iter = iter(fav_mods_list)
-    return fav_mods_iter
-
-
 # show_in_editmode and show_on_cage buttons
 #=======================================================================
 
@@ -75,18 +38,8 @@ def mod_show_editmode_and_cage(modifier, layout, scale_x=1.0, use_in_list=False)
     # SHOW_ON_CAGE_ON_INACTIVE_BUTTON are used here for that reason.
     # Is it a bug or just how icon_value works?
 
-    has_no_show_in_editmode = {
-        'MESH_SEQUENCE_CACHE', 'BUILD', 'DECIMATE', 'MULTIRES', 'CLOTH', 'COLLISION',
-        'DYNAMIC_PAINT','EXPLODE', 'FLUID_SIMULATION', 'PARTICLE_SYSTEM','SMOKE', 'SOFT_BODY'
-    }
-
-    deform_mods = {mod for _, _, mod in all_modifier_names_icons_types()[25:41]}
-    other_show_on_cage_mods = {
-        'DATA_TRANSFER', 'NORMAL_EDIT', 'WEIGHTED_NORMAL', 'UV_PROJECT','VERTEX_WEIGHT_EDIT',
-        'VERTEX_WEIGHT_MIX', 'VERTEX_WEIGHT_PROXIMITY', 'ARRAY', 'EDGE_SPLIT', 'MASK', 'MIRROR',
-        'SOLIDIFY', 'SUBSURF', 'TRIANGULATE'
-    }
-    has_show_on_cage = deform_mods.union(other_show_on_cage_mods)
+    dont_support_show_in_editmode  = modifier_categories.dont_support_show_in_editmode
+    support_show_on_cage  = modifier_categories.support_show_on_cage
 
     pcoll = icons.preview_collections["main"]
 
@@ -95,7 +48,7 @@ def mod_show_editmode_and_cage(modifier, layout, scale_x=1.0, use_in_list=False)
     sub.scale_x = scale_x
     if not use_in_list:
         sub.active = modifier.show_viewport
-    if modifier.type not in has_no_show_in_editmode:
+    if modifier.type not in dont_support_show_in_editmode :
         if not modifier.show_viewport and use_in_list:
             show_in_editmode_on = pcoll['SHOW_IN_EDITMODE_ON_INACTIVE']
             show_in_editmode_off = pcoll['SHOW_IN_EDITMODE_OFF_INACTIVE']
@@ -114,7 +67,7 @@ def mod_show_editmode_and_cage(modifier, layout, scale_x=1.0, use_in_list=False)
         sub.label(text="", translate=False, icon_value=empy_icon.icon_id)
 
     # === show_on_cage ===
-    if modifier.type in has_show_on_cage:
+    if modifier.type in support_show_on_cage :
         ob = bpy.context.object
         mods = ob.modifiers
         mod_index = mods.find(modifier.name)
@@ -124,7 +77,7 @@ def mod_show_editmode_and_cage(modifier, layout, scale_x=1.0, use_in_list=False)
         is_before_show_in_editmode_on = False
         end_index = np.clip(mod_index, 1, 99)
         for mod in mods[0:end_index]:
-            if mod.show_in_editmode and mod.type not in has_show_on_cage:
+            if mod.show_in_editmode and mod.type not in support_show_on_cage :
                 is_before_show_in_editmode_on = True
                 break
 
@@ -286,25 +239,25 @@ class OBJECT_MT_ml_add_modifier_menu(Menu):
         col = row.column()
         col.label(text="Modify")
         col.separator(factor=0.3)
-        for name, icon, mod in all_modifier_names_icons_types()[0:10]:
+        for name, icon, mod in modifier_categories.all_modifier_names_icons_types()[0:10]:
             col.operator("object.ml_modifier_add", text=name, icon=icon).modifier_type = mod
 
         col = row.column()
         col.label(text="Generate")
         col.separator(factor=0.3)
-        for name, icon, mod in all_modifier_names_icons_types()[10:26]:
+        for name, icon, mod in modifier_categories.all_modifier_names_icons_types()[10:26]:
             col.operator("object.ml_modifier_add", text=name, icon=icon).modifier_type = mod
 
         col = row.column()
         col.label(text="Deform")
         col.separator(factor=0.3)
-        for name, icon, mod in all_modifier_names_icons_types()[26:42]:
+        for name, icon, mod in modifier_categories.all_modifier_names_icons_types()[26:42]:
             col.operator("object.ml_modifier_add", text=name, icon=icon).modifier_type = mod
 
         col = row.column()
         col.label(text="Simulate")
         col.separator(factor=0.3)
-        for name, icon, mod in all_modifier_names_icons_types()[42:52]:
+        for name, icon, mod in modifier_categories.all_modifier_names_icons_types()[42:52]:
             col.operator("object.ml_modifier_add", text=name, icon=icon).modifier_type = mod
 
 
@@ -504,7 +457,7 @@ def modifiers_ui(context, layout, num_of_rows=False):
     # Check if an item or the next item in
     # favourite_modifiers_names_icons_types has a value and add rows
     # and buttons accordingly (two buttons per row).
-    fav_names_icons_types_iter = favourite_modifiers_names_icons_types()
+    fav_names_icons_types_iter = modifier_categories.favourite_modifiers_names_icons_types()
 
     for name, icon, mod in fav_names_icons_types_iter:
         next_mod = next(fav_names_icons_types_iter)
@@ -574,6 +527,8 @@ def modifiers_ui(context, layout, num_of_rows=False):
             active_mod_index = ob.ml_modifier_active_index
             active_mod = ob.modifiers[active_mod_index]
 
+            all_modifier_names_icons_types = modifier_categories.all_modifier_names_icons_types
+
             active_mod_icon = [icon for name, icon, mod in all_modifier_names_icons_types()
                                if mod == active_mod.type].pop()
 
@@ -605,20 +560,14 @@ def modifiers_ui(context, layout, num_of_rows=False):
             # In those cases "Apply As Shape Key" doesn't need to be scaled up.
             if active_mod.type not in {'CLOTH', 'SOFT_BODY'}:
                 sub.scale_x = 1.3
-            deform_mods = {mod for name, icon, mod in all_modifier_names_icons_types()[26:42]}
-            other_shape_key_mods = {'CLOTH', 'SOFT_BODY', 'MESH_CACHE'}
-            has_shape_key = deform_mods.union(other_shape_key_mods)
-            if active_mod.type in has_shape_key:
+
+            if active_mod.type in modifier_categories.support_apply_as_shape_key:
                 apply_as_shape_key = sub.operator("object.ml_modifier_apply",
                                                     text="Apply as Shape Key")
                 apply_as_shape_key.modifier=active_mod.name
                 apply_as_shape_key.apply_as='SHAPE'
 
-            has_no_copy = {
-                'CLOTH', 'COLLISION', 'DYNAMIC_PAINT', 'FLUID_SIMULATION',
-                'PARTICLE_SYSTEM', 'SMOKE', 'SOFT_BODY'
-            }
-            if active_mod.type not in has_no_copy:
+            if active_mod.type not in modifier_categories.dont_support_copy:
                 row.operator("object.ml_modifier_copy",
                              text="Copy").modifier = active_mod.name
 
@@ -657,7 +606,7 @@ def set_modifier_collection_items():
     all_modifiers = bpy.context.window_manager.ml_all_modifiers
 
     if not all_modifiers:
-        for name, _, mod in all_modifier_names_icons_types():
+        for name, _, mod in modifier_categories.all_modifier_names_icons_types():
             item = all_modifiers.add()
             item.name = name
             item.value = mod
