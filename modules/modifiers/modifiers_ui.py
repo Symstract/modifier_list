@@ -221,7 +221,7 @@ def assign_gizmo_object_to_modifier(self, context, modifier, place_at_vertex=Fal
         for p in projectors[0:projector_count]:
             if not p.object:
                 gizmo_ob = _create_gizmo_object(self, context, modifier,
-                                             place_at_vertex=place_at_vertex)
+                                                place_at_vertex=place_at_vertex)
                 p.object = gizmo_ob
                 break
 
