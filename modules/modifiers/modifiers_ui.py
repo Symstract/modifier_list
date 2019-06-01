@@ -194,7 +194,7 @@ def assign_gizmo_object_to_modifier(self, context, modifier, place_at_vertex=Fal
 # Modifier list and operator classes etc.
 #=======================================================================
 
-class AllModifiersCollection(PropertyGroup):
+class MeshModifiersCollection(PropertyGroup):
     # Collection Property for search
     value: StringProperty(name="Type")
 
@@ -207,7 +207,7 @@ def add_modifier(self, context):
     if mod_name == "":
         return None
 
-    mod_type = wm.ml_all_modifiers[mod_name].value
+    mod_type = wm.ml_mesh_modifiers[mod_name].value
     bpy.ops.object.modifier_add(type=mod_type)
 
     ob = context.object
@@ -479,7 +479,7 @@ def modifiers_ui(context, layout, num_of_rows=False):
     col = layout.column()
     row = col.split(factor=0.59)
     wm = bpy.context.window_manager
-    row.prop_search(wm, "ml_mod_to_add", wm, "ml_all_modifiers", text="", icon='MODIFIER')
+    row.prop_search(wm, "ml_mod_to_add", wm, "ml_mesh_modifiers", text="", icon='MODIFIER')
     row.menu("MESH_MT_ml_add_modifier_menu")
 
     # === Modifier list ===
@@ -599,22 +599,22 @@ def modifiers_ui(context, layout, num_of_rows=False):
 # Registering
 #=======================================================================
 
-def set_modifier_collection_items():
+def set_mesh_modifier_collection_items():
     """This is to be called on loading a new file or reloading addons
     to make modifiers available in search.
     """
-    all_modifiers = bpy.context.window_manager.ml_all_modifiers
+    mesh_modifiers = bpy.context.window_manager.ml_mesh_modifiers
 
-    if not all_modifiers:
+    if not mesh_modifiers:
         for name, _, mod in modifier_categories.all_modifier_names_icons_types():
-            item = all_modifiers.add()
+            item = mesh_modifiers.add()
             item.name = name
             item.value = mod
 
 
 @persistent
 def on_file_load(dummy):
-    set_modifier_collection_items()
+    set_mesh_modifier_collection_items()
 
 
 def register():
@@ -627,11 +627,11 @@ def register():
     wm = bpy.types.WindowManager
     wm.ml_mod_to_add = StringProperty(name="Modifier to add", update=add_modifier,
                                       description="Search for a modifier and add it to the stack")
-    wm.ml_all_modifiers = CollectionProperty(type=AllModifiersCollection)
+    wm.ml_mesh_modifiers = CollectionProperty(type=MeshModifiersCollection)
 
     bpy.app.handlers.load_post.append(on_file_load)
 
-    set_modifier_collection_items()
+    set_mesh_modifier_collection_items()
 
 
 def unregister():
