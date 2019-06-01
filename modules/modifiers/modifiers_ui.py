@@ -239,25 +239,25 @@ class OBJECT_MT_ml_add_modifier_menu(Menu):
         col = row.column()
         col.label(text="Modify")
         col.separator(factor=0.3)
-        for name, icon, mod in modifier_categories.all_modifier_names_icons_types()[0:10]:
+        for name, icon, mod in modifier_categories.mesh_modify_names_icons_types:
             col.operator("object.ml_modifier_add", text=name, icon=icon).modifier_type = mod
 
         col = row.column()
         col.label(text="Generate")
         col.separator(factor=0.3)
-        for name, icon, mod in modifier_categories.all_modifier_names_icons_types()[10:26]:
+        for name, icon, mod in modifier_categories.mesh_generate_names_icons_types:
             col.operator("object.ml_modifier_add", text=name, icon=icon).modifier_type = mod
 
         col = row.column()
         col.label(text="Deform")
         col.separator(factor=0.3)
-        for name, icon, mod in modifier_categories.all_modifier_names_icons_types()[26:42]:
+        for name, icon, mod in modifier_categories.mesh_deform_names_icons_types:
             col.operator("object.ml_modifier_add", text=name, icon=icon).modifier_type = mod
 
         col = row.column()
         col.label(text="Simulate")
         col.separator(factor=0.3)
-        for name, icon, mod in modifier_categories.all_modifier_names_icons_types()[42:52]:
+        for name, icon, mod in modifier_categories.mesh_simulate_names_icons_types:
             col.operator("object.ml_modifier_add", text=name, icon=icon).modifier_type = mod
 
 

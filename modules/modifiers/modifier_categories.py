@@ -73,3 +73,12 @@ have_gizmo_property = {
     'SIMPLE_DEFORM': "origin",
     'WAVE': "start_position_object"
 }
+
+# === Mesh modifiers by categories ===
+mesh_modify_names_icons_types = [mod for mod in all_modifier_names_icons_types()[0:10]]
+
+mesh_generate_names_icons_types = [mod for mod in all_modifier_names_icons_types()[10:26]]
+
+mesh_deform_names_icons_types = [mod for mod in all_modifier_names_icons_types()[26:42]]
+
+mesh_simulate_names_icons_types = [mod for mod in all_modifier_names_icons_types()[42:52]]
