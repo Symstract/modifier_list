@@ -226,7 +226,7 @@ def add_modifier(self, context):
     bpy.ops.ed.undo_push(message="Add Modifier")
 
 
-class OBJECT_MT_ml_add_modifier_menu(Menu):
+class MESH_MT_ml_add_modifier_menu(Menu):
     bl_label = "Add Modifier"
     bl_description = "Add a procedural operation/effect to the active object"
 
@@ -480,7 +480,7 @@ def modifiers_ui(context, layout, num_of_rows=False):
     row = col.split(factor=0.59)
     wm = bpy.context.window_manager
     row.prop_search(wm, "ml_mod_to_add", wm, "ml_all_modifiers", text="", icon='MODIFIER')
-    row.menu("OBJECT_MT_ml_add_modifier_menu")
+    row.menu("MESH_MT_ml_add_modifier_menu")
 
     # === Modifier list ===
     ob = context.object
