@@ -199,6 +199,16 @@ class MeshModifiersCollection(PropertyGroup):
     value: StringProperty(name="Type")
 
 
+class CurveModifiersCollection(PropertyGroup):
+    # Collection Property for search
+    value: StringProperty(name="Type")
+
+
+class LatticeModifiersCollection(PropertyGroup):
+    # Collection Property for search
+    value: StringProperty(name="Type")
+
+
 def add_modifier(self, context):
     # Add modifier
     wm = bpy.context.window_manager
@@ -549,10 +559,10 @@ def modifiers_ui(context, layout, num_of_rows=False):
         row.prop_search(wm, "ml_mod_to_add", wm, "ml_mesh_modifiers", text="", icon='MODIFIER')
         row.menu("MESH_MT_ml_add_modifier_menu")
     elif ob.type in {'CURVE', 'SURFACE', 'FONT'}:
-        row.prop_search(wm, "ml_mod_to_add", wm, "ml_mesh_modifiers", text="", icon='MODIFIER')
+        row.prop_search(wm, "ml_mod_to_add", wm, "ml_curve_modifiers", text="", icon='MODIFIER')
         row.menu("CURVE_MT_ml_add_modifier_menu")
     elif ob.type == 'LATTICE':
-        row.prop_search(wm, "ml_mod_to_add", wm, "ml_mesh_modifiers", text="", icon='MODIFIER')
+        row.prop_search(wm, "ml_mod_to_add", wm, "ml_lattice_modifiers", text="", icon='MODIFIER')
         row.menu("LATTICE_MT_ml_add_modifier_menu")
 
 
@@ -682,9 +692,37 @@ def set_mesh_modifier_collection_items():
             item.value = mod
 
 
+def set_curve_modifier_collection_items():
+    """This is to be called on loading a new file or reloading addons
+    to make modifiers available in search.
+    """
+    curve_modifiers = bpy.context.window_manager.ml_curve_modifiers
+
+    if not curve_modifiers:
+        for name, _, mod in modifier_categories.curve_all_names_icons_types:
+            item = curve_modifiers.add()
+            item.name = name
+            item.value = mod
+
+
+def set_lattice_modifier_collection_items():
+    """This is to be called on loading a new file or reloading addons
+    to make modifiers available in search.
+    """
+    lattice_modifiers = bpy.context.window_manager.ml_lattice_modifiers
+
+    if not lattice_modifiers:
+        for name, _, mod in modifier_categories.lattice_all_names_icons_types:
+            item = lattice_modifiers.add()
+            item.name = name
+            item.value = mod
+
+
 @persistent
 def on_file_load(dummy):
     set_mesh_modifier_collection_items()
+    set_curve_modifier_collection_items()
+    set_lattice_modifier_collection_items()
 
 
 def register():
@@ -698,10 +736,14 @@ def register():
     wm.ml_mod_to_add = StringProperty(name="Modifier to add", update=add_modifier,
                                       description="Search for a modifier and add it to the stack")
     wm.ml_mesh_modifiers = CollectionProperty(type=MeshModifiersCollection)
+    wm.ml_curve_modifiers = CollectionProperty(type=CurveModifiersCollection)
+    wm.ml_lattice_modifiers = CollectionProperty(type=LatticeModifiersCollection)
 
     bpy.app.handlers.load_post.append(on_file_load)
 
     set_mesh_modifier_collection_items()
+    set_curve_modifier_collection_items()
+    set_lattice_modifier_collection_items()
 
 
 def unregister():
