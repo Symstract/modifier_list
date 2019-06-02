@@ -82,3 +82,76 @@ mesh_generate_names_icons_types = [mod for mod in all_modifier_names_icons_types
 mesh_deform_names_icons_types = [mod for mod in all_modifier_names_icons_types()[26:42]]
 
 mesh_simulate_names_icons_types = [mod for mod in all_modifier_names_icons_types()[42:52]]
+
+# === Curve, surface and text modifiers by categories ===
+curve_modify_names_icons_types = (
+    ('Mesh Cache', 'MOD_MESHDEFORM', 'MESH_CACHE'),
+    ('Mesh Sequence Cache', 'MOD_MESHDEFORM', 'MESH_SEQUENCE_CACHE')
+)
+
+curve_generate_names_icons_types = (
+    ('Array', 'MOD_ARRAY', 'ARRAY'),
+    ('Bevel', 'MOD_BEVEL', 'BEVEL'),
+    ('Build', 'MOD_BUILD', 'BUILD'),
+    ('Decimate', 'MOD_DECIM', 'DECIMATE'),
+    ('Edge Split', 'MOD_EDGESPLIT', 'EDGE_SPLIT'),
+    ('Mirror', 'MOD_MIRROR', 'MIRROR'),
+    ('Remesh', 'MOD_REMESH', 'REMESH'),
+    ('Screw', 'MOD_SCREW', 'SCREW'),
+    ('Solidify', 'MOD_SOLIDIFY', 'SOLIDIFY'),
+    ('Subdivision Surface', 'MOD_SUBSURF', 'SUBSURF'),
+    ('Triangulate', 'MOD_TRIANGULATE', 'TRIANGULATE'),
+)
+
+curve_deform_names_icons_types = (
+    ('Armature', 'MOD_ARMATURE', 'ARMATURE'),
+    ('Cast', 'MOD_CAST', 'CAST'),
+    ('Curve', 'MOD_CURVE', 'CURVE'),
+    ('Hook', 'HOOK', 'HOOK'),
+    ('Lattice', 'MOD_LATTICE', 'LATTICE'),
+    ('Mesh Deform', 'MOD_MESHDEFORM', 'MESH_DEFORM'),
+    ('Shrinkwrap', 'MOD_SHRINKWRAP', 'SHRINKWRAP'),
+    ('Simple Deform', 'MOD_SIMPLEDEFORM', 'SIMPLE_DEFORM'),
+    ('Smooth', 'MOD_SMOOTH', 'SMOOTH'),
+    ('Warp', 'MOD_WARP', 'WARP'),
+    ('Wave', 'MOD_WAVE', 'WAVE'),
+)
+
+curve_simulate_names_icons_types = (
+    ('Soft Body', 'MOD_SOFT', 'SOFT_BODY'),
+)
+
+curve_all_names_icons_types = (
+    curve_modify_names_icons_types
+    + curve_generate_names_icons_types
+    + curve_deform_names_icons_types
+    + curve_simulate_names_icons_types
+)
+
+# === Lattice modifiers by categories ===
+lattice_modify_names_icons_types = (
+    ('Mesh Cache', 'MOD_MESHDEFORM', 'MESH_CACHE'),
+)
+
+lattice_deform_names_icons_types = (
+    ('Armature', 'MOD_ARMATURE', 'ARMATURE'),
+    ('Cast', 'MOD_CAST', 'CAST'),
+    ('Curve', 'MOD_CURVE', 'CURVE'),
+    ('Hook', 'HOOK', 'HOOK'),
+    ('Lattice', 'MOD_LATTICE', 'LATTICE'),
+    ('Mesh Deform', 'MOD_MESHDEFORM', 'MESH_DEFORM'),
+    ('Shrinkwrap', 'MOD_SHRINKWRAP', 'SHRINKWRAP'),
+    ('Simple Deform', 'MOD_SIMPLEDEFORM', 'SIMPLE_DEFORM'),
+    ('Warp', 'MOD_WARP', 'WARP'),
+    ('Wave', 'MOD_WAVE', 'WAVE'),
+)
+
+lattice_simulate_names_icons_types = (
+    ('Soft Body', 'MOD_SOFT', 'SOFT_BODY'),
+)
+
+lattice_all_names_icons_types = (
+    curve_modify_names_icons_types
+    + curve_deform_names_icons_types
+    + curve_simulate_names_icons_types
+)

@@ -261,6 +261,70 @@ class MESH_MT_ml_add_modifier_menu(Menu):
             col.operator("object.ml_modifier_add", text=name, icon=icon).modifier_type = mod
 
 
+class CURVE_MT_ml_add_modifier_menu(Menu):
+    bl_label = "Add Modifier"
+    bl_description = "Add a procedural operation/effect to the active object"
+
+    def draw(self, context):
+        layout = self.layout
+
+        row = layout.row()
+        row.alignment = 'LEFT'
+
+        col = row.column()
+        col.label(text="Modify")
+        col.separator(factor=0.3)
+        for name, icon, mod in modifier_categories.curve_modify_names_icons_types:
+            col.operator("object.ml_modifier_add", text=name, icon=icon).modifier_type = mod
+
+        col = row.column()
+        col.label(text="Generate")
+        col.separator(factor=0.3)
+        for name, icon, mod in modifier_categories.curve_generate_names_icons_types:
+            col.operator("object.ml_modifier_add", text=name, icon=icon).modifier_type = mod
+
+        col = row.column()
+        col.label(text="Deform")
+        col.separator(factor=0.3)
+        for name, icon, mod in modifier_categories.curve_deform_names_icons_types:
+            col.operator("object.ml_modifier_add", text=name, icon=icon).modifier_type = mod
+
+        col = row.column()
+        col.label(text="Simulate")
+        col.separator(factor=0.3)
+        for name, icon, mod in modifier_categories.curve_simulate_names_icons_types:
+            col.operator("object.ml_modifier_add", text=name, icon=icon).modifier_type = mod
+
+
+class LATTICE_MT_ml_add_modifier_menu(Menu):
+    bl_label = "Add Modifier"
+    bl_description = "Add a procedural operation/effect to the active object"
+
+    def draw(self, context):
+        layout = self.layout
+
+        row = layout.row()
+        row.alignment = 'LEFT'
+
+        col = row.column()
+        col.label(text="Modify")
+        col.separator(factor=0.3)
+        for name, icon, mod in modifier_categories.lattice_modify_names_icons_types:
+            col.operator("object.ml_modifier_add", text=name, icon=icon).modifier_type = mod
+
+        col = row.column()
+        col.label(text="Deform")
+        col.separator(factor=0.3)
+        for name, icon, mod in modifier_categories.lattice_deform_names_icons_types:
+            col.operator("object.ml_modifier_add", text=name, icon=icon).modifier_type = mod
+
+        col = row.column()
+        col.label(text="Simulate")
+        col.separator(factor=0.3)
+        for name, icon, mod in modifier_categories.lattice_simulate_names_icons_types:
+            col.operator("object.ml_modifier_add", text=name, icon=icon).modifier_type = mod
+
+
 class OBJECT_UL_modifier_list(UIList):
 
     def draw_item(self, context, layout, data, item, icon, active_data, active_propname):
@@ -451,6 +515,8 @@ class OBJECT_OT_ml_create_gizmo_object(Operator):
 #=======================================================================
 
 def modifiers_ui(context, layout, num_of_rows=False):
+    ob = context.object
+
     # === Favourite modifiers ===
     col = layout.column(align=True)
 
@@ -479,12 +545,18 @@ def modifiers_ui(context, layout, num_of_rows=False):
     col = layout.column()
     row = col.split(factor=0.59)
     wm = bpy.context.window_manager
-    row.prop_search(wm, "ml_mod_to_add", wm, "ml_mesh_modifiers", text="", icon='MODIFIER')
-    row.menu("MESH_MT_ml_add_modifier_menu")
+    if ob.type == 'MESH':
+        row.prop_search(wm, "ml_mod_to_add", wm, "ml_mesh_modifiers", text="", icon='MODIFIER')
+        row.menu("MESH_MT_ml_add_modifier_menu")
+    elif ob.type in {'CURVE', 'SURFACE', 'FONT'}:
+        row.prop_search(wm, "ml_mod_to_add", wm, "ml_mesh_modifiers", text="", icon='MODIFIER')
+        row.menu("CURVE_MT_ml_add_modifier_menu")
+    elif ob.type == 'LATTICE':
+        row.prop_search(wm, "ml_mod_to_add", wm, "ml_mesh_modifiers", text="", icon='MODIFIER')
+        row.menu("LATTICE_MT_ml_add_modifier_menu")
+
 
     # === Modifier list ===
-    ob = context.object
-
     layout.template_list("OBJECT_UL_modifier_list", "", ob, "modifiers",
                          ob, "ml_modifier_active_index", rows=num_of_rows)
 
@@ -520,8 +592,6 @@ def modifiers_ui(context, layout, num_of_rows=False):
     sub.operator(OBJECT_OT_ml_modifier_remove.bl_idname, icon='REMOVE', text="")
 
     # === Modifier settings ===
-    ob = context.object
-
     if ob:
         if ob.modifiers:
             active_mod_index = ob.ml_modifier_active_index
