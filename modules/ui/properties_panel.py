@@ -2,7 +2,7 @@ import bpy
 from bpy.types import Panel
 from bl_ui.properties_data_modifier import DATA_PT_modifiers as original_DATA_PT_modifiers
 
-from .modifiers.modifiers_ui import modifiers_ui
+from .modifiers_ui import modifiers_ui
 
 
 class DATA_PT_modifiers(Panel):

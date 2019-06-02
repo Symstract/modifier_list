@@ -2,7 +2,7 @@ import bpy
 from bpy.props import *
 from bpy.types import Operator
 
-from .modifiers.modifiers_ui import modifiers_ui
+from .modifiers_ui import modifiers_ui
 from .vertex_groups_ui import vertex_groups_ui
 
 
