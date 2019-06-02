@@ -75,8 +75,8 @@ class Preferences(AddonPreferences):
         # Draw two property searches per row
         for attr in attr_iter:
             row = col.split(factor=0.5, align=True)
-            row.prop_search(self, attr, wm, "ml_all_modifiers", text="", icon='MODIFIER')
-            row.prop_search(self, next(attr_iter), wm, "ml_all_modifiers", text="", icon='MODIFIER')
+            row.prop_search(self, attr, wm, "ml_mesh_modifiers", text="", icon='MODIFIER')
+            row.prop_search(self, next(attr_iter), wm, "ml_mesh_modifiers", text="", icon='MODIFIER')
 
         layout.separator()
 
