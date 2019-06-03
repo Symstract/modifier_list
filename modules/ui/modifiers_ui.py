@@ -473,7 +473,7 @@ def modifiers_ui(context, layout, num_of_rows=False):
             if (active_mod.type in modifier_categories.have_gizmo_property
                     or active_mod.type == 'UV_PROJECT'):
                 box = col.box()
-                box.operator("object.ml_create_gizmo_object", text="", icon='EMPTY_DATA'
+                box.operator("object.ml_gizmo_object_create", text="", icon='EMPTY_DATA'
                             ).modifier = active_mod.name
 
             # === Modifier specific settings ===
