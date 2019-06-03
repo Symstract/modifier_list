@@ -4,8 +4,8 @@ from bpy.types import Operator
 from ..utils import assign_gizmo_object_to_modifier
 
 
-class OBJECT_OT_ml_create_gizmo_object(Operator):
-    bl_idname = "object.ml_create_gizmo_object"
+class OBJECT_OT_ml_gizmo_object_create(Operator):
+    bl_idname = "object.ml_gizmo_object_create"
     bl_label = "Add Gizmo Object"
     bl_description = ("Add a gizmo object to the modifier.\n"
                       "\n"
