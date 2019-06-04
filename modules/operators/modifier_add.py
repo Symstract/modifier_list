@@ -2,6 +2,8 @@ import bpy
 from bpy.props import *
 from bpy.types import Operator
 
+from ..modifier_categories import all_modifier_names_icons_types
+
 class OBJECT_OT_ml_modifier_add(Operator):
     bl_idname = "object.ml_modifier_add"
     bl_label = "Add Modifier"
@@ -11,7 +13,14 @@ class OBJECT_OT_ml_modifier_add(Operator):
     modifier_type: StringProperty()
 
     def execute(self, context):
-        bpy.ops.object.modifier_add(type=self.modifier_type)
+        try:
+            bpy.ops.object.modifier_add(type=self.modifier_type)
+        except TypeError:
+            for mod in all_modifier_names_icons_types():
+                if mod[2] == self.modifier_type:
+                    modifier_name = mod[0]
+                    break
+            self.report({'ERROR'}, f"Cannot add {modifier_name} modifier for this object type")
 
         ob = context.object
 
