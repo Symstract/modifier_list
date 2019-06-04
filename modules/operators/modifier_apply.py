@@ -20,7 +20,7 @@ class OBJECT_OT_ml_modifier_apply(Operator):
     )
 
     def execute(self, context):
-        if context.mode == 'EDIT_MESH':
+        if context.mode in {'EDIT_MESH', 'EDIT_CURVE', 'EDIT_SURFACE', 'EDIT_TEXT', 'EDIT_LATTICE'}:
             bpy.ops.object.editmode_toggle()
             bpy.ops.ed.undo_push(message="Toggle Editmode")
             bpy.ops.object.modifier_apply(apply_as=self.apply_as, modifier=self.modifier)
