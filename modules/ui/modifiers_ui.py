@@ -450,8 +450,9 @@ def modifiers_ui(context, layout, num_of_rows=False):
             mod_show_editmode_and_cage(active_mod, sub, scale_x=1.1)
 
             row = box.row()
-            row.operator("object.ml_modifier_apply",
-                         text="Apply").modifier = active_mod.name
+            apply = row.operator("object.ml_modifier_apply", text="Apply")
+            apply.modifier = active_mod.name
+            apply.apply_as = 'DATA'
 
             sub = row.row()
             # Cloth and Soft Body have "Apply As Shape Key" but no "Copy Modifier" .
