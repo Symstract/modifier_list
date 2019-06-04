@@ -29,9 +29,9 @@ class OBJECT_OT_ml_modifier_apply(Operator):
             try:
                 bpy.ops.object.modifier_apply(apply_as=self.apply_as, modifier=self.modifier)
             except RuntimeError as rte:
-                message = str(rte).replace("Error:", "")
+                message = str(rte).replace("Error: ", "")
                 message = message[:-1]
-                self.report(type={'WARNING'}, message=message)
+                self.report(type={'ERROR'}, message=message)
                 bpy.ops.object.editmode_toggle()
                 return {'FINISHED'}
 
@@ -41,9 +41,9 @@ class OBJECT_OT_ml_modifier_apply(Operator):
             try:
                 bpy.ops.object.modifier_apply(apply_as=self.apply_as, modifier=self.modifier)
             except RuntimeError as rte:
-                message = str(rte).replace("Error:", "")
+                message = str(rte).replace("Error: ", "")
                 message = message[:-1]
-                self.report(type={'WARNING'}, message=message)
+                self.report(type={'ERROR'}, message=message)
                 return {'FINISHED'}
 
         # Set correct active_mod index in case the applied modifier is
