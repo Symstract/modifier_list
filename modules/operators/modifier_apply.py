@@ -25,11 +25,26 @@ class OBJECT_OT_ml_modifier_apply(Operator):
         if context.mode in {'EDIT_MESH', 'EDIT_CURVE', 'EDIT_SURFACE', 'EDIT_TEXT', 'EDIT_LATTICE'}:
             bpy.ops.object.editmode_toggle()
             bpy.ops.ed.undo_push(message="Toggle Editmode")
-            bpy.ops.object.modifier_apply(apply_as=self.apply_as, modifier=self.modifier)
+
+            try:
+                bpy.ops.object.modifier_apply(apply_as=self.apply_as, modifier=self.modifier)
+            except RuntimeError as rte:
+                message = str(rte).replace("Error:", "")
+                message = message[:-1]
+                self.report(type={'WARNING'}, message=message)
+                bpy.ops.object.editmode_toggle()
+                return {'FINISHED'}
+
             bpy.ops.ed.undo_push(message="Apply Modifier")
             bpy.ops.object.editmode_toggle()
         else:
-            bpy.ops.object.modifier_apply(apply_as=self.apply_as, modifier=self.modifier)
+            try:
+                bpy.ops.object.modifier_apply(apply_as=self.apply_as, modifier=self.modifier)
+            except RuntimeError as rte:
+                message = str(rte).replace("Error:", "")
+                message = message[:-1]
+                self.report(type={'WARNING'}, message=message)
+                return {'FINISHED'}
 
         # Set correct active_mod index in case the applied modifier is
         # not the first in modifier stack.
