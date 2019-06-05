@@ -19,7 +19,7 @@ def _get_ml_collection(context):
     return ml_col
 
 
-def _create_gizmo_object(self, context, modifier, place_at_vertex):
+def _create_gizmo_object(self, context, modifier):
     """Create a gizmo (empty) object"""
     ob = context.object
     ob.update_from_editmode()
@@ -28,12 +28,11 @@ def _create_gizmo_object(self, context, modifier, place_at_vertex):
 
     sel_verts = [v for v in mesh.vertices if v.select]
 
-    if place_at_vertex :
-        if len(sel_verts) != 1:
-            self.report(type={'INFO'}, message="Please, select (only) a single vertex")
-            return
-        else:
-            vert_loc = ob_mat @ sel_verts[0].co
+    if len(sel_verts) == 1:
+        place_at_vertex = True
+        vert_loc = ob_mat @ sel_verts[0].co
+    else:
+        place_at_vertex = False
 
     gizmo_ob = bpy.data.objects.new(modifier + "_Gizmo", None)
     gizmo_ob.empty_display_type = 'ARROWS'
@@ -49,7 +48,7 @@ def _create_gizmo_object(self, context, modifier, place_at_vertex):
     return gizmo_ob
 
 
-def assign_gizmo_object_to_modifier(self, context, modifier, place_at_vertex=False):
+def assign_gizmo_object_to_modifier(self, context, modifier):
     """Assign a gizmo object to the correct property of the given modifier"""
     ob = context.object
     mod = ob.modifiers[modifier]
@@ -61,15 +60,14 @@ def assign_gizmo_object_to_modifier(self, context, modifier, place_at_vertex=Fal
 
         for p in projectors[0:projector_count]:
             if not p.object:
-                gizmo_ob = _create_gizmo_object(self, context, modifier,
-                                                place_at_vertex=place_at_vertex)
+                gizmo_ob = _create_gizmo_object(self, context, modifier)
                 p.object = gizmo_ob
                 break
 
         return
 
     # If modifier is not UV Project, continue normally
-    gizmo_ob = _create_gizmo_object(self, context, modifier, place_at_vertex=place_at_vertex)
+    gizmo_ob = _create_gizmo_object(self, context, modifier)
 
     if mod.type == 'ARRAY':
         mod.use_object_offset = True
