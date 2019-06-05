@@ -22,13 +22,13 @@ class OBJECT_OT_ml_modifier_add(Operator):
                     modifier_name = mod[0]
                     break
             self.report({'ERROR'}, f"Cannot add {modifier_name} modifier for this object type")
+            return {'FINISHED'}
 
         ob = context.object
 
         # Enable auto smooth if modifier is weighted normal
-        if ob.type == 'MESH':
-            if self.modifier_type == 'WEIGHTED_NORMAL':
-                ob.data.use_auto_smooth = True
+        if self.modifier_type == 'WEIGHTED_NORMAL':
+            ob.data.use_auto_smooth = True
 
         # Set correct active_mod index
         mods = ob.modifiers
