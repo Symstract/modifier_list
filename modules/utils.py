@@ -26,11 +26,13 @@ def _create_gizmo_object(self, context, modifier):
     ob_mat = ob.matrix_world
     mesh = ob.data
 
-    sel_verts = [v for v in mesh.vertices if v.select]
-
-    if len(sel_verts) == 1:
-        place_at_vertex = True
-        vert_loc = ob_mat @ sel_verts[0].co
+    if ob.mode == 'EDIT_MESH':
+        sel_verts = [v for v in mesh.vertices if v.select]
+        if len(sel_verts) == 1:
+            place_at_vertex = True
+            vert_loc = ob_mat @ sel_verts[0].co
+        else:
+            place_at_vertex = False
     else:
         place_at_vertex = False
 
