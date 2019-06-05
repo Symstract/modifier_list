@@ -471,11 +471,12 @@ def modifiers_ui(context, layout, num_of_rows=False):
                              text="Copy").modifier = active_mod.name
 
             # === Gizmo object settings ===
-            if (active_mod.type in modifier_categories.have_gizmo_property
-                    or active_mod.type == 'UV_PROJECT'):
-                box = col.box()
-                box.operator("object.ml_gizmo_object_create", text="", icon='EMPTY_DATA'
-                            ).modifier = active_mod.name
+            if ob.type == 'MESH':
+                if (active_mod.type in modifier_categories.have_gizmo_property
+                        or active_mod.type == 'UV_PROJECT'):
+                    box = col.box()
+                    box.operator("object.ml_gizmo_object_create", text="", icon='EMPTY_DATA'
+                                ).modifier = active_mod.name
 
             # === Modifier specific settings ===
             box = col.box()
