@@ -420,92 +420,93 @@ def modifiers_ui(context, layout, num_of_rows=False):
     sub.operator(OBJECT_OT_ml_modifier_remove.bl_idname, icon='REMOVE', text="")
 
     # === Modifier settings ===
-    if ob:
-        if ob.modifiers:
-            active_mod_index = ob.ml_modifier_active_index
-            active_mod = ob.modifiers[active_mod_index]
+    if not ob.modifiers:
+        return
 
-            all_modifier_names_icons_types = modifier_categories.all_modifier_names_icons_types
+    active_mod_index = ob.ml_modifier_active_index
+    active_mod = ob.modifiers[active_mod_index]
 
-            active_mod_icon = [icon for name, icon, mod in all_modifier_names_icons_types()
-                               if mod == active_mod.type].pop()
+    all_modifier_names_icons_types = modifier_categories.all_modifier_names_icons_types
 
-            col = layout.column(align=True)
+    active_mod_icon = [icon for name, icon, mod in all_modifier_names_icons_types()
+                        if mod == active_mod.type].pop()
 
-            # === General settings ===
+    col = layout.column(align=True)
+
+    # === General settings ===
+    box = col.box()
+    row = box.row()
+    sub = row.row()
+    sub.label(text="", icon=active_mod_icon)
+    sub.prop(active_mod, "name", text="")
+
+    sub = row.row(align=True)
+    sub_sub = sub.row(align=True)
+    sub_sub.scale_x = 1.1
+    # Hide visibility toggles for collision modifier as they are not used
+    # in the regular UI either (apparently can cause problems in some scenes).
+    if active_mod.type != 'COLLISION':
+        sub_sub.prop(active_mod, "show_render", text="")
+        sub_sub.prop(active_mod, "show_viewport", text="")
+    mod_show_editmode_and_cage(active_mod, sub, scale_x=1.1)
+
+    row = box.row()
+    apply = row.operator("object.ml_modifier_apply", text="Apply")
+    apply.modifier = active_mod.name
+    apply.apply_as = 'DATA'
+
+    sub = row.row()
+    # Cloth and Soft Body have "Apply As Shape Key" but no "Copy Modifier" .
+    # In those cases "Apply As Shape Key" doesn't need to be scaled up.
+    if active_mod.type not in {'CLOTH', 'SOFT_BODY'}:
+        sub.scale_x = 1.3
+
+    if active_mod.type in modifier_categories.support_apply_as_shape_key:
+        apply_as_shape_key = sub.operator("object.ml_modifier_apply",
+                                            text="Apply as Shape Key")
+        apply_as_shape_key.modifier=active_mod.name
+        apply_as_shape_key.apply_as='SHAPE'
+
+    if active_mod.type not in modifier_categories.dont_support_copy:
+        row.operator("object.ml_modifier_copy",
+                        text="Copy").modifier = active_mod.name
+
+    # === Gizmo object settings ===
+    if ob.type == 'MESH':
+        if (active_mod.type in modifier_categories.have_gizmo_property
+                or active_mod.type == 'UV_PROJECT'):
+            gizmo_ob_prop = modifier_categories.have_gizmo_property[active_mod.type]
+            gizmo_ob = getattr(active_mod, gizmo_ob_prop)
+
             box = col.box()
-            row = box.row()
-            sub = row.row()
-            sub.label(text="", icon=active_mod_icon)
-            sub.prop(active_mod, "name", text="")
-
-            sub = row.row(align=True)
-            sub_sub = sub.row(align=True)
-            sub_sub.scale_x = 1.1
-            # Hide visibility toggles for collision modifier as they are not used
-            # in the regular UI either (apparently can cause problems in some scenes).
-            if active_mod.type != 'COLLISION':
-                sub_sub.prop(active_mod, "show_render", text="")
-                sub_sub.prop(active_mod, "show_viewport", text="")
-            mod_show_editmode_and_cage(active_mod, sub, scale_x=1.1)
-
-            row = box.row()
-            apply = row.operator("object.ml_modifier_apply", text="Apply")
-            apply.modifier = active_mod.name
-            apply.apply_as = 'DATA'
-
-            sub = row.row()
-            # Cloth and Soft Body have "Apply As Shape Key" but no "Copy Modifier" .
-            # In those cases "Apply As Shape Key" doesn't need to be scaled up.
-            if active_mod.type not in {'CLOTH', 'SOFT_BODY'}:
-                sub.scale_x = 1.3
-
-            if active_mod.type in modifier_categories.support_apply_as_shape_key:
-                apply_as_shape_key = sub.operator("object.ml_modifier_apply",
-                                                    text="Apply as Shape Key")
-                apply_as_shape_key.modifier=active_mod.name
-                apply_as_shape_key.apply_as='SHAPE'
-
-            if active_mod.type not in modifier_categories.dont_support_copy:
-                row.operator("object.ml_modifier_copy",
-                             text="Copy").modifier = active_mod.name
-
-            # === Gizmo object settings ===
-            if ob.type == 'MESH':
-                if (active_mod.type in modifier_categories.have_gizmo_property
-                        or active_mod.type == 'UV_PROJECT'):
-                    gizmo_ob_prop = modifier_categories.have_gizmo_property[active_mod.type]
-                    gizmo_ob = getattr(active_mod, gizmo_ob_prop)
-
-                    box = col.box()
-                    row = box.row(align=True)
-                    row.scale_x = 1.5
-                    if not gizmo_ob:
-                        row.operator("object.ml_gizmo_object_create", text="Add Gizmo", icon='EMPTY_DATA'
-                                    ).modifier = active_mod.name
-                    else:
-                        icon = 'RESTRICT_VIEW_OFF' if not gizmo_ob.hide_viewport else 'RESTRICT_VIEW_ON'
-                        depress = not gizmo_ob.hide_viewport
-                        row.operator("object.ml_gizmo_object_toggle_visibility", text="Show Gizmo",
-                                     icon=icon, depress=depress)
-
-
-            # === Modifier specific settings ===
-            box = col.box()
-            # A column is needed here to keep the layout more compact,
-            # because in a box separators give an unnecessarily big space.
-            col = box.column()
-            # Custom layouts for laplacian deform, mesh deform and
-            # surface deform because bind button doesn't work otherwise.
-            if active_mod.type == 'LAPLACIANDEFORM':
-                ml_modifier_layouts.LAPLACIANDEFORM(col, ob, active_mod)
-            elif active_mod.type == 'MESH_DEFORM':
-                ml_modifier_layouts.MESH_DEFORM(col, ob, active_mod)
-            elif active_mod.type =='SURFACE_DEFORM':
-                ml_modifier_layouts.SURFACE_DEFORM(col, ob, active_mod)
+            row = box.row(align=True)
+            row.scale_x = 1.5
+            if not gizmo_ob:
+                row.operator("object.ml_gizmo_object_create", text="Add Gizmo", icon='EMPTY_DATA'
+                            ).modifier = active_mod.name
             else:
-                mp = DATA_PT_modifiers(context)
-                getattr(mp, active_mod.type)(col, ob, active_mod)
+                icon = 'RESTRICT_VIEW_OFF' if not gizmo_ob.hide_viewport else 'RESTRICT_VIEW_ON'
+                depress = not gizmo_ob.hide_viewport
+                row.operator("object.ml_gizmo_object_toggle_visibility", text="Show Gizmo",
+                                icon=icon, depress=depress)
+
+
+    # === Modifier specific settings ===
+    box = col.box()
+    # A column is needed here to keep the layout more compact,
+    # because in a box separators give an unnecessarily big space.
+    col = box.column()
+    # Custom layouts for laplacian deform, mesh deform and
+    # surface deform because bind button doesn't work otherwise.
+    if active_mod.type == 'LAPLACIANDEFORM':
+        ml_modifier_layouts.LAPLACIANDEFORM(col, ob, active_mod)
+    elif active_mod.type == 'MESH_DEFORM':
+        ml_modifier_layouts.MESH_DEFORM(col, ob, active_mod)
+    elif active_mod.type =='SURFACE_DEFORM':
+        ml_modifier_layouts.SURFACE_DEFORM(col, ob, active_mod)
+    else:
+        mp = DATA_PT_modifiers(context)
+        getattr(mp, active_mod.type)(col, ob, active_mod)
 
 
 # Registering
