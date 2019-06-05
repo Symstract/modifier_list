@@ -474,9 +474,17 @@ def modifiers_ui(context, layout, num_of_rows=False):
             if ob.type == 'MESH':
                 if (active_mod.type in modifier_categories.have_gizmo_property
                         or active_mod.type == 'UV_PROJECT'):
+                    gizmo_ob_prop = modifier_categories.have_gizmo_property[active_mod.type]
+                    gizmo_ob = getattr(active_mod, gizmo_ob_prop)
+
                     box = col.box()
-                    box.operator("object.ml_gizmo_object_create", text="", icon='EMPTY_DATA'
-                                ).modifier = active_mod.name
+                    row = box.row(align=True)
+                    row.scale_x = 1.5
+                    if not gizmo_ob:
+                        row.operator("object.ml_gizmo_object_create", text="Add Gizmo", icon='EMPTY_DATA'
+                                    ).modifier = active_mod.name
+                    else:
+                        row.prop(gizmo_ob, "hide_viewport", text="Toggle Gizmo")
 
             # === Modifier specific settings ===
             box = col.box()
