@@ -2,7 +2,8 @@ import bpy
 from bpy.props import *
 from bpy.types import Operator
 
-from ..modifier_categories import all_modifier_names_icons_types
+from ..modifier_categories import all_modifier_names_icons_types, have_gizmo_property
+from ..utils import assign_gizmo_object_to_modifier
 
 class OBJECT_OT_ml_modifier_add(Operator):
     bl_idname = "object.ml_modifier_add"
@@ -34,4 +35,15 @@ class OBJECT_OT_ml_modifier_add(Operator):
         mods_len = len(mods) - 1
         ob.ml_modifier_active_index = mods_len
 
+        # Add a gizmo object
+        mod = ob.modifiers[-1]
+        if self.add_gizmo and ob.type == 'MESH':
+            if mod.type in have_gizmo_property or mod.type == 'UV_PROJECT':
+                assign_gizmo_object_to_modifier(self, context, mod.name)
+
         return {'FINISHED'}
+
+    def invoke(self, context, event):
+        self.add_gizmo = True if event.shift else False
+
+        return self.execute(context)
