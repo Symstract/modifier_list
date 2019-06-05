@@ -34,7 +34,8 @@ def _create_gizmo_object(self, context, modifier):
     else:
         place_at_vertex = False
 
-    gizmo_ob = bpy.data.objects.new(modifier + "_Gizmo Object", None)
+    gizmo_ob = bpy.data.objects.new(modifier + "_Gizmo", None)
+    gizmo_ob.empty_display_type = 'ARROWS'
 
     if place_at_vertex:
         gizmo_ob.location = vert_loc
