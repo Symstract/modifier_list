@@ -353,6 +353,16 @@ class OBJECT_PT_Gizmo_object_settings(Panel):
 
         layout.prop(gizmo_ob, "name", text="")
         layout.prop(gizmo_ob ,"empty_display_size", text="Gizmo Size")
+
+        layout.label(text="Parent")
+
+        depress = True if gizmo_ob.parent else False
+        unset = True if gizmo_ob.parent else False
+        layout.operator("object.ml_gizmo_object_parent_set", text="Gizmo To Active Object",
+                        depress=depress).unset = unset
+
+        layout.separator()
+
         layout.operator("object.ml_gizmo_object_select")
 
 # UI
