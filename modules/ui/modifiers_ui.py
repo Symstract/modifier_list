@@ -502,10 +502,9 @@ def modifiers_ui(context, layout, num_of_rows=False):
                 row.operator("object.ml_gizmo_object_create", text="Add Gizmo", icon='EMPTY_DATA'
                             ).modifier = active_mod.name
             else:
-                icon = 'RESTRICT_VIEW_OFF' if not gizmo_ob.hide_viewport else 'RESTRICT_VIEW_ON'
                 depress = not gizmo_ob.hide_viewport
                 row.operator("object.ml_gizmo_object_toggle_visibility", text="Show Gizmo",
-                                icon=icon, depress=depress)
+                                icon='EMPTY_DATA', depress=depress)
                 row.popover("OBJECT_PT_Gizmo_object_settings", text="", icon='PREFERENCES')
 
 
