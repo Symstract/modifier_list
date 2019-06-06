@@ -1,6 +1,7 @@
 from bpy.types import Operator
 
 from ..modifier_categories import have_gizmo_property
+from ..utils import get_gizmo_object
 
 
 class OBJECT_OT_ml_gizmo_object_(Operator):
@@ -14,12 +15,7 @@ class OBJECT_OT_ml_gizmo_object_(Operator):
     bl_options = {'REGISTER', 'INTERNAL', 'UNDO'}
 
     def execute(self, context):
-        ob = context.object
-        active_mod_index = ob.ml_modifier_active_index
-        active_mod = ob.modifiers[active_mod_index]
-
-        gizmo_ob_prop = have_gizmo_property[active_mod.type]
-        gizmo_ob = getattr(active_mod, gizmo_ob_prop)
+        gizmo_ob = get_gizmo_object(context)
 
         gizmo_ob.hide_viewport = not gizmo_ob.hide_viewport
 
