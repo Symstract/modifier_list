@@ -11,7 +11,7 @@ class OBJECT_OT_ml_gizmo_object_toggle_visibility(Operator):
     """
     bl_idname = "object.ml_gizmo_object_toggle_visibility"
     bl_label = "Toggle Gizmo Object Visibility"
-    bl_description = "Toggle Gizmo Object Visibility"
+    bl_description = "Toggle gizmo object visibility"
     bl_options = {'REGISTER', 'INTERNAL', 'UNDO'}
 
     def execute(self, context):
