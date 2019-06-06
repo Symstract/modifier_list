@@ -1,4 +1,3 @@
-from bpy.props import *
 from bpy.types import Operator
 
 from ..modifier_categories import have_gizmo_property
@@ -13,8 +12,6 @@ class OBJECT_OT_ml_gizmo_object_toggle_visibility(Operator):
     bl_label = "Toggle Gizmo Object Visibility"
     bl_description = "Toggle Gizmo Object Visibility"
     bl_options = {'REGISTER', 'INTERNAL', 'UNDO'}
-
-    modifier: StringProperty()
 
     def execute(self, context):
         ob = context.object
