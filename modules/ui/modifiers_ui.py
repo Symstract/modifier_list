@@ -500,7 +500,7 @@ def modifiers_ui(context, layout, num_of_rows=False):
             row = box.row(align=True)
             row.scale_x = 1.5
             if not gizmo_ob:
-                row.operator("object.ml_gizmo_object_create", text="Add Gizmo", icon='EMPTY_DATA'
+                row.operator("object.ml_gizmo_object_add", text="Add Gizmo", icon='EMPTY_DATA'
                             ).modifier = active_mod.name
             else:
                 depress = not gizmo_ob.hide_viewport
