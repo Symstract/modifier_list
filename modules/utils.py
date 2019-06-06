@@ -1,6 +1,6 @@
 import bpy
 
-from . import modifier_categories
+from .modifier_categories import have_gizmo_property
 
 
 # Functions for adding a gizmo object
@@ -74,6 +74,19 @@ def assign_gizmo_object_to_modifier(self, context, modifier):
     if mod.type == 'ARRAY':
         mod.use_object_offset = True
 
-    gizmo_ob_prop = modifier_categories.have_gizmo_property[mod.type]
+    gizmo_ob_prop = have_gizmo_property[mod.type]
 
     setattr(mod, gizmo_ob_prop, gizmo_ob)
+
+
+# Other gizmo functions
+# ======================================================================
+
+def get_gizmo_object(context):
+        ob = context.object
+        active_mod_index = ob.ml_modifier_active_index
+        active_mod = ob.modifiers[active_mod_index]
+
+        gizmo_ob_prop = have_gizmo_property[active_mod.type]
+        gizmo_ob = getattr(active_mod, gizmo_ob_prop)
+        return gizmo_ob

@@ -355,6 +355,7 @@ class OBJECT_PT_Gizmo_object_settings(Panel):
         gizmo_ob = getattr(active_mod, gizmo_ob_prop)
 
         layout.prop(gizmo_ob ,"empty_display_size", text="Gizmo Size")
+        layout.operator("object.ml_gizmo_object_select")
 
 # UI
 #=======================================================================
