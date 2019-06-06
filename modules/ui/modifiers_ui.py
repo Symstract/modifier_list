@@ -9,6 +9,7 @@ from bpy.props import *
 from bpy.types import (
     Menu,
     Operator,
+    Panel,
     PropertyGroup,
     UIList
 )
@@ -339,6 +340,22 @@ class OBJECT_OT_ml_modifier_remove(Operator, ModifierListActions):
     action = 'REMOVE'
 
 
+class OBJECT_PT_Gizmo_object_settings(Panel):
+    bl_label = "Gizmo Settings"
+    bl_space_type = 'VIEW_3D'
+    bl_region_type = 'WINDOW'
+
+    def draw(self, context):
+        layout = self.layout
+
+        ob = context.object
+        active_mod_index = ob.ml_modifier_active_index
+        active_mod = ob.modifiers[active_mod_index]
+        gizmo_ob_prop = modifier_categories.have_gizmo_property[active_mod.type]
+        gizmo_ob = getattr(active_mod, gizmo_ob_prop)
+
+        layout.prop(gizmo_ob ,"empty_display_size", text="Gizmo Size")
+
 # UI
 #=======================================================================
 
@@ -489,6 +506,7 @@ def modifiers_ui(context, layout, num_of_rows=False):
                 depress = not gizmo_ob.hide_viewport
                 row.operator("object.ml_gizmo_object_toggle_visibility", text="Show Gizmo",
                                 icon=icon, depress=depress)
+                row.popover("OBJECT_PT_Gizmo_object_settings", text="", icon='PREFERENCES')
 
 
     # === Modifier specific settings ===
