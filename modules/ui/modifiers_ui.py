@@ -17,6 +17,7 @@ from bpy.types import (
 from .. import icons
 from . import ml_modifier_layouts
 from .. import modifier_categories
+from..utils import get_gizmo_object
 
 
 # UI elements
@@ -348,11 +349,7 @@ class OBJECT_PT_Gizmo_object_settings(Panel):
     def draw(self, context):
         layout = self.layout
 
-        ob = context.object
-        active_mod_index = ob.ml_modifier_active_index
-        active_mod = ob.modifiers[active_mod_index]
-        gizmo_ob_prop = modifier_categories.have_gizmo_property[active_mod.type]
-        gizmo_ob = getattr(active_mod, gizmo_ob_prop)
+        gizmo_ob = get_gizmo_object(context)
 
         layout.prop(gizmo_ob ,"empty_display_size", text="Gizmo Size")
         layout.operator("object.ml_gizmo_object_select")
@@ -493,8 +490,7 @@ def modifiers_ui(context, layout, num_of_rows=False):
     if ob.type == 'MESH':
         if (active_mod.type in modifier_categories.have_gizmo_property
                 or active_mod.type == 'UV_PROJECT'):
-            gizmo_ob_prop = modifier_categories.have_gizmo_property[active_mod.type]
-            gizmo_ob = getattr(active_mod, gizmo_ob_prop)
+            gizmo_ob = get_gizmo_object(context)
 
             box = col.box()
             row = box.row(align=True)
