@@ -17,7 +17,7 @@ from bpy.types import (
 from .. import icons
 from . import ml_modifier_layouts
 from .. import modifier_categories
-from..utils import get_gizmo_object
+from..utils import get_gizmo_object, delete_gizmo_object
 
 
 # UI elements
@@ -311,10 +311,19 @@ class ModifierListActions:
                 bpy.ops.object.modifier_move_down(modifier=active_mod_name)
                 ob.ml_modifier_active_index = active_mod_index_down
             elif self.action == 'REMOVE':
+                if self.delete_gizmo:
+                    delete_gizmo_object(self, context)
+
+
                 bpy.ops.object.modifier_remove(modifier=active_mod_name)
                 ob.ml_modifier_active_index = active_mod_index_up
 
         return {'FINISHED'}
+
+    def invoke(self, context, event):
+        self.delete_gizmo = True if event.shift else False
+
+        return self.execute(context)
 
 
 class OBJECT_OT_ml_modifier_move_up(Operator, ModifierListActions):
@@ -336,7 +345,9 @@ class OBJECT_OT_ml_modifier_move_down(Operator, ModifierListActions):
 class OBJECT_OT_ml_modifier_remove(Operator, ModifierListActions):
     bl_idname = "object.ml_modifier_remove"
     bl_label = "Remove Modifier"
-    bl_description = "Remove modifier from the active object"
+    bl_description = ("Remove modifier from the active object\n"
+                     "\n"
+                     "Hold shift to also delete its gizmo object (if it has one)")
 
     action = 'REMOVE'
 

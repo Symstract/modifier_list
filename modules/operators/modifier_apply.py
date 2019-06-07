@@ -5,12 +5,14 @@ from bpy.props import *
 from bpy.types import Operator
 
 from ..modifier_categories import curve_deform_names_icons_types
-
+from ..utils import delete_gizmo_object
 
 class OBJECT_OT_ml_modifier_apply(Operator):
     bl_idname = "object.ml_modifier_apply"
     bl_label = "Apply Modifier"
-    bl_description = "Apply modifier and remove from the stack"
+    bl_description = ("Apply modifier and remove from the stack.\n"
+                      "\n"
+                      "Hold shift to also delete its gizmo object (if it has one)")
     bl_options = {'REGISTER', 'INTERNAL', 'UNDO'}
 
     modifier: StringProperty()
@@ -26,6 +28,10 @@ class OBJECT_OT_ml_modifier_apply(Operator):
     def execute(self, context):
         ob = context.object
         self.mod_type = ob.modifiers[self.modifier].type
+
+        if self.delete_gizmo:
+            delete_gizmo_object(self, context)
+
 
         if context.mode in {'EDIT_MESH', 'EDIT_CURVE', 'EDIT_SURFACE', 'EDIT_TEXT', 'EDIT_LATTICE'}:
             bpy.ops.object.editmode_toggle()
@@ -65,6 +71,11 @@ class OBJECT_OT_ml_modifier_apply(Operator):
             self.report({'INFO'}, "Applied modifier was not first, result may not be as expected")
 
         return {'FINISHED'}
+
+    def invoke(self, context, event):
+        self.delete_gizmo = True if event.shift else False
+
+        return self.execute(context)
 
     def curve_modifier_apply_report(self):
         curve_deform_mods = [mod[2] for mod in curve_deform_names_icons_types]

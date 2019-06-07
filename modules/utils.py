@@ -87,6 +87,9 @@ def get_gizmo_object(context):
     active_mod_index = ob.ml_modifier_active_index
     active_mod = ob.modifiers[active_mod_index]
 
+    if active_mod.type not in have_gizmo_property:
+        return None
+
     gizmo_ob_prop = have_gizmo_property[active_mod.type]
     gizmo_ob = getattr(active_mod, gizmo_ob_prop)
     return gizmo_ob
@@ -102,10 +105,11 @@ def _delete_empty_ml_collection():
             cols.remove(ml_col)
 
 
-def delete_gizmo_object(context):
+def delete_gizmo_object(self, context):
     obs = bpy.data.objects
     gizmo_ob = get_gizmo_object(context)
 
-    obs.remove(gizmo_ob)
-
-    _delete_empty_ml_collection()
+    if gizmo_ob:
+        obs.remove(gizmo_ob)
+        _delete_empty_ml_collection()
+        self.report({'INFO'}, "Deleted a gizmo object")
