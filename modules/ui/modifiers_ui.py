@@ -381,6 +381,7 @@ class OBJECT_PT_Gizmo_object_settings(Panel):
         layout.separator()
 
         layout.operator("object.ml_gizmo_object_select")
+        layout.operator("object.ml_gizmo_object_delete")
 
 # UI
 #=======================================================================
