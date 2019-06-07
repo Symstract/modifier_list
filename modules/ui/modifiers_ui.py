@@ -530,7 +530,7 @@ def modifiers_ui(context, layout, num_of_rows=False):
     if ob.type == 'MESH':
         if (active_mod.type in modifier_categories.have_gizmo_property
                 or active_mod.type == 'UV_PROJECT'):
-            gizmo_ob = None if active_mod.type == 'UV_PROJECT' else get_gizmo_object(context)
+            gizmo_ob = get_gizmo_object(context)
 
             box = col.box()
             row = box.row(align=True)
