@@ -349,6 +349,7 @@ class OBJECT_PT_Gizmo_object_settings(Panel):
     def draw(self, context):
         layout = self.layout
 
+        ob = context.object
         gizmo_ob = get_gizmo_object(context)
 
         layout.prop(gizmo_ob, "name", text="")
@@ -356,9 +357,25 @@ class OBJECT_PT_Gizmo_object_settings(Panel):
 
         layout.label(text="Parent")
 
-        depress = True if gizmo_ob.parent else False
-        unset = True if gizmo_ob.parent else False
-        layout.operator("object.ml_gizmo_object_parent_set", text="Gizmo To Active Object",
+        is_ob_parented_to_gizmo = True if ob.parent == gizmo_ob else False
+        is_gizmo_parented_to_ob = True if gizmo_ob.parent == ob else False
+
+        col = layout.column(align=True)
+
+        sub = col.row()
+        if is_ob_parented_to_gizmo:
+            sub.enabled = False
+        depress = is_gizmo_parented_to_ob
+        unset = is_gizmo_parented_to_ob
+        sub.operator("object.ml_gizmo_object_parent_set", text="Gizmo To Active Object",
+                        depress=depress).unset = unset
+
+        sub = col.row()
+        if is_gizmo_parented_to_ob:
+            sub.enabled = False
+        depress = is_ob_parented_to_gizmo
+        unset = is_ob_parented_to_gizmo
+        sub.operator("object.ml_gizmo_object_child_set", text="Active Object To Gizmo",
                         depress=depress).unset = unset
 
         layout.separator()
