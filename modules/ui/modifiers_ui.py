@@ -345,7 +345,7 @@ class OBJECT_OT_ml_modifier_move_down(Operator, ModifierListActions):
 class OBJECT_OT_ml_modifier_remove(Operator, ModifierListActions):
     bl_idname = "object.ml_modifier_remove"
     bl_label = "Remove Modifier"
-    bl_description = ("Remove modifier from the active object\n"
+    bl_description = ("Remove modifier from the active object.\n"
                      "\n"
                      "Hold shift to also delete its gizmo object (if it has one)")
 

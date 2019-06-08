@@ -7,7 +7,7 @@ from ..utils import get_gizmo_object
 class OBJECT_OT_ml_gizmo_object_select(Operator):
     bl_idname = "object.ml_gizmo_object_select"
     bl_label = "Select Gizmo"
-    bl_description = ("Select gizmo object\n"
+    bl_description = ("Select the gizmo object.\n"
                       "\n"
                       "Hold shift to extend selection")
     bl_options = {'REGISTER', 'INTERNAL', 'UNDO'}
