@@ -366,6 +366,14 @@ class OBJECT_PT_Gizmo_object_settings(Panel):
         layout.prop(gizmo_ob, "name", text="")
         layout.prop(gizmo_ob ,"empty_display_size", text="Gizmo Size")
 
+        layout.label(text="Location:")
+        col = layout.column()
+        col.prop(gizmo_ob, "location", text="")
+
+        layout.label(text="Rotation:")
+        col = layout.column()
+        col.prop(gizmo_ob, "rotation_euler", text="")
+
         layout.label(text="Parent")
 
         is_ob_parented_to_gizmo = True if ob.parent == gizmo_ob else False
@@ -393,6 +401,7 @@ class OBJECT_PT_Gizmo_object_settings(Panel):
 
         layout.operator("object.ml_gizmo_object_select")
         layout.operator("object.ml_gizmo_object_delete")
+
 
 # UI
 #=======================================================================
