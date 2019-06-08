@@ -74,6 +74,8 @@ def assign_gizmo_object_to_modifier(self, context, modifier):
     gizmo_ob = _create_gizmo_object(self, context, modifier)
 
     if mod.type == 'ARRAY':
+        mod.use_constant_offset = False
+        mod.use_relative_offset = False
         mod.use_object_offset = True
 
     gizmo_ob_prop = have_gizmo_property[mod.type]
