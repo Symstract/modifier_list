@@ -44,6 +44,8 @@ def _create_gizmo_object(self, context, modifier):
     else:
         gizmo_ob.location = ob_mat.to_translation()
 
+    gizmo_ob.rotation_euler = ob_mat.to_euler()
+
     ml_col = _get_ml_collection(context)
     ml_col.objects.link(gizmo_ob)
 
