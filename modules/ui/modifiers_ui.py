@@ -364,6 +364,7 @@ class OBJECT_PT_Gizmo_object_settings(Panel):
         gizmo_ob = get_gizmo_object(context)
 
         layout.prop(gizmo_ob, "name", text="")
+        layout.prop(gizmo_ob ,"empty_display_type", text="")
         layout.prop(gizmo_ob ,"empty_display_size", text="Display Size")
 
         layout.label(text="Location:")
