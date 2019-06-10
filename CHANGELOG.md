@@ -1,6 +1,6 @@
 # Changelog
 
-## 1.2 - (Unreleased)
+## 1.2 - 11.6.2019
 
 ### New Features and Changes
 
