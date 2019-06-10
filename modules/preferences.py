@@ -6,7 +6,7 @@ import rna_keymap_ui
 from bpy.props import *
 from bpy.types import AddonPreferences
 
-from .ui.properties_panel import register_DATA_PT_modifiers
+from .ui.properties_editor import register_DATA_PT_modifiers
 
 
 class Preferences(AddonPreferences):
@@ -17,8 +17,8 @@ class Preferences(AddonPreferences):
     use_sidebar: BoolProperty(name="Sidebar Tab",
                               description="Enable/disable sidebar tab", default=True)
 
-    use_properties_panel: BoolProperty(name="Properties Panel",
-                                       description="Enable/disable properties panel tab",
+    use_properties_editor: BoolProperty(name="Properties Editor",
+                                       description="Enable/disable inside Properties Editor",
                                        default=True, update=register_DATA_PT_modifiers)
 
     modifier_01: StringProperty(description="Add a favourite modifier")
@@ -63,7 +63,7 @@ class Preferences(AddonPreferences):
         # kmi.active = self.use_popup
 
         row.prop(self, "use_sidebar")
-        row.prop(self, "use_properties_panel")
+        row.prop(self, "use_properties_editor")
 
         layout.separator()
 
