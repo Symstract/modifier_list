@@ -43,6 +43,10 @@ class Preferences(AddonPreferences):
         name="Use Dialog Type Popup",
         description="Use a dialog type popup which doesn't close when you are not hovering over it")
 
+    parent_new_gizmo_to_object: BoolProperty(
+        name="Auto Parent Gizmos To Active Object",
+        description="Automatically parent gizmos to the active object on addition")
+
     def draw(self, context):
         layout = self.layout
 
@@ -102,6 +106,9 @@ class Preferences(AddonPreferences):
         #     rna_keymap_ui.draw_kmi([], kc, km, kmi, col, 0)
 
         # layout.separator()
+
+        # === Gizmo object settings ===
+        layout.prop(self, "parent_new_gizmo_to_object")
 
         # === Info ===
         _, is_enabled = addon_utils.check("space_view3d_modifier_tools")

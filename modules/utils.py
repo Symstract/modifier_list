@@ -56,6 +56,8 @@ def assign_gizmo_object_to_modifier(self, context, modifier):
     """Assign a gizmo object to the correct property of the given modifier"""
     ob = context.object
     mod = ob.modifiers[modifier]
+    prefs = bpy.context.preferences.addons["modifier_list"].preferences
+    parent_gizmo = prefs.parent_new_gizmo_to_object
 
     # If modifier is UV Project, handle it differently here
     if mod.type == 'UV_PROJECT':
@@ -66,7 +68,11 @@ def assign_gizmo_object_to_modifier(self, context, modifier):
             if not p.object:
                 gizmo_ob = _create_gizmo_object(self, context, modifier)
                 p.object = gizmo_ob
+                if parent_gizmo:
+                    gizmo_ob.parent = ob
+                    gizmo_ob.matrix_parent_inverse = ob.matrix_world.inverted()
                 break
+
 
         return
 
@@ -81,6 +87,10 @@ def assign_gizmo_object_to_modifier(self, context, modifier):
     gizmo_ob_prop = have_gizmo_property[mod.type]
 
     setattr(mod, gizmo_ob_prop, gizmo_ob)
+
+    if parent_gizmo:
+        gizmo_ob.parent = ob
+        gizmo_ob.matrix_parent_inverse = ob.matrix_world.inverted()
 
 
 # Other gizmo functions
