@@ -25,8 +25,8 @@ bl_info = {
     "blender": (2, 80, 0),
     "location": "View3D > Alt + Spacebar & View3D > Sidebar",
     "description": "Popup + Sidebar tab for showing modifiers in the viewport",
-    "warning": "Development version",
-    "wiki_url": "https://github.com/Symstract/Modifier-List",
+    "warning": "",
+    "wiki_url": "https://github.com/Symstract/modifier_list",
     "category": "3D View"
 }
 
