@@ -6,7 +6,7 @@ import rna_keymap_ui
 from bpy.props import *
 from bpy.types import AddonPreferences
 
-from .ui.properties_panel import register_DATA_PT_modifiers
+from .ui.properties_editor import register_DATA_PT_modifiers
 
 
 class Preferences(AddonPreferences):

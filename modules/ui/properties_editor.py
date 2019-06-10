@@ -30,9 +30,9 @@ def register_DATA_PT_modifiers(self, context):
     from bpy.utils import register_class, unregister_class
 
     prefs = bpy.context.preferences.addons["modifier_list"].preferences
-    use_properties_panel = prefs.use_properties_panel
+    use_properties_editor = prefs.use_properties_editor
 
-    if use_properties_panel:
+    if use_properties_editor:
         register_class(DATA_PT_modifiers)
     else:
         try:
@@ -44,9 +44,9 @@ def register_DATA_PT_modifiers(self, context):
 
 def register():
     prefs = bpy.context.preferences.addons["modifier_list"].preferences
-    use_properties_panel = prefs.use_properties_panel
+    use_properties_editor = prefs.use_properties_editor
 
-    if use_properties_panel:
+    if use_properties_editor:
         from bpy.utils import register_class
 
         register_class(DATA_PT_modifiers)
