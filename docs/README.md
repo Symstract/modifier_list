@@ -23,7 +23,7 @@
 - **Modifier menu**
 - **Favourite modifiers** which can be set in addon preferences
 - **Ability to apply modifiers in edit mode (kind of).** The apply operator acts as a macro when used in edit mode and automatically switches to object mode, applies the modifier and switches back to edit mode.
-- **Modifier batch operators from built-in Modifier Tools add-on** (when that addon is enabled)
+- **Modifier batch operators from built-in Modifier Tools add-on** (when that addon is enabled). Enable that addon before Modifier List, so you don't have the buttons twice inside Properties Editor, because the order in which these addons are enabled matters.
 - **Sidebar tab and popup**, which contain also a vertex group list. The sidebar tab can be disabled from addon preferences.
 - **Easy way to add a control object** - or as I decided to call them, **a gizmo object** - to a modifier
   - There is Add Gizmo button for adding a "gizmo object" to a modifier. It basically just adds an empty and assings it to the appropriate property of the modifier (Mirror Object for Mirror modifier for example).
@@ -44,8 +44,9 @@ Default hotkey is **alt + space**. In the keymap editor, you can find it under 3
 1. Go to Edit menu (File menu in 2.79) and open user preferences
 2. Switch to Addons tab and click Install...
 3. Navigate to where you downloaded the zip file to, select it and click Install Add-on from File
-4. Enable the add-on by ticking the check box next to the add-on's name
-5. (Optional) Search for Modifier Tools add-on and enable it to get modifier batch operators under the modifier list
+4. (Optional but recommended) Search for Modifier Tools add-on and enable it (by ticking the check box next to its name) to get modifier batch operators under the modifier list
+   - This should be done before, not after, the next step to avoid duplicate buttons inside Properties Editor, because the order in which these addons are enabled matters.
+5. Enable the add-on.
 6. Save user preferences
 
 ## Known Issues and Limitations
