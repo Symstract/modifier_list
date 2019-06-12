@@ -1,3 +1,44 @@
+import bpy
+from bl_ui.properties_data_modifier import DATA_PT_modifiers
+
+from..utils import get_gizmo_object
+
+
+# Modified to improve
+# ======================================================================
+def LATTICE(layout, ob, md):
+    context = bpy.context
+    gizmo_ob = get_gizmo_object(context)
+
+    if gizmo_ob:
+        lat = gizmo_ob.data
+
+        row = layout.row()
+        row.prop(lat, "points_u")
+        row.prop(lat, "interpolation_type_u", text="")
+
+        row = layout.row()
+        row.prop(lat, "points_v")
+        row.prop(lat, "interpolation_type_v", text="")
+
+        row = layout.row()
+        row.prop(lat, "points_w")
+        row.prop(lat, "interpolation_type_w", text="")
+
+        layout.separator()
+
+        layout.prop(lat, "use_outside", text="Outside Only")
+
+        layout.separator()
+
+    mp = DATA_PT_modifiers(context)
+    mp.LATTICE(layout, ob, md)
+
+
+
+# Modified to work
+# ======================================================================
+
 def LAPLACIANDEFORM(layout, ob, md):
     is_bind = md.is_bind
 

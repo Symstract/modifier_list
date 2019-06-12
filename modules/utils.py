@@ -1,4 +1,5 @@
 import bpy
+from mathutils import Vector
 
 from .modifier_categories import have_gizmo_property
 
@@ -52,6 +53,46 @@ def _create_gizmo_object(self, context, modifier):
     return gizmo_ob
 
 
+def _create_lattice_gizmo_object(self, context, modifier):
+    """Create a gizmo (lattice) object"""
+    ob = context.object
+    ob.update_from_editmode()
+    ob_mat = ob.matrix_world
+    mesh = ob.data
+
+    # if ob.mode == 'EDIT':
+    #     sel_verts = [v for v in mesh.vertices if v.select]
+    #     if len(sel_verts) == 1:
+    #         place_at_vertex = True
+    #         vert_loc = ob_mat @ sel_verts[0].co
+    #     else:
+    #         place_at_vertex = False
+    # else:
+    #     place_at_vertex = False
+
+    lattice = bpy.data.lattices.new(modifier + "_Gizmo")
+    gizmo_ob = bpy.data.objects.new(modifier + "_Gizmo", lattice)
+
+    # if place_at_vertex:
+    #     gizmo_ob.location = vert_loc
+    # else:
+    #     gizmo_ob.location = ob_mat.to_translation()
+
+    gizmo_ob.dimensions = ob.dimensions
+
+    local_bound_box_center = sum((Vector(b) for b in ob.bound_box), Vector()) / 8
+    global_bound_box_center = ob_mat @ local_bound_box_center
+
+    gizmo_ob.location = global_bound_box_center
+
+    gizmo_ob.rotation_euler = ob_mat.to_euler()
+
+    ml_col = _get_ml_collection(context)
+    ml_col.objects.link(gizmo_ob)
+
+    return gizmo_ob
+
+
 def assign_gizmo_object_to_modifier(self, context, modifier):
     """Assign a gizmo object to the correct property of the given modifier"""
     ob = context.object
@@ -73,11 +114,13 @@ def assign_gizmo_object_to_modifier(self, context, modifier):
                     gizmo_ob.matrix_parent_inverse = ob.matrix_world.inverted()
                 break
 
-
         return
 
     # If modifier is not UV Project, continue normally
-    gizmo_ob = _create_gizmo_object(self, context, modifier)
+    if mod.type == 'LATTICE':
+        gizmo_ob = _create_lattice_gizmo_object(self, context, modifier)
+    else:
+        gizmo_ob = _create_gizmo_object(self, context, modifier)
 
     if mod.type == 'ARRAY':
         mod.use_constant_offset = False

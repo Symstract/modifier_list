@@ -70,6 +70,7 @@ have_gizmo_property = {
     'SCREW': "object",
     'CAST': "object",
     'HOOK': "object",
+    'LATTICE': "object",
     'SIMPLE_DEFORM': "origin",
     'WAVE': "start_position_object"
 }

@@ -568,6 +568,8 @@ def modifiers_ui(context, layout, num_of_rows=False):
         ml_modifier_layouts.MESH_DEFORM(col, ob, active_mod)
     elif active_mod.type =='SURFACE_DEFORM':
         ml_modifier_layouts.SURFACE_DEFORM(col, ob, active_mod)
+    elif active_mod.type == 'LATTICE':
+        ml_modifier_layouts.LATTICE(col, ob, active_mod)
     else:
         mp = DATA_PT_modifiers(context)
         getattr(mp, active_mod.type)(col, ob, active_mod)
