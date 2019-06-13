@@ -5,7 +5,13 @@ from bpy.props import *
 from bpy.types import Operator
 
 from ..modifier_categories import curve_deform_names_icons_types
-from ..utils import delete_gizmo_object, delete_ml_vertex_group
+from ..utils import (
+    delete_gizmo_object,
+    delete_ml_vertex_group,
+    get_gizmo_object,
+    get_vertex_group
+)
+
 
 class OBJECT_OT_ml_modifier_apply(Operator):
     bl_idname = "object.ml_modifier_apply"
@@ -29,10 +35,10 @@ class OBJECT_OT_ml_modifier_apply(Operator):
         ob = context.object
         self.mod_type = ob.modifiers[self.modifier].type
 
-        if self.shift:
-            delete_gizmo_object(self, context)
-            if self.mod_type == 'LATTICE':
-                delete_ml_vertex_group(context)
+        # Get the gizmo object and the vertex group, so they can be
+        # deleted after applying the modifier
+        gizmo_ob = get_gizmo_object(context)
+        vert_group = get_vertex_group(context)
 
         if context.mode in {'EDIT_MESH', 'EDIT_CURVE', 'EDIT_SURFACE', 'EDIT_TEXT', 'EDIT_LATTICE'}:
             bpy.ops.object.editmode_toggle()
@@ -70,6 +76,12 @@ class OBJECT_OT_ml_modifier_apply(Operator):
 
         if current_active_mod_index != 0:
             self.report({'INFO'}, "Applied modifier was not first, result may not be as expected")
+
+        # Delete the gizmo object and the vertex group
+        if self.shift:
+            delete_gizmo_object(self, context, gizmo_ob)
+            if self.mod_type == 'LATTICE':
+                delete_ml_vertex_group(context, vert_group)
 
         return {'FINISHED'}
 

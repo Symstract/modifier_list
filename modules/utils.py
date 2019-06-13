@@ -166,6 +166,18 @@ def get_gizmo_object(context):
     return gizmo_ob
 
 
+def get_vertex_group(context):
+    ob = context.object
+    active_mod_index = ob.ml_modifier_active_index
+    active_mod = ob.modifiers[active_mod_index]
+
+    if not hasattr(active_mod, "vertex_group"):
+        return None
+
+    vert_group = active_mod.vertex_group
+    return vert_group
+
+
 def _delete_empty_ml_collection():
     cols = bpy.data.collections
     ml_col_name = "ML_Gizmo Objects"
@@ -176,21 +188,18 @@ def _delete_empty_ml_collection():
             cols.remove(ml_col)
 
 
-def delete_gizmo_object(self, context):
+def delete_gizmo_object(self, context, gizmo_object):
     obs = bpy.data.objects
-    gizmo_ob = get_gizmo_object(context)
 
-    if gizmo_ob:
-        obs.remove(gizmo_ob)
+    if gizmo_object:
+        obs.remove(gizmo_object)
         _delete_empty_ml_collection()
         self.report({'INFO'}, "Deleted a gizmo object")
 
 
-def delete_ml_vertex_group(context):
+def delete_ml_vertex_group(context, vertex_group):
     ob = context.object
-    active_mod_index = ob.ml_modifier_active_index
-    active_mod = ob.modifiers[active_mod_index]
-    vert_group_name = active_mod.vertex_group
+    vert_group_name = vertex_group
 
     if vert_group_name:
         if vert_group_name.startswith("ML_"):

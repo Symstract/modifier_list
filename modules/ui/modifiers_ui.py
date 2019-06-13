@@ -19,6 +19,7 @@ from . import ml_modifier_layouts
 from .. import modifier_categories
 from..utils import (
     get_gizmo_object,
+    get_vertex_group,
     delete_gizmo_object,
     delete_ml_vertex_group
 )
@@ -316,11 +317,12 @@ class ModifierListActions:
                 bpy.ops.object.modifier_move_down(modifier=active_mod_name)
                 ob.ml_modifier_active_index = active_mod_index_down
             elif self.action == 'REMOVE':
-                if self.delete_gizmo:
-                    delete_gizmo_object(self, context)
+                if self.shift:
+                    gizmo_ob = get_gizmo_object(context)
+                    delete_gizmo_object(self, context, gizmo_ob)
                     if active_mod.type == 'LATTICE':
-                        delete_ml_vertex_group(context)
-
+                        vert_group = get_vertex_group(context)
+                        delete_ml_vertex_group(context, vert_group)
 
                 bpy.ops.object.modifier_remove(modifier=active_mod_name)
                 ob.ml_modifier_active_index = active_mod_index_up
@@ -328,7 +330,7 @@ class ModifierListActions:
         return {'FINISHED'}
 
     def invoke(self, context, event):
-        self.delete_gizmo = True if event.shift else False
+        self.shift = True if event.shift else False
 
         return self.execute(context)
 
