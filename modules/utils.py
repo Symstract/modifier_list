@@ -20,6 +20,15 @@ def _get_ml_collection(context):
     return ml_col
 
 
+def _create_vertex_group_from_selection(object, vertex_indices, group_name):
+    """Create a vertex group for a modifier to use """
+    vert_group = object.vertex_groups.new(name=group_name)
+    bpy.ops.object.mode_set(mode='OBJECT')
+    vert_group.add(vertex_indices, 1, 'ADD')
+    bpy.ops.object.mode_set(mode='EDIT')
+    return vert_group
+
+
 def _create_gizmo_object(self, context, modifier):
     """Create a gizmo (empty) object"""
     ob = context.object
@@ -59,32 +68,37 @@ def _create_lattice_gizmo_object(self, context, modifier):
     ob.update_from_editmode()
     ob_mat = ob.matrix_world
     mesh = ob.data
+    active_mod_index = ob.ml_modifier_active_index
+    active_mod = ob.modifiers[active_mod_index]
 
-    # if ob.mode == 'EDIT':
-    #     sel_verts = [v for v in mesh.vertices if v.select]
-    #     if len(sel_verts) == 1:
-    #         place_at_vertex = True
-    #         vert_loc = ob_mat @ sel_verts[0].co
-    #     else:
-    #         place_at_vertex = False
-    # else:
-    #     place_at_vertex = False
+    if ob.mode == 'EDIT':
+        sel_verts = [v for v in mesh.vertices if v.select]
+        if len(sel_verts) >= 2:
+            place_at_verts = True
+
+            vert_indices = [v.index for v in sel_verts]
+            vert_locs = [v.co for v in sel_verts]
+            local_verts_avg_loc = sum(vert_locs, Vector()) / len(sel_verts)
+            global_verts_avg_loc = ob_mat @ local_verts_avg_loc
+
+            vert_group = _create_vertex_group_from_selection(ob, vert_indices, "ML_Lattice")
+            active_mod.vertex_group = vert_group.name
+        else:
+            place_at_verts = False
+    else:
+        place_at_verts = False
 
     lattice = bpy.data.lattices.new(modifier + "_Gizmo")
     gizmo_ob = bpy.data.objects.new(modifier + "_Gizmo", lattice)
 
-    # if place_at_vertex:
-    #     gizmo_ob.location = vert_loc
-    # else:
-    #     gizmo_ob.location = ob_mat.to_translation()
+    if place_at_verts:
+        gizmo_ob.location = global_verts_avg_loc
+    else:
+        local_bound_box_center = sum((Vector(b) for b in ob.bound_box), Vector()) / 8
+        global_bound_box_center = ob_mat @ local_bound_box_center
+        gizmo_ob.location = global_bound_box_center
 
     gizmo_ob.dimensions = ob.dimensions
-
-    local_bound_box_center = sum((Vector(b) for b in ob.bound_box), Vector()) / 8
-    global_bound_box_center = ob_mat @ local_bound_box_center
-
-    gizmo_ob.location = global_bound_box_center
-
     gizmo_ob.rotation_euler = ob_mat.to_euler()
 
     ml_col = _get_ml_collection(context)
@@ -170,3 +184,16 @@ def delete_gizmo_object(self, context):
         obs.remove(gizmo_ob)
         _delete_empty_ml_collection()
         self.report({'INFO'}, "Deleted a gizmo object")
+
+
+def delete_ml_vertex_group(context):
+    ob = context.object
+    active_mod_index = ob.ml_modifier_active_index
+    active_mod = ob.modifiers[active_mod_index]
+    vert_group_name = active_mod.vertex_group
+
+    if vert_group_name:
+        if vert_group_name.startswith("ML_"):
+            vert_group = ob.vertex_groups[vert_group_name]
+            ob.vertex_groups.remove(vert_group)
+

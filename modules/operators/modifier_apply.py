@@ -5,7 +5,7 @@ from bpy.props import *
 from bpy.types import Operator
 
 from ..modifier_categories import curve_deform_names_icons_types
-from ..utils import delete_gizmo_object
+from ..utils import delete_gizmo_object, delete_ml_vertex_group
 
 class OBJECT_OT_ml_modifier_apply(Operator):
     bl_idname = "object.ml_modifier_apply"
@@ -29,9 +29,10 @@ class OBJECT_OT_ml_modifier_apply(Operator):
         ob = context.object
         self.mod_type = ob.modifiers[self.modifier].type
 
-        if self.delete_gizmo:
+        if self.shift:
             delete_gizmo_object(self, context)
-
+            if self.mod_type == 'LATTICE':
+                delete_ml_vertex_group(context)
 
         if context.mode in {'EDIT_MESH', 'EDIT_CURVE', 'EDIT_SURFACE', 'EDIT_TEXT', 'EDIT_LATTICE'}:
             bpy.ops.object.editmode_toggle()
@@ -73,7 +74,7 @@ class OBJECT_OT_ml_modifier_apply(Operator):
         return {'FINISHED'}
 
     def invoke(self, context, event):
-        self.delete_gizmo = True if event.shift else False
+        self.shift = True if event.shift else False
 
         return self.execute(context)
 

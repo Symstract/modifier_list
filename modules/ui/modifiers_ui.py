@@ -17,7 +17,11 @@ from bpy.types import (
 from .. import icons
 from . import ml_modifier_layouts
 from .. import modifier_categories
-from..utils import get_gizmo_object, delete_gizmo_object
+from..utils import (
+    get_gizmo_object,
+    delete_gizmo_object,
+    delete_ml_vertex_group
+)
 
 
 # UI elements
@@ -302,7 +306,8 @@ class ModifierListActions:
         active_mod_index_down = np.clip(active_mod_index + 1, 0, mods_len)
 
         if mods:
-            active_mod_name = ob.modifiers[active_mod_index].name
+            active_mod = ob.modifiers[active_mod_index]
+            active_mod_name = active_mod.name
 
             if self.action == 'UP':
                 bpy.ops.object.modifier_move_up(modifier=active_mod_name)
@@ -313,6 +318,8 @@ class ModifierListActions:
             elif self.action == 'REMOVE':
                 if self.delete_gizmo:
                     delete_gizmo_object(self, context)
+                    if active_mod.type == 'LATTICE':
+                        delete_ml_vertex_group(context)
 
 
                 bpy.ops.object.modifier_remove(modifier=active_mod_name)
