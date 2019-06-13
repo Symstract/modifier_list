@@ -312,7 +312,8 @@ class ModifierListActions:
                 ob.ml_modifier_active_index = active_mod_index_down
             elif self.action == 'REMOVE':
                 if self.delete_gizmo:
-                    delete_gizmo_object(self, context)
+                    gizmo_ob = get_gizmo_object(context)
+                    delete_gizmo_object(self, context, gizmo_ob)
 
 
                 bpy.ops.object.modifier_remove(modifier=active_mod_name)

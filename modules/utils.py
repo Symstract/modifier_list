@@ -119,11 +119,10 @@ def _delete_empty_ml_collection():
             cols.remove(ml_col)
 
 
-def delete_gizmo_object(self, context):
+def delete_gizmo_object(self, context, gizmo_object):
     obs = bpy.data.objects
-    gizmo_ob = get_gizmo_object(context)
 
-    if gizmo_ob:
-        obs.remove(gizmo_ob)
+    if gizmo_object:
+        obs.remove(gizmo_object)
         _delete_empty_ml_collection()
         self.report({'INFO'}, "Deleted a gizmo object")
