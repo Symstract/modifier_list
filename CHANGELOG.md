@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.2.1 - 13.6.2019
+
+- Fixed the effect of a gizmo object not being taken into account when applying a modifier if the gizmo is deleted at the same time (by holding shift).
+
 ## 1.2 - 11.6.2019
 
 ### New Features and Changes
