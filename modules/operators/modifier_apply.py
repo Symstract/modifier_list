@@ -5,7 +5,7 @@ from bpy.props import *
 from bpy.types import Operator
 
 from ..modifier_categories import curve_deform_names_icons_types
-from ..utils import delete_gizmo_object
+from ..utils import delete_gizmo_object, get_gizmo_object
 
 class OBJECT_OT_ml_modifier_apply(Operator):
     bl_idname = "object.ml_modifier_apply"
@@ -29,9 +29,8 @@ class OBJECT_OT_ml_modifier_apply(Operator):
         ob = context.object
         self.mod_type = ob.modifiers[self.modifier].type
 
-        if self.delete_gizmo:
-            delete_gizmo_object(self, context)
-
+        # Get the gizmo object, so it can be deleted after applying the modifier
+        gizmo_ob = get_gizmo_object(context)
 
         if context.mode in {'EDIT_MESH', 'EDIT_CURVE', 'EDIT_SURFACE', 'EDIT_TEXT', 'EDIT_LATTICE'}:
             bpy.ops.object.editmode_toggle()
@@ -69,6 +68,10 @@ class OBJECT_OT_ml_modifier_apply(Operator):
 
         if current_active_mod_index != 0:
             self.report({'INFO'}, "Applied modifier was not first, result may not be as expected")
+
+        # Delete the gizmo object
+        if self.delete_gizmo:
+            delete_gizmo_object(self, context, gizmo_ob)
 
         return {'FINISHED'}
 
