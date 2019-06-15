@@ -148,7 +148,11 @@ def _fit_lattice_to_object(object, lattice_object):
     global_bbox_center_mat = Matrix.Translation(ob_loc) @ Matrix.Translation(local_bbox_center)
 
     lattice_object.matrix_world = global_bbox_center_mat @ ob_rot.to_matrix().to_4x4()
-    lattice_object.dimensions = object.dimensions
+
+    dims = object.dimensions.copy()
+    ensured_dims = [d if d > 0 else 0.1 for d in dims]
+
+    lattice_object.dimensions = ensured_dims
 
 
 def _create_lattice_gizmo_object(self, context, modifier):
