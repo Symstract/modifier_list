@@ -1,5 +1,6 @@
 import bpy
-from mathutils import Vector
+from mathutils import Matrix, Vector
+from mathutils.geometry import distance_point_to_plane
 
 from .modifier_categories import have_gizmo_property
 
@@ -62,6 +63,83 @@ def _create_gizmo_object(self, context, modifier):
     return gizmo_ob
 
 
+# === Lattice ===
+
+def _calc_lattice_axis_length(vertex_coords, plane_co, plane_no):
+    max_dist = 0
+    min_dist = 0
+
+    for v in vertex_coords:
+        dist = distance_point_to_plane(v, plane_co, plane_no)
+        if dist > max_dist:
+            max_dist = dist
+        elif dist < min_dist:
+            min_dist = dist
+
+    length = max_dist + abs(min_dist)
+
+    # Avoid setting dimensions of a lattice to 0; it causes problems
+    if length == 0:
+        length = 0.1
+
+    return length
+
+
+def _calc_lattice_dimensions(vertex_coords, plane_co, plane_no=None):
+    normal_vecs = [Vector((1, 0, 0)), Vector((0, 1, 0)), Vector((0, 0, 1))]
+
+    # for v in normal_vecs:
+    #     v.rotate(plane_no.to_track_quat('X', 'Z'))
+
+    dims = [_calc_lattice_axis_length(vertex_coords, plane_co, normal) for normal in normal_vecs]
+    return dims
+
+
+def _calc_lattice_axis_midpoint_3d(vertex_coords, plane_co, plane_no):
+    max_dist = 0
+    min_dist = 0
+
+    max_vert_co = Vector((0, 0, 0))
+    min_vert_co = Vector((0, 0, 0))
+
+    for v in vertex_coords:
+        dist = distance_point_to_plane(v, plane_co, plane_no)
+        if dist > max_dist:
+            max_dist = dist
+            max_vert_co = v
+        elif dist < min_dist:
+            min_dist = dist
+            min_vert_co = v
+
+    midpoint_3d = (max_vert_co + min_vert_co) / 2
+    if midpoint_3d == Vector((0, 0, 0)):
+        midpoint_3d = plane_co
+    return midpoint_3d
+
+
+def _calc_lattice_origin(vertex_coords, plane_co, plane_no=None):
+    normal_vecs = [Vector((1, 0, 0)), Vector((0, 1, 0)), Vector((0, 0, 1))]
+    origin = Vector((0, 0, 0))
+
+    for i, normal in enumerate(normal_vecs):
+        origin[i] = _calc_lattice_axis_midpoint_3d(vertex_coords, plane_co, normal)[i]
+
+    return origin
+
+
+def _fit_lattice(object, vertices, lattice_object):
+    ob_mat = object.matrix_world
+    ob_loc, ob_rot, _ = ob_mat.decompose()
+    vert_locs = [v.co for v in vertices]
+    avg_vert_loc = sum(vert_locs, Vector()) / len(vert_locs)
+    lat_origin = _calc_lattice_origin(vert_locs, avg_vert_loc)
+
+    lattice_object.matrix_world = (Matrix.Translation(ob_loc) @ ob_rot.to_matrix().to_4x4() @
+                                   Matrix.Translation(lat_origin))
+
+    lattice_object.dimensions = _calc_lattice_dimensions(vert_locs, avg_vert_loc)
+
+
 def _create_lattice_gizmo_object(self, context, modifier):
     """Create a gizmo (lattice) object"""
     ob = context.object
@@ -77,10 +155,6 @@ def _create_lattice_gizmo_object(self, context, modifier):
             place_at_verts = True
 
             vert_indices = [v.index for v in sel_verts]
-            vert_locs = [v.co for v in sel_verts]
-            local_verts_avg_loc = sum(vert_locs, Vector()) / len(sel_verts)
-            global_verts_avg_loc = ob_mat @ local_verts_avg_loc
-
             vert_group = _create_vertex_group_from_selection(ob, vert_indices, "ML_Lattice")
             active_mod.vertex_group = vert_group.name
         else:
@@ -92,20 +166,22 @@ def _create_lattice_gizmo_object(self, context, modifier):
     gizmo_ob = bpy.data.objects.new(modifier + "_Gizmo", lattice)
 
     if place_at_verts:
-        gizmo_ob.location = global_verts_avg_loc
+        _fit_lattice(ob, sel_verts, gizmo_ob)
     else:
         local_bound_box_center = sum((Vector(b) for b in ob.bound_box), Vector()) / 8
         global_bound_box_center = ob_mat @ local_bound_box_center
-        gizmo_ob.location = global_bound_box_center
 
-    gizmo_ob.dimensions = ob.dimensions
-    gizmo_ob.rotation_euler = ob_mat.to_euler()
+        gizmo_ob.location = global_bound_box_center
+        gizmo_ob.rotation_euler = ob_mat.to_euler()
+        gizmo_ob.dimensions = ob.dimensions
 
     ml_col = _get_ml_collection(context)
     ml_col.objects.link(gizmo_ob)
 
     return gizmo_ob
 
+
+# ==========
 
 def assign_gizmo_object_to_modifier(self, context, modifier):
     """Assign a gizmo object to the correct property of the given modifier"""
