@@ -95,7 +95,7 @@ def _calc_lattice_dimensions(vertex_coords, plane_co, plane_no=None):
     return dims
 
 
-def _calc_lattice_axis_midpoint_3d(vertex_coords, plane_co, plane_no):
+def _calc_lattice_axis_midpoint_location(vertex_coords, plane_co, plane_no):
     max_dist = 0
     min_dist = 0
 
@@ -111,10 +111,10 @@ def _calc_lattice_axis_midpoint_3d(vertex_coords, plane_co, plane_no):
             min_dist = dist
             min_vert_co = v
 
-    midpoint_3d = (max_vert_co + min_vert_co) / 2
-    if midpoint_3d == Vector((0, 0, 0)):
-        midpoint_3d = plane_co
-    return midpoint_3d
+    midpoint_co = (max_vert_co + min_vert_co) / 2
+    if midpoint_co == Vector((0, 0, 0)):
+        midpoint_co = plane_co
+    return midpoint_co
 
 
 def _calc_lattice_origin(vertex_coords, plane_co, plane_no=None):
@@ -122,7 +122,7 @@ def _calc_lattice_origin(vertex_coords, plane_co, plane_no=None):
     origin = Vector((0, 0, 0))
 
     for i, normal in enumerate(normal_vecs):
-        origin[i] = _calc_lattice_axis_midpoint_3d(vertex_coords, plane_co, normal)[i]
+        origin[i] = _calc_lattice_axis_midpoint_location(vertex_coords, plane_co, normal)[i]
 
     return origin
 
@@ -144,10 +144,10 @@ def _fit_lattice_to_object(object, lattice_object):
     ob_mat = object.matrix_world
     ob_loc, ob_rot, _ = ob_mat.decompose()
 
-    local_bound_box_center = sum((Vector(b) for b in object.bound_box), Vector()) / 8
-    global_bound_box_center_mat = Matrix.Translation(ob_loc) @ Matrix.Translation(local_bound_box_center)
+    local_bbox_center = sum((Vector(b) for b in object.bound_box), Vector()) / 8
+    global_bbox_center_mat = Matrix.Translation(ob_loc) @ Matrix.Translation(local_bbox_center)
 
-    lattice_object.matrix_world = global_bound_box_center_mat @ ob_rot.to_matrix().to_4x4()
+    lattice_object.matrix_world = global_bbox_center_mat @ ob_rot.to_matrix().to_4x4()
     lattice_object.dimensions = object.dimensions
 
 
