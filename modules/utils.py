@@ -127,7 +127,7 @@ def _calc_lattice_origin(vertex_coords, plane_co, plane_no=None):
     return origin
 
 
-def _fit_lattice(object, vertices, lattice_object):
+def _fit_lattice_to_selection(object, vertices, lattice_object):
     ob_mat = object.matrix_world
     ob_loc, ob_rot, _ = ob_mat.decompose()
     vert_locs = [v.co for v in vertices]
@@ -140,11 +140,21 @@ def _fit_lattice(object, vertices, lattice_object):
     lattice_object.dimensions = _calc_lattice_dimensions(vert_locs, avg_vert_loc)
 
 
+def _fit_lattice_to_object(object, lattice_object):
+    ob_mat = object.matrix_world
+    ob_loc, ob_rot, _ = ob_mat.decompose()
+
+    local_bound_box_center = sum((Vector(b) for b in object.bound_box), Vector()) / 8
+    global_bound_box_center_mat = Matrix.Translation(ob_loc) @ Matrix.Translation(local_bound_box_center)
+
+    lattice_object.matrix_world = global_bound_box_center_mat @ ob_rot.to_matrix().to_4x4()
+    lattice_object.dimensions = object.dimensions
+
+
 def _create_lattice_gizmo_object(self, context, modifier):
     """Create a gizmo (lattice) object"""
     ob = context.object
     ob.update_from_editmode()
-    ob_mat = ob.matrix_world
     mesh = ob.data
     active_mod_index = ob.ml_modifier_active_index
     active_mod = ob.modifiers[active_mod_index]
@@ -166,14 +176,9 @@ def _create_lattice_gizmo_object(self, context, modifier):
     gizmo_ob = bpy.data.objects.new(modifier + "_Gizmo", lattice)
 
     if place_at_verts:
-        _fit_lattice(ob, sel_verts, gizmo_ob)
+        _fit_lattice_to_selection(ob, sel_verts, gizmo_ob)
     else:
-        local_bound_box_center = sum((Vector(b) for b in ob.bound_box), Vector()) / 8
-        global_bound_box_center = ob_mat @ local_bound_box_center
-
-        gizmo_ob.location = global_bound_box_center
-        gizmo_ob.rotation_euler = ob_mat.to_euler()
-        gizmo_ob.dimensions = ob.dimensions
+        _fit_lattice_to_object(ob, gizmo_ob)
 
     ml_col = _get_ml_collection(context)
     ml_col.objects.link(gizmo_ob)
