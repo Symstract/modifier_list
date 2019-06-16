@@ -17,8 +17,12 @@ class OBJECT_OT_ml_modifier_add(Operator):
     modifier_type: StringProperty()
 
     def execute(self, context):
+        # Make adding modifiers possible when an object is pinned
+        override = context.copy()
+        override['object'] = get_ml_active_object()
+
         try:
-            bpy.ops.object.modifier_add(type=self.modifier_type)
+            bpy.ops.object.modifier_add(override, type=self.modifier_type)
         except TypeError:
             for mod in all_modifier_names_icons_types():
                 if mod[2] == self.modifier_type:

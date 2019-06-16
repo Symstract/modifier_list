@@ -325,7 +325,11 @@ class ModifierListActions:
                         vert_group = get_vertex_group()
                         delete_ml_vertex_group(vert_group)
 
-                bpy.ops.object.modifier_remove(modifier=active_mod_name)
+                # Make removing modifiers possible when an object is pinned
+                override = context.copy()
+                override['object'] = ob
+
+                bpy.ops.object.modifier_remove(override, modifier=active_mod_name)
                 ob.ml_modifier_active_index = active_mod_index_up
 
         return {'FINISHED'}

@@ -14,10 +14,15 @@ class OBJECT_OT_ml_modifier_copy(Operator):
     modifier: StringProperty()
 
     def execute(self, context):
-        bpy.ops.object.modifier_copy(modifier=self.modifier)
+        ob = get_ml_active_object()
+
+        # Make copying modifiers possible when an object is pinned
+        override = context.copy()
+        override['object'] = ob
+
+        bpy.ops.object.modifier_copy(override, modifier=self.modifier)
 
         # Set correct active_mod index
-        ob = get_ml_active_object()
         active_index = ob.ml_modifier_active_index
         ob.ml_modifier_active_index = active_index + 1
 
