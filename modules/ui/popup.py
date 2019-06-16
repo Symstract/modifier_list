@@ -3,6 +3,7 @@ from bpy.props import *
 from bpy.types import Operator
 
 from .modifiers_ui import modifiers_ui
+from .ui_utils import pin_object_button
 from .vertex_groups_ui import vertex_groups_ui
 from ..utils import get_ml_active_object
 
@@ -49,7 +50,9 @@ class VIEW3D_OT_ml_modifier_popup(Operator):
             # Don't add a label when props_dialog is used, avoiding
             # wasting space.
             if not prefs.use_props_dialog:
-                layout.label(text="Modifier Popup")
+                row = layout.row()
+                pin_object_button(context, row)
+                row.label(text="Modifier Popup")
 
             split_factor = panel_width / overall_width
             split = layout.split(factor=split_factor)
@@ -66,6 +69,14 @@ class VIEW3D_OT_ml_modifier_popup(Operator):
             col = split.column(align=True)
             col.scale_y = 1.3
             col.prop_tabs_enum(wm, "ml_popup_active_tab", icon_only=True)
+
+            # When using the dialog type popup, the label is automatic
+            # and the pin button can't be put next to it. In that case,
+            # display it here.
+            if prefs.use_props_dialog:
+                col.separator(factor=3)
+
+                pin_object_button(context, col)
 
 
 def register():

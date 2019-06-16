@@ -2,6 +2,7 @@ import bpy
 from bpy.types import Panel
 
 from .modifiers_ui import modifiers_ui
+from .ui_utils import pin_object_button
 from .vertex_groups_ui import vertex_groups_ui
 from ..utils import get_ml_active_object
 
@@ -19,7 +20,9 @@ class BasePanel:
 
 
 class VIEW3D_PT_Modifiers(Panel, BasePanel):
-    bl_label = "Modifiers"
+    # A leading space in the label, so there's separation between it
+    # and the pin button
+    bl_label = " Modifiers"
 
     @classmethod
     def poll(cls, context):
@@ -31,6 +34,10 @@ class VIEW3D_PT_Modifiers(Panel, BasePanel):
             return ob.type in {'MESH', 'CURVE', 'SURFACE', 'FONT', 'LATTICE'}
 
         return False
+
+    def draw_header(self, context):
+        layout = self.layout
+        pin_object_button(context, layout)
 
     def draw(self, context):
         layout = self.layout
