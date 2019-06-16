@@ -36,6 +36,10 @@ class OBJECT_OT_ml_modifier_apply(Operator):
         ob = get_ml_active_object()
         self.mod_type = ob.modifiers[self.modifier].type
 
+        # Make applying modifiers possible when an object is pinned
+        override = context.copy()
+        override['object'] = get_ml_active_object()
+
         # Get the gizmo object and the vertex group, so they can be
         # deleted after applying the modifier
         gizmo_ob = get_gizmo_object()
@@ -46,7 +50,7 @@ class OBJECT_OT_ml_modifier_apply(Operator):
             bpy.ops.ed.undo_push(message="Toggle Editmode")
 
             try:
-                bpy.ops.object.modifier_apply(apply_as=self.apply_as, modifier=self.modifier)
+                bpy.ops.object.modifier_apply(override, apply_as=self.apply_as, modifier=self.modifier)
                 if ob.type in {'CURVE', 'SURFACE'}:
                     self.curve_modifier_apply_report()
             except RuntimeError as rte:
@@ -60,7 +64,7 @@ class OBJECT_OT_ml_modifier_apply(Operator):
             bpy.ops.object.editmode_toggle()
         else:
             try:
-                bpy.ops.object.modifier_apply(apply_as=self.apply_as, modifier=self.modifier)
+                bpy.ops.object.modifier_apply(override, apply_as=self.apply_as, modifier=self.modifier)
                 if ob.type in {'CURVE', 'SURFACE'}:
                     self.curve_modifier_apply_report()
             except RuntimeError as rte:
