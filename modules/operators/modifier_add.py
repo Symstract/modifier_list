@@ -3,7 +3,7 @@ from bpy.props import *
 from bpy.types import Operator
 
 from ..modifier_categories import all_modifier_names_icons_types, have_gizmo_property
-from ..utils import assign_gizmo_object_to_modifier
+from ..utils import get_ml_active_object ,assign_gizmo_object_to_modifier
 
 class OBJECT_OT_ml_modifier_add(Operator):
     bl_idname = "object.ml_modifier_add"
@@ -27,7 +27,7 @@ class OBJECT_OT_ml_modifier_add(Operator):
             self.report({'ERROR'}, f"Cannot add {modifier_name} modifier for this object type")
             return {'FINISHED'}
 
-        ob = context.object
+        ob = get_ml_active_object()
 
         # Enable auto smooth if modifier is weighted normal
         if self.modifier_type == 'WEIGHTED_NORMAL':

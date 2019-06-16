@@ -8,7 +8,7 @@ from..utils import get_gizmo_object
 # ======================================================================
 def LATTICE(layout, ob, md):
     context = bpy.context
-    gizmo_ob = get_gizmo_object(context)
+    gizmo_ob = get_gizmo_object()
 
     if gizmo_ob:
         lat = gizmo_ob.data

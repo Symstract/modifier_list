@@ -4,6 +4,7 @@ from bpy.types import Operator
 
 from .modifiers_ui import modifiers_ui
 from .vertex_groups_ui import vertex_groups_ui
+from ..utils import get_ml_active_object
 
 
 panel_width = 300
@@ -33,7 +34,7 @@ class VIEW3D_OT_ml_modifier_popup(Operator):
     def draw(self, context):
         layout = self.layout
 
-        ob = context.object
+        ob = get_ml_active_object()
 
         if not ob:
             layout.label(text="No active object")

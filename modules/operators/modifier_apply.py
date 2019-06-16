@@ -9,6 +9,7 @@ from ..utils import (
     delete_gizmo_object,
     delete_ml_vertex_group,
     get_gizmo_object,
+    get_ml_active_object,
     get_vertex_group
 )
 
@@ -32,13 +33,13 @@ class OBJECT_OT_ml_modifier_apply(Operator):
     )
 
     def execute(self, context):
-        ob = context.object
+        ob = get_ml_active_object()
         self.mod_type = ob.modifiers[self.modifier].type
 
         # Get the gizmo object and the vertex group, so they can be
         # deleted after applying the modifier
-        gizmo_ob = get_gizmo_object(context)
-        vert_group = get_vertex_group(context)
+        gizmo_ob = get_gizmo_object()
+        vert_group = get_vertex_group()
 
         if context.mode in {'EDIT_MESH', 'EDIT_CURVE', 'EDIT_SURFACE', 'EDIT_TEXT', 'EDIT_LATTICE'}:
             bpy.ops.object.editmode_toggle()
@@ -79,9 +80,9 @@ class OBJECT_OT_ml_modifier_apply(Operator):
 
         # Delete the gizmo object and the vertex group
         if self.shift:
-            delete_gizmo_object(self, context, gizmo_ob)
+            delete_gizmo_object(self, gizmo_ob)
             if self.mod_type == 'LATTICE':
-                delete_ml_vertex_group(context, vert_group)
+                delete_ml_vertex_group(vert_group)
 
         return {'FINISHED'}
 

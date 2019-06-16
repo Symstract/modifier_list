@@ -13,7 +13,7 @@ class OBJECT_OT_ml_gizmo_object_select(Operator):
     bl_options = {'REGISTER', 'INTERNAL', 'UNDO'}
 
     def execute(self, context):
-        gizmo_ob = get_gizmo_object(context)
+        gizmo_ob = get_gizmo_object()
 
         if not self.extend_selection:
             bpy.ops.object.select_all(action='DESELECT')

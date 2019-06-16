@@ -5,6 +5,22 @@ from mathutils.geometry import distance_point_to_plane
 from .modifier_categories import have_gizmo_property
 
 
+def get_ml_active_object():
+    """Get the active object or if some object is pinned, get that"""
+    context = bpy.context
+    ob = context.object
+    wm = context.window_manager
+
+    if wm.ml_pinned_object:
+        if wm.ml_pinned_object.users == 1 and not wm.ml_pinned_object.use_fake_user:
+            wm.ml_pinned_object = None
+            return ob
+        else:
+            return wm.ml_pinned_object
+    else:
+        return ob
+
+
 # Functions for adding a gizmo object
 # ======================================================================
 
@@ -32,7 +48,7 @@ def _create_vertex_group_from_selection(object, vertex_indices, group_name):
 
 def _create_gizmo_object(self, context, modifier):
     """Create a gizmo (empty) object"""
-    ob = context.object
+    ob = get_ml_active_object()
     ob.update_from_editmode()
     ob_mat = ob.matrix_world
     mesh = ob.data
@@ -155,7 +171,7 @@ def _fit_lattice_to_object(object, lattice_object):
 
 def _create_lattice_gizmo_object(self, context, modifier):
     """Create a gizmo (lattice) object"""
-    ob = context.object
+    ob = get_ml_active_object()
     ob.update_from_editmode()
     mesh = ob.data
     active_mod_index = ob.ml_modifier_active_index
@@ -192,7 +208,7 @@ def _create_lattice_gizmo_object(self, context, modifier):
 
 def assign_gizmo_object_to_modifier(self, context, modifier):
     """Assign a gizmo object to the correct property of the given modifier"""
-    ob = context.object
+    ob = get_ml_active_object()
     mod = ob.modifiers[modifier]
     prefs = bpy.context.preferences.addons["modifier_list"].preferences
     parent_gizmo = prefs.parent_new_gizmo_to_object
@@ -236,8 +252,8 @@ def assign_gizmo_object_to_modifier(self, context, modifier):
 # Other gizmo functions
 # ======================================================================
 
-def get_gizmo_object(context):
-    ob = context.object
+def get_gizmo_object():
+    ob = get_ml_active_object()
     active_mod_index = ob.ml_modifier_active_index
     active_mod = ob.modifiers[active_mod_index]
 
@@ -249,8 +265,8 @@ def get_gizmo_object(context):
     return gizmo_ob
 
 
-def get_vertex_group(context):
-    ob = context.object
+def get_vertex_group():
+    ob = get_ml_active_object()
     active_mod_index = ob.ml_modifier_active_index
     active_mod = ob.modifiers[active_mod_index]
 
@@ -271,7 +287,7 @@ def _delete_empty_ml_collection():
             cols.remove(ml_col)
 
 
-def delete_gizmo_object(self, context, gizmo_object):
+def delete_gizmo_object(self, gizmo_object):
     obs = bpy.data.objects
 
     if gizmo_object:
@@ -280,8 +296,8 @@ def delete_gizmo_object(self, context, gizmo_object):
         self.report({'INFO'}, "Deleted a gizmo object")
 
 
-def delete_ml_vertex_group(context, vertex_group):
-    ob = context.object
+def delete_ml_vertex_group(vertex_group):
+    ob = get_ml_active_object()
     vert_group_name = vertex_group
 
     if vert_group_name:

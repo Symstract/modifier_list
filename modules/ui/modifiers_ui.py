@@ -18,10 +18,11 @@ from .. import icons
 from . import ml_modifier_layouts
 from .. import modifier_categories
 from..utils import (
-    get_gizmo_object,
-    get_vertex_group,
     delete_gizmo_object,
-    delete_ml_vertex_group
+    delete_ml_vertex_group,
+    get_gizmo_object,
+    get_ml_active_object,
+    get_vertex_group,
 )
 
 
@@ -76,7 +77,7 @@ def mod_show_editmode_and_cage(modifier, layout, scale_x=1.0, use_in_list=False)
 
     # === show_on_cage ===
     if modifier.type in support_show_on_cage :
-        ob = bpy.context.object
+        ob = get_ml_active_object()
         mods = ob.modifiers
         mod_index = mods.find(modifier.name)
 
@@ -150,7 +151,7 @@ def add_modifier(self, context):
     mod_type = wm.ml_mesh_modifiers[mod_name].value
     bpy.ops.object.modifier_add(type=mod_type)
 
-    ob = context.object
+    ob = get_ml_active_object()
 
     # Enable auto smooth if modifier is weighted normal
     if mod_type == 'WEIGHTED_NORMAL':
@@ -299,7 +300,7 @@ class ModifierListActions:
     action = None
 
     def execute(self, context):
-        ob = context.object
+        ob = get_ml_active_object()
         mods = ob.modifiers
         mods_len = len(mods) - 1
         active_mod_index = ob.ml_modifier_active_index
@@ -318,11 +319,11 @@ class ModifierListActions:
                 ob.ml_modifier_active_index = active_mod_index_down
             elif self.action == 'REMOVE':
                 if self.shift:
-                    gizmo_ob = get_gizmo_object(context)
-                    delete_gizmo_object(self, context, gizmo_ob)
+                    gizmo_ob = get_gizmo_object()
+                    delete_gizmo_object(self, gizmo_ob)
                     if active_mod.type == 'LATTICE':
-                        vert_group = get_vertex_group(context)
-                        delete_ml_vertex_group(context, vert_group)
+                        vert_group = get_vertex_group()
+                        delete_ml_vertex_group(vert_group)
 
                 bpy.ops.object.modifier_remove(modifier=active_mod_name)
                 ob.ml_modifier_active_index = active_mod_index_up
@@ -369,8 +370,8 @@ class OBJECT_PT_Gizmo_object_settings(Panel):
     def draw(self, context):
         layout = self.layout
 
-        ob = context.object
-        gizmo_ob = get_gizmo_object(context)
+        ob = get_ml_active_object()
+        gizmo_ob = get_gizmo_object()
 
         layout.prop(gizmo_ob, "name", text="")
         layout.prop(gizmo_ob ,"empty_display_type", text="")
@@ -417,7 +418,7 @@ class OBJECT_PT_Gizmo_object_settings(Panel):
 #=======================================================================
 
 def modifiers_ui(context, layout, num_of_rows=False):
-    ob = context.object
+    ob = get_ml_active_object()
 
     # === Favourite modifiers ===
     col = layout.column(align=True)
@@ -549,7 +550,7 @@ def modifiers_ui(context, layout, num_of_rows=False):
     if ob.type == 'MESH':
         if (active_mod.type in modifier_categories.have_gizmo_property
                 or active_mod.type == 'UV_PROJECT'):
-            gizmo_ob = get_gizmo_object(context)
+            gizmo_ob = get_gizmo_object()
 
             box = col.box()
             row = box.row(align=True)
@@ -646,6 +647,8 @@ def register():
     wm.ml_mesh_modifiers = CollectionProperty(type=MeshModifiersCollection)
     wm.ml_curve_modifiers = CollectionProperty(type=CurveModifiersCollection)
     wm.ml_lattice_modifiers = CollectionProperty(type=LatticeModifiersCollection)
+
+    wm.ml_pinned_object = PointerProperty(type=bpy.types.Object)
 
     bpy.app.handlers.load_post.append(on_file_load)
 
