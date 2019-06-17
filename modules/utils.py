@@ -94,7 +94,9 @@ def _calc_lattice_axis_length(vertex_coords, plane_co, plane_no):
     length = max_dist + abs(min_dist)
     # Avoid setting dimensions of a lattice to 0; it causes problems
     ensured_length = length if length > 0 else 0.1
-    return ensured_length
+    # Avoid overlapping
+    length_with_offset = ensured_length + 0.005
+    return length_with_offset
 
 
 def _calc_lattice_dimensions(vertex_coords, plane_co, plane_no=None):
@@ -161,9 +163,10 @@ def _fit_lattice_to_object(object, lattice_object):
 
     lattice_object.matrix_world = global_bbox_center_mat @ ob_rot.to_matrix().to_4x4()
 
-    dims = object.dimensions.copy()
-    # Avoid setting dimensions of a lattice to 0; it causes problems
-    ensured_dims = [d if d > 0 else 0.1 for d in dims]
+    dims = object.dimensions
+    # Avoid setting dimensions of a lattice to 0; it causes problems.
+    # Also add some offset to avoid overlapping.
+    ensured_dims = [d + 0.005 if d > 0 else 0.1 for d in dims]
 
     lattice_object.dimensions = ensured_dims
 
