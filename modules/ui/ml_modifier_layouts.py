@@ -1,3 +1,38 @@
+def MULTIRES(layout, ob, md):
+    layout.row().prop(md, "subdivision_type", expand=True)
+
+    split = layout.split()
+    col = split.column()
+    col.prop(md, "levels", text="Preview")
+    col.prop(md, "sculpt_levels", text="Sculpt")
+    col.prop(md, "render_levels", text="Render")
+    col.prop(md, "quality")
+
+    col = split.column()
+
+    col.enabled = ob.mode != 'EDIT'
+    col.operator("object.multires_subdivide", text="Subdivide").modifier = md.name # Changed
+    col.operator("object.multires_higher_levels_delete", text="Delete Higher").modifier = md.name # Changed
+    col.operator("object.multires_reshape", text="Reshape").modifier = md.name # Changed
+    col.operator("object.multires_base_apply", text="Apply Base").modifier = md.name # Changed
+    col.prop(md, "uv_smooth", text="")
+    col.prop(md, "show_only_control_edges")
+    col.prop(md, "use_creases")
+
+    layout.separator()
+
+    col = layout.column()
+    row = col.row()
+    if md.is_external:
+        row.operator("object.multires_external_pack", text="Pack External").modifier = md.name # Changed
+        row.label()
+        row = col.row()
+        row.prop(md, "filepath", text="")
+    else:
+        row.operator("object.multires_external_save", text="Save External...").modifier = md.name # Changed
+        row.label()
+
+
 def LAPLACIANDEFORM(layout, ob, md):
     is_bind = md.is_bind
 

@@ -561,9 +561,11 @@ def modifiers_ui(context, layout, num_of_rows=False):
     # A column is needed here to keep the layout more compact,
     # because in a box separators give an unnecessarily big space.
     col = box.column()
-    # Custom layouts for laplacian deform, mesh deform and
-    # surface deform because bind button doesn't work otherwise.
-    if active_mod.type == 'LAPLACIANDEFORM':
+    # Custom layouts for multiresolution, laplacian deform, mesh deform
+    # and surface deform because otherwise their operators don't work.
+    if active_mod.type == 'MULTIRES':
+        ml_modifier_layouts.MULTIRES(col, ob, active_mod)
+    elif active_mod.type == 'LAPLACIANDEFORM':
         ml_modifier_layouts.LAPLACIANDEFORM(col, ob, active_mod)
     elif active_mod.type == 'MESH_DEFORM':
         ml_modifier_layouts.MESH_DEFORM(col, ob, active_mod)
