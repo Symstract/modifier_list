@@ -38,11 +38,10 @@ def _get_ml_collection(context):
 
 
 def _create_vertex_group_from_selection(object, vertex_indices, group_name):
-    """Create a vertex group for a modifier to use """
+    """Create a vertex group for a modifier to use.
+    Works only in object mode."""
     vert_group = object.vertex_groups.new(name=group_name)
-    bpy.ops.object.mode_set(mode='OBJECT')
     vert_group.add(vertex_indices, 1, 'ADD')
-    bpy.ops.object.mode_set(mode='EDIT')
     return vert_group
 
 
@@ -172,12 +171,12 @@ def _fit_lattice_to_object(object, lattice_object):
 def _create_lattice_gizmo_object(self, context, modifier):
     """Create a gizmo (lattice) object"""
     ob = get_ml_active_object()
-    ob.update_from_editmode()
     mesh = ob.data
     active_mod_index = ob.ml_modifier_active_index
     active_mod = ob.modifiers[active_mod_index]
 
     if ob.mode == 'EDIT':
+        bpy.ops.object.mode_set(mode='OBJECT')
         sel_verts = [v for v in mesh.vertices if v.select]
         if len(sel_verts) >= 2:
             place_at_verts = True
