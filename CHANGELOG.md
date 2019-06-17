@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.2.2 - 17.6.2019
+
+- Fixed Multiresolution modifier operators not working.
+
 ## 1.2.1 - 13.6.2019
 
 - Fixed the effect of a gizmo object not being taken into account when applying a modifier if the gizmo is deleted at the same time (by holding shift).
