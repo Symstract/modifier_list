@@ -322,6 +322,7 @@ class ModifierListActions:
                     gizmo_ob = get_gizmo_object()
                     delete_gizmo_object(self, gizmo_ob)
                     if active_mod.type == 'LATTICE':
+                        context.view_layer.objects.active = ob
                         vert_group = get_vertex_group()
                         delete_ml_vertex_group(vert_group)
 
