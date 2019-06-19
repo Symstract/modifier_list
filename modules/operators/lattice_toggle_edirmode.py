@@ -5,22 +5,24 @@ from bpy.types import Operator
 from ..utils import get_gizmo_object, get_ml_active_object
 
 
-def pinned_object_unset_ensure(dummy):
-    """Handler for making sure the object doesn't stay
-    pinned if the user goes manually out of lattice edit mode
-    instead of using the dedicated button.
+is_initially_ob_pinned = False
+initial_mode = None
+initially_selected_ob = None
+
+
+def scene_correct_state_ensure(dummy):
+    """Handler for making sure the active object, object selection
+    and object pinning are set correctly even if the user goes manually
+    out of lattice edit mode instead of using the dedicated button.
     """
     ob = bpy.context.object
     if ob:
         if ob.mode == 'OBJECT':
             wm = bpy.context.window_manager
-            wm.ml_pinned_object = None
-            bpy.app.handlers.depsgraph_update_post.remove(pinned_object_unset_ensure)
-
-
-is_initially_ob_pinned = False
-initial_mode = None
-initially_selected_ob = None
+            if not is_initially_ob_pinned:
+                wm.ml_pinned_object = None
+            bpy.context.view_layer.objects.active = initially_selected_ob
+            bpy.app.handlers.depsgraph_update_post.remove(scene_correct_state_ensure)
 
 
 class OBJECT_OT_ml_lattice_toggle_editmode(Operator):
@@ -57,12 +59,11 @@ class OBJECT_OT_ml_lattice_toggle_editmode(Operator):
 
             bpy.ops.object.mode_set(mode='EDIT')
 
-            if not is_initially_ob_pinned:
-                depsgraph_handlers.append(pinned_object_unset_ensure)
+            depsgraph_handlers.append(scene_correct_state_ensure)
 
         else:
             try:
-                depsgraph_handlers.remove(pinned_object_unset_ensure)
+                depsgraph_handlers.remove(scene_correct_state_ensure)
             except:
                 pass
 
