@@ -13,6 +13,11 @@ def LATTICE(layout, ob, md):
     if gizmo_ob:
         lat = gizmo_ob.data
 
+        depress = context.object.type == 'LATTICE' and context.object.mode == 'EDIT'
+        layout.operator("object.lattice_toggle_editmode", text="Edit Lattice", depress=depress)
+
+        layout.separator()
+
         row = layout.row()
         row.prop(lat, "points_u")
         row.prop(lat, "interpolation_type_u", text="")
