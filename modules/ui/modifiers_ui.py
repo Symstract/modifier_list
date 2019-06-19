@@ -562,13 +562,14 @@ def modifiers_ui(context, layout, num_of_rows=False):
             box = col.box()
             row = box.row(align=True)
             row.scale_x = 1.5
+            icon = 'OUTLINER_OB_LATTICE' if active_mod.type == 'LATTICE' else 'OUTLINER_OB_EMPTY'
             if not gizmo_ob:
-                row.operator("object.ml_gizmo_object_add", text="Add Gizmo", icon='EMPTY_DATA'
+                row.operator("object.ml_gizmo_object_add", text="Add Gizmo", icon=icon
                             ).modifier = active_mod.name
             else:
                 depress = not gizmo_ob.hide_viewport
                 row.operator("object.ml_gizmo_object_toggle_visibility", text="Show Gizmo",
-                                icon='EMPTY_DATA', depress=depress)
+                                icon=icon, depress=depress)
                 row.popover("OBJECT_PT_Gizmo_object_settings", text="", icon='PREFERENCES')
 
 
