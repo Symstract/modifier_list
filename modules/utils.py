@@ -159,9 +159,9 @@ def _fit_lattice_to_object(object, lattice_object):
     ob_loc, ob_rot, _ = ob_mat.decompose()
 
     local_bbox_center = sum((Vector(b) for b in object.bound_box), Vector()) / 8
-    global_bbox_center_mat = Matrix.Translation(ob_loc) @ Matrix.Translation(local_bbox_center)
 
-    lattice_object.matrix_world = global_bbox_center_mat @ ob_rot.to_matrix().to_4x4()
+    lattice_object.matrix_world = (Matrix.Translation(ob_loc) @ ob_rot.to_matrix().to_4x4() @
+                                   Matrix.Translation(local_bbox_center))
 
     dims = object.dimensions
     # Avoid setting dimensions of a lattice to 0; it causes problems.
