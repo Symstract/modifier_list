@@ -13,8 +13,10 @@ def LATTICE(layout, ob, md):
     if gizmo_ob:
         lat = gizmo_ob.data
 
+        row = layout.row()
+        row.enabled = not gizmo_ob.hide_viewport
         depress = context.object.type == 'LATTICE' and context.object.mode == 'EDIT'
-        layout.operator("object.lattice_toggle_editmode", text="Edit Lattice", depress=depress)
+        row.operator("object.lattice_toggle_editmode", text="Edit Lattice", depress=depress)
 
         layout.separator()
 
