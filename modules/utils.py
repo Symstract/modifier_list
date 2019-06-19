@@ -178,19 +178,32 @@ def _create_lattice_gizmo_object(self, context, modifier):
     active_mod_index = ob.ml_modifier_active_index
     active_mod = ob.modifiers[active_mod_index]
 
+    has_already_vert_group = bool(active_mod.vertex_group)
+    if has_already_vert_group:
+        vert_group_index = ob.vertex_groups[active_mod.vertex_group].index
+    else:
+        vert_group_index = None
+
     if ob.mode == 'EDIT':
         bpy.ops.object.mode_set(mode='OBJECT')
-        sel_verts = [v for v in mesh.vertices if v.select]
-        if len(sel_verts) >= 2:
-            place_at_verts = True
-
-            vert_indices = [v.index for v in sel_verts]
-            vert_group = _create_vertex_group_from_selection(ob, vert_indices, "ML_Lattice")
-            active_mod.vertex_group = vert_group.name
+        if not has_already_vert_group:
+            sel_verts = [v for v in mesh.vertices if v.select]
+            place_at_verts = len(sel_verts) >= 2
+            if place_at_verts:
+                vert_indices = [v.index for v in sel_verts]
+                vert_group = _create_vertex_group_from_selection(ob, vert_indices, "ML_Lattice")
+                active_mod.vertex_group = vert_group.name
+        else:
+            sel_verts = [v for v in mesh.vertices if vert_group_index in
+                            [vg.group for vg in v.groups]]
+            place_at_verts = len(sel_verts) >= 2
+    else:
+        if has_already_vert_group:
+            sel_verts = [v for v in mesh.vertices if vert_group_index in
+                            [vg.group for vg in v.groups]]
+            place_at_verts = len(sel_verts) >= 2
         else:
             place_at_verts = False
-    else:
-        place_at_verts = False
 
     lattice = bpy.data.lattices.new(modifier + "_Gizmo")
     gizmo_ob = bpy.data.objects.new(modifier + "_Gizmo", lattice)
