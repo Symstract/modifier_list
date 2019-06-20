@@ -270,6 +270,9 @@ def assign_gizmo_object_to_modifier(self, context, modifier):
 
     setattr(mod, gizmo_ob_prop, gizmo_ob)
 
+    if mod.type == 'LATTICE':
+        bpy.ops.object.lattice_toggle_editmode()
+
     if parent_gizmo:
         gizmo_ob.parent = ob
         gizmo_ob.matrix_parent_inverse = ob.matrix_world.inverted()
