@@ -171,8 +171,8 @@ def _fit_lattice_to_object(object, lattice_object):
     lattice_object.dimensions = ensured_dims
 
 
-def _create_lattice_gizmo_object(self, context, modifier):
-    """Create a gizmo (lattice) object"""
+def _position_lattice_gizmo_object(gizmo_object):
+    """Position a lattice gizmo object"""
     ob = get_ml_active_object()
     mesh = ob.data
     active_mod_index = ob.ml_modifier_active_index
@@ -205,16 +205,21 @@ def _create_lattice_gizmo_object(self, context, modifier):
         else:
             place_at_verts = False
 
+    if place_at_verts:
+        _fit_lattice_to_selection(ob, sel_verts, gizmo_object)
+    else:
+        _fit_lattice_to_object(ob, gizmo_object)
+
+
+def _create_lattice_gizmo_object(self, context, modifier):
+    """Create a gizmo (lattice) object"""
     lattice = bpy.data.lattices.new(modifier + "_Gizmo")
     gizmo_ob = bpy.data.objects.new(modifier + "_Gizmo", lattice)
 
-    if place_at_verts:
-        _fit_lattice_to_selection(ob, sel_verts, gizmo_ob)
-    else:
-        _fit_lattice_to_object(ob, gizmo_ob)
-
     ml_col = _get_ml_collection(context)
     ml_col.objects.link(gizmo_ob)
+
+    _position_lattice_gizmo_object(gizmo_ob)
 
     return gizmo_ob
 
