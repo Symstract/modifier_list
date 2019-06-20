@@ -45,8 +45,8 @@ def _create_vertex_group_from_selection(object, vertex_indices, group_name):
     return vert_group
 
 
-def _create_gizmo_object(self, context, modifier):
-    """Create a gizmo (empty) object"""
+def _position_gizmo_object(gizmo_object):
+    """Position a gizmo (empty) object"""
     ob = get_ml_active_object()
     ob.update_from_editmode()
     ob_mat = ob.matrix_world
@@ -62,18 +62,23 @@ def _create_gizmo_object(self, context, modifier):
     else:
         place_at_vertex = False
 
+    if place_at_vertex:
+        gizmo_object.location = vert_loc
+    else:
+        gizmo_object.location = ob_mat.to_translation()
+
+    gizmo_object.rotation_euler = ob_mat.to_euler()
+
+
+def _create_gizmo_object(self, context, modifier):
+    """Create a gizmo (empty) object"""
     gizmo_ob = bpy.data.objects.new(modifier + "_Gizmo", None)
     gizmo_ob.empty_display_type = 'ARROWS'
 
-    if place_at_vertex:
-        gizmo_ob.location = vert_loc
-    else:
-        gizmo_ob.location = ob_mat.to_translation()
-
-    gizmo_ob.rotation_euler = ob_mat.to_euler()
-
     ml_col = _get_ml_collection(context)
     ml_col.objects.link(gizmo_ob)
+
+    _position_gizmo_object(gizmo_ob)
 
     return gizmo_ob
 
