@@ -37,7 +37,7 @@ def _get_ml_collection(context):
     return ml_col
 
 
-def _create_vertex_group_from_selection(object, vertex_indices, group_name):
+def _create_vertex_group_from_vertices(object, vertex_indices, group_name):
     """Create a vertex group for a modifier to use.
     Works only in object mode."""
     vert_group = object.vertex_groups.new(name=group_name)
@@ -196,7 +196,7 @@ def _position_lattice_gizmo_object(gizmo_object):
             place_at_verts = len(sel_verts) >= 2
             if place_at_verts:
                 vert_indices = [v.index for v in sel_verts]
-                vert_group = _create_vertex_group_from_selection(ob, vert_indices, "ML_Lattice")
+                vert_group = _create_vertex_group_from_vertices(ob, vert_indices, "ML_Lattice")
                 active_mod.vertex_group = vert_group.name
         else:
             sel_verts = [v for v in mesh.vertices if vert_group_index in
