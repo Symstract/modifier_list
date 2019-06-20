@@ -87,7 +87,7 @@ class OBJECT_OT_ml_modifier_apply(Operator):
             delete_gizmo_object(self, gizmo_ob)
             context.view_layer.objects.active = ob
             if self.mod_type == 'LATTICE':
-                delete_ml_vertex_group(vert_group)
+                delete_ml_vertex_group(ob, vert_group)
 
         return {'FINISHED'}
 

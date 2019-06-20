@@ -325,12 +325,11 @@ def delete_gizmo_object(self, gizmo_object):
         self.report({'INFO'}, "Deleted a gizmo object")
 
 
-def delete_ml_vertex_group(vertex_group):
-    ob = get_ml_active_object()
+def delete_ml_vertex_group(object, vertex_group):
     vert_group_name = vertex_group
 
     if vert_group_name:
         if vert_group_name.startswith("ML_"):
-            vert_group = ob.vertex_groups[vert_group_name]
-            ob.vertex_groups.remove(vert_group)
+            vert_group = object.vertex_groups[vert_group_name]
+            object.vertex_groups.remove(vert_group)
 
