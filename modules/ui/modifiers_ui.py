@@ -14,11 +14,10 @@ from bpy.types import (
     UIList
 )
 
-from .. import icons
 from . import ml_modifier_layouts
-from .. import modifier_categories
+from .. import icons, modifier_categories
 from ..operators import lattice_toggle_editmode
-from..utils import (
+from ..utils import (
     delete_gizmo_object,
     delete_ml_vertex_group,
     get_gizmo_object,
