@@ -97,11 +97,7 @@ def _calc_lattice_axis_length(vertex_coords, plane_co, plane_no):
             min_dist = dist
 
     length = max_dist + abs(min_dist)
-    # Avoid setting dimensions of a lattice to 0; it causes problems
-    ensured_length = length if length > 0 else 0.1
-    # Avoid overlapping
-    length_with_offset = ensured_length + 0.005
-    return length_with_offset
+    return length
 
 
 def _calc_lattice_dimensions(vertex_coords, plane_co, plane_no=None):
@@ -146,6 +142,21 @@ def _calc_lattice_origin(vertex_coords, plane_co, plane_no=None):
     return origin
 
 
+def set_lattice_points(lattice_object, lattice_dimensions):
+    """Set the number of points per axis for a lattice.
+
+    If the lattice has zero lenght on an axis, the amount of points on
+    that axis is 1; otherwise it's 2. That way there's no unnecessary
+    points.
+    """
+    lat = lattice_object.data
+    points = "points_u", "points_v", "points_w"
+
+    for i, p in enumerate(points):
+        num_of_points = 1 if lattice_dimensions[i] == 0 else 2
+        setattr(lat, p, num_of_points)
+
+
 def _fit_lattice_to_selection(object, vertices, lattice_object):
     ob_mat = object.matrix_world
     ob_loc, ob_rot, _ = ob_mat.decompose()
@@ -156,7 +167,14 @@ def _fit_lattice_to_selection(object, vertices, lattice_object):
     lattice_object.matrix_world = (Matrix.Translation(ob_loc) @ ob_rot.to_matrix().to_4x4() @
                                    Matrix.Translation(lat_origin))
 
-    lattice_object.dimensions = _calc_lattice_dimensions(vert_locs, avg_vert_loc)
+    dims = _calc_lattice_dimensions(vert_locs, avg_vert_loc)
+    # Avoid setting dimensions of a lattice to 0; it causes problems.
+    # Also add some offset to avoid overlapping.
+    ensured_dims = [d + 0.005 if d > 0 else 0.1 for d in dims]
+
+    lattice_object.dimensions = ensured_dims
+
+    set_lattice_points(lattice_object, dims)
 
 
 def _fit_lattice_to_object(object, lattice_object):
@@ -174,6 +192,8 @@ def _fit_lattice_to_object(object, lattice_object):
     ensured_dims = [d + 0.005 if d > 0 else 0.1 for d in dims]
 
     lattice_object.dimensions = ensured_dims
+
+    set_lattice_points(lattice_object, dims)
 
 
 def _position_lattice_gizmo_object(gizmo_object):
