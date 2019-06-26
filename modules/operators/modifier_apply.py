@@ -4,6 +4,7 @@ import bpy
 from bpy.props import *
 from bpy.types import Operator
 
+from . import lattice_toggle_edirmode
 from ..modifier_categories import curve_deform_names_icons_types
 from ..utils import (
     delete_gizmo_object,
@@ -61,7 +62,16 @@ class OBJECT_OT_ml_modifier_apply(Operator):
                 return {'FINISHED'}
 
             bpy.ops.ed.undo_push(message="Apply Modifier")
-            bpy.ops.object.editmode_toggle()
+
+            if context.object.type == 'LATTICE':
+                # When using lattice_toggle_editmode operator, the mode
+                # the user was in before that is stored inside that
+                # module. That can also be utilised here.
+                if lattice_toggle_edirmode.initial_mode == 'EDIT_MESH':
+                    bpy.ops.object.editmode_toggle()
+            else:
+                bpy.ops.object.editmode_toggle()
+
         else:
             try:
                 bpy.ops.object.modifier_apply(override, apply_as=self.apply_as, modifier=self.modifier)
