@@ -200,13 +200,13 @@ def _position_lattice_gizmo_object(gizmo_object):
                 active_mod.vertex_group = vert_group.name
         else:
             sel_verts = [v for v in mesh.vertices if vert_group_index in
-                            [vg.group for vg in v.groups]]
+                         [vg.group for vg in v.groups]]
             place_at_verts = len(sel_verts) >= 2
         bpy.ops.object.mode_set(mode='EDIT')
     else:
         if has_already_vert_group:
             sel_verts = [v for v in mesh.vertices if vert_group_index in
-                            [vg.group for vg in v.groups]]
+                         [vg.group for vg in v.groups]]
             place_at_verts = len(sel_verts) >= 2
         else:
             place_at_verts = False
