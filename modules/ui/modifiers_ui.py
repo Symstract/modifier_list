@@ -324,7 +324,7 @@ class ModifierListActions:
                     if active_mod.type == 'LATTICE':
                         context.view_layer.objects.active = ob
                         vert_group = get_vertex_group()
-                        delete_ml_vertex_group(vert_group)
+                        delete_ml_vertex_group(ob, vert_group)
 
                 # Make removing modifiers possible when an object is pinned
                 override = context.copy()
