@@ -17,6 +17,7 @@ from bpy.types import (
 from .. import icons
 from . import ml_modifier_layouts
 from .. import modifier_categories
+from ..operators import lattice_toggle_editmode
 from..utils import (
     delete_gizmo_object,
     delete_ml_vertex_group,
@@ -319,12 +320,26 @@ class ModifierListActions:
                 ob.ml_modifier_active_index = active_mod_index_down
             elif self.action == 'REMOVE':
                 if self.shift:
+                    # When using lattice_toggle_editmode operator,
+                    # the mode the user was in before that is stored
+                    # inside that module. That can also be utilised
+                    # here, so we can return into the correct mode
+                    # after deleting a lattice in lattice edit mode.
+                    if (context.object.type == 'LATTICE'
+                        and lattice_toggle_editmode.initial_mode == 'EDIT_MESH'):
+                        switch_into_editmode = True
+                    else:
+                        switch_into_editmode = False
+
                     gizmo_ob = get_gizmo_object()
                     delete_gizmo_object(self, gizmo_ob)
+
                     if active_mod.type == 'LATTICE':
                         context.view_layer.objects.active = ob
                         vert_group = get_vertex_group()
                         delete_ml_vertex_group(ob, vert_group)
+                        if switch_into_editmode:
+                            bpy.ops.object.editmode_toggle()
 
                 # Make removing modifiers possible when an object is pinned
                 override = context.copy()
