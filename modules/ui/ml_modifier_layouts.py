@@ -21,16 +21,16 @@ def LATTICE(layout, ob, md):
         layout.separator()
 
         row = layout.row()
-        row.prop(lat, "points_u")
-        row.prop(lat, "interpolation_type_u", text="")
 
-        row = layout.row()
-        row.prop(lat, "points_v")
-        row.prop(lat, "interpolation_type_v", text="")
+        sub = row.column(align=True)
+        sub.prop(lat, "points_u")
+        sub.prop(lat, "points_v")
+        sub.prop(lat, "points_w")
 
-        row = layout.row()
-        row.prop(lat, "points_w")
-        row.prop(lat, "interpolation_type_w", text="")
+        sub = row.column(align=True)
+        sub.prop(lat, "interpolation_type_u", text="")
+        sub.prop(lat, "interpolation_type_v", text="")
+        sub.prop(lat, "interpolation_type_w", text="")
 
         layout.separator()
 
