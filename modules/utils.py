@@ -9,14 +9,13 @@ def get_ml_active_object():
     """Get the active object or if some object is pinned, get that"""
     context = bpy.context
     ob = context.object
-    wm = context.window_manager
+    scene = context.scene
 
-    if wm.ml_pinned_object:
-        if wm.ml_pinned_object.users == 1 and not wm.ml_pinned_object.use_fake_user:
-            wm.ml_pinned_object = None
+    if scene.ml_pinned_object:
+        if scene.ml_pinned_object.users == 1 and not scene.ml_pinned_object.use_fake_user:
             return ob
         else:
-            return wm.ml_pinned_object
+            return scene.ml_pinned_object
     else:
         return ob
 

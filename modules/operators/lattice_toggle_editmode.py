@@ -18,9 +18,9 @@ def scene_correct_state_ensure(dummy):
     ob = bpy.context.object
     if ob:
         if ob.mode == 'OBJECT':
-            wm = bpy.context.window_manager
+            scene = bpy.context.scene
             if not is_initially_ob_pinned:
-                wm.ml_pinned_object = None
+                scene.ml_pinned_object = None
             bpy.context.view_layer.objects.active = initially_selected_ob
             bpy.app.handlers.depsgraph_update_post.remove(scene_correct_state_ensure)
 
@@ -33,7 +33,7 @@ class OBJECT_OT_ml_lattice_toggle_editmode(Operator):
 
     def execute(self, context):
         ob = context.object
-        wm = context.window_manager
+        scene = context.scene
         depsgraph_handlers = bpy.app.handlers.depsgraph_update_post
 
         global initial_mode
@@ -47,10 +47,10 @@ class OBJECT_OT_ml_lattice_toggle_editmode(Operator):
 
         if not is_lattice_edit_mode_on:
             initial_mode = context.mode
-            is_initially_ob_pinned = bool(wm.ml_pinned_object)
+            is_initially_ob_pinned = bool(scene.ml_pinned_object)
             initially_selected_ob = ob
 
-            wm.ml_pinned_object = get_ml_active_object()
+            scene.ml_pinned_object = get_ml_active_object()
             gizmo_ob = get_gizmo_object()
 
             bpy.ops.object.mode_set(mode='OBJECT')
@@ -73,17 +73,17 @@ class OBJECT_OT_ml_lattice_toggle_editmode(Operator):
                 context.view_layer.objects.active = initially_selected_ob
 
                 if initial_mode == 'EDIT_MESH':
-                    context.view_layer.objects.active = wm.ml_pinned_object
+                    context.view_layer.objects.active = scene.ml_pinned_object
                     bpy.ops.object.mode_set(mode='EDIT')
 
             else:
                 if initial_mode == 'OBJECT':
                     ob.select_set(False)
-                    context.view_layer.objects.active = wm.ml_pinned_object
-                    wm.ml_pinned_object = None
+                    context.view_layer.objects.active = scene.ml_pinned_object
+                    scene.ml_pinned_object = None
                 else:
-                    context.view_layer.objects.active = wm.ml_pinned_object
+                    context.view_layer.objects.active = scene.ml_pinned_object
                     bpy.ops.object.mode_set(mode='EDIT')
-                    wm.ml_pinned_object = None
+                    scene.ml_pinned_object = None
 
         return {'FINISHED'}

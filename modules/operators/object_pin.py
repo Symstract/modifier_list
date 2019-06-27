@@ -2,8 +2,6 @@ import bpy
 from bpy.props import *
 from bpy.types import Operator
 
-from ..utils import get_ml_active_object
-
 class UI_OT_ml_object_pin(Operator):
     bl_idname = "ui.ml_object_pin"
     bl_label = "Pin Object"
@@ -13,9 +11,9 @@ class UI_OT_ml_object_pin(Operator):
     unpin: BoolProperty()
 
     def execute(self, context):
-        ob = get_ml_active_object()
-        wm = context.window_manager
-        wm.ml_pinned_object = None if self.unpin else ob
+        ob = context.object
+        scene = context.scene
+        scene.ml_pinned_object = None if self.unpin else ob
 
         # Update the sidebar if called from the popup
         context.area.tag_redraw()

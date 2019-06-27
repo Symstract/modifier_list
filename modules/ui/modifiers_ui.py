@@ -656,6 +656,29 @@ def on_file_load(dummy):
     set_lattice_modifier_collection_items()
 
 
+def pinned_object_ensure_users(scene):
+    """Handler for making sure a pinned object which is only used by
+    ml_pinned_object, i.e. an object which was deleted while it was
+    pinned, really gets deleted + the property gets reset.
+    """
+    if scene.ml_pinned_object:
+        if scene.ml_pinned_object.users == 1 and not scene.ml_pinned_object.use_fake_user:
+            bpy.data.objects.remove(scene.ml_pinned_object)
+            scene.ml_pinned_object = None
+
+
+def on_pinned_object_change(self, context):
+    """Callback function for ml_pinned_object"""
+    scene = context.scene
+    depsgraph_handlers = bpy.app.handlers.depsgraph_update_pre
+
+    if scene.ml_pinned_object:
+        depsgraph_handlers.append(pinned_object_ensure_users)
+    else:
+        if pinned_object_ensure_users in depsgraph_handlers:
+            depsgraph_handlers.remove(pinned_object_ensure_users)
+
+
 def register():
     # === Properties ===
     bpy.types.Object.ml_modifier_active_index = IntProperty()
@@ -670,7 +693,8 @@ def register():
     wm.ml_curve_modifiers = CollectionProperty(type=CurveModifiersCollection)
     wm.ml_lattice_modifiers = CollectionProperty(type=LatticeModifiersCollection)
 
-    wm.ml_pinned_object = PointerProperty(type=bpy.types.Object)
+    scene = bpy.types.Scene
+    scene.ml_pinned_object = PointerProperty(type=bpy.types.Object, update=on_pinned_object_change)
 
     bpy.app.handlers.load_post.append(on_file_load)
 
