@@ -675,8 +675,10 @@ def on_pinned_object_change(self, context):
     if scene.ml_pinned_object:
         depsgraph_handlers.append(pinned_object_ensure_users)
     else:
-        if pinned_object_ensure_users in depsgraph_handlers:
+        try:
             depsgraph_handlers.remove(pinned_object_ensure_users)
+        except ValueError:
+            pass
 
 
 def register():
