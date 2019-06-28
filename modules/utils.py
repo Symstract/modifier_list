@@ -346,9 +346,11 @@ def delete_gizmo_object(self, gizmo_object):
 
 def delete_ml_vertex_group(object, vertex_group):
     vert_group_name = vertex_group
+    vert_groups = object.vertex_groups
 
     if vert_group_name:
         if vert_group_name.startswith("ML_"):
-            vert_group = object.vertex_groups[vert_group_name]
-            object.vertex_groups.remove(vert_group)
+            if vert_group_name in vert_groups:
+                vert_group = vert_groups[vert_group_name]
+                vert_groups.remove(vert_group)
 
