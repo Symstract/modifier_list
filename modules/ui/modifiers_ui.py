@@ -438,8 +438,8 @@ class OBJECT_PT_Gizmo_object_settings(Panel):
 # UI
 #=======================================================================
 
-def modifiers_ui(context, layout, num_of_rows=False):
-    ob = get_ml_active_object()
+def modifiers_ui(context, layout, num_of_rows=False, use_in_properties_editor=False):
+    ob = context.object if use_in_properties_editor else get_ml_active_object()
 
     # === Favourite modifiers ===
     col = layout.column(align=True)
