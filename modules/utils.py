@@ -10,14 +10,18 @@ def get_ml_active_object():
     context = bpy.context
     ob = context.object
     scene = context.scene
+    area = context.area
 
-    if scene.ml_pinned_object:
-        if scene.ml_pinned_object.users == 1 and not scene.ml_pinned_object.use_fake_user:
-            return ob
-        else:
-            return scene.ml_pinned_object
-    else:
+    if area.type == 'PROPERTIES':
         return ob
+    else:
+        if scene.ml_pinned_object:
+            if scene.ml_pinned_object.users == 1 and not scene.ml_pinned_object.use_fake_user:
+                return ob
+            else:
+                return scene.ml_pinned_object
+        else:
+            return ob
 
 
 # Functions for adding a gizmo object
@@ -290,7 +294,10 @@ def assign_gizmo_object_to_modifier(self, context, modifier):
     setattr(mod, gizmo_ob_prop, gizmo_ob)
 
     if mod.type == 'LATTICE':
-        bpy.ops.object.lattice_toggle_editmode()
+        if context.area.type == 'PROPERTIES':
+            bpy.ops.object.lattice_toggle_editmode_prop_editor()
+        else:
+            bpy.ops.object.lattice_toggle_editmode()
 
     if parent_gizmo:
         gizmo_ob.parent = ob

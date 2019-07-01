@@ -4,7 +4,7 @@ import bpy
 from bpy.props import *
 from bpy.types import Operator
 
-from . import lattice_toggle_editmode
+from . import lattice_toggle_editmode, lattice_toggle_editmode_prop_editor
 from ..modifier_categories import curve_deform_names_icons_types
 from ..utils import (
     delete_gizmo_object,
@@ -35,7 +35,16 @@ class OBJECT_OT_ml_modifier_apply(Operator):
 
     def execute(self, context):
         ml_active_ob = get_ml_active_object()
-        ob = context.object
+
+        # Get the active object in 3d View so Properties Editor's
+        # context pinning won't mess things up.
+        if context.area.type == 'PROPERTIES':
+            context.area.type = 'VIEW_3D'
+            ob = context.object
+            context.area.type = 'PROPERTIES'
+        else:
+            ob = context.object
+
         self.mod_type = ml_active_ob.modifiers[self.modifier].type
 
         # Make applying modifiers possible when an object is pinned
@@ -65,10 +74,13 @@ class OBJECT_OT_ml_modifier_apply(Operator):
             bpy.ops.ed.undo_push(message="Apply Modifier")
 
             if ob.type == 'LATTICE':
-                # When using lattice_toggle_editmode operator, the mode
+                # When using lattice_toggle_editmode(_prop_editor) operator, the mode
                 # the user was in before that is stored inside that
                 # module. That can also be utilised here.
-                if lattice_toggle_editmode.initial_mode == 'EDIT_MESH':
+                if context.area.type == 'PROPERTIES':
+                    if lattice_toggle_editmode_prop_editor.init_mode == 'EDIT_MESH':
+                        bpy.ops.object.editmode_toggle()
+                elif lattice_toggle_editmode.initial_mode == 'EDIT_MESH':
                     bpy.ops.object.editmode_toggle()
             else:
                 bpy.ops.object.editmode_toggle()

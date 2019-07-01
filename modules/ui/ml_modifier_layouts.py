@@ -6,7 +6,7 @@ from..utils import get_gizmo_object
 
 # Modified to improve
 # ======================================================================
-def LATTICE(layout, ob, md):
+def LATTICE(layout, ob, md, use_in_properties_editor=False):
     context = bpy.context
     gizmo_ob = get_gizmo_object()
 
@@ -15,8 +15,12 @@ def LATTICE(layout, ob, md):
 
         row = layout.row()
         row.enabled = not gizmo_ob.hide_viewport
-        depress = context.object.type == 'LATTICE' and context.object.mode == 'EDIT'
-        row.operator("object.lattice_toggle_editmode", text="Edit Lattice", depress=depress)
+        depress = gizmo_ob.mode == 'EDIT'
+        if use_in_properties_editor:
+            row.operator("object.lattice_toggle_editmode_prop_editor", text="Edit Lattice",
+                         depress=depress)
+        else:
+            row.operator("object.lattice_toggle_editmode", text="Edit Lattice", depress=depress)
 
         layout.separator()
 

@@ -16,7 +16,7 @@ from bpy.types import (
 
 from . import ml_modifier_layouts
 from .. import icons, modifier_categories
-from ..operators import lattice_toggle_editmode
+from ..operators import lattice_toggle_editmode, lattice_toggle_editmode_prop_editor
 from ..utils import (
     delete_gizmo_object,
     delete_ml_vertex_group,
@@ -300,33 +300,51 @@ class ModifierListActions:
     action = None
 
     def execute(self, context):
-        ob = get_ml_active_object()
-        mods = ob.modifiers
+        ml_active_ob = get_ml_active_object()
+
+        # Get the active object in 3d View so Properties Editor's
+        # context pinning won't mess things up.
+        if context.area.type == 'PROPERTIES':
+            context.area.type = 'VIEW_3D'
+            ob = context.object
+            context.area.type = 'PROPERTIES'
+        else:
+            ob = context.object
+
+        mods = ml_active_ob.modifiers
         mods_len = len(mods) - 1
-        active_mod_index = ob.ml_modifier_active_index
+        active_mod_index = ml_active_ob.ml_modifier_active_index
         active_mod_index_up = np.clip(active_mod_index - 1, 0, mods_len)
         active_mod_index_down = np.clip(active_mod_index + 1, 0, mods_len)
 
         if mods:
-            active_mod = ob.modifiers[active_mod_index]
+            active_mod = ml_active_ob.modifiers[active_mod_index]
             active_mod_name = active_mod.name
 
             if self.action == 'UP':
                 bpy.ops.object.modifier_move_up(modifier=active_mod_name)
-                ob.ml_modifier_active_index = active_mod_index_up
+                ml_active_ob.ml_modifier_active_index = active_mod_index_up
             elif self.action == 'DOWN':
                 bpy.ops.object.modifier_move_down(modifier=active_mod_name)
-                ob.ml_modifier_active_index = active_mod_index_down
+                ml_active_ob.ml_modifier_active_index = active_mod_index_down
             elif self.action == 'REMOVE':
                 if self.shift:
-                    # When using lattice_toggle_editmode operator,
-                    # the mode the user was in before that is stored
-                    # inside that module. That can also be utilised
-                    # here, so we can return into the correct mode
-                    # after deleting a lattice in lattice edit mode.
-                    if (context.object.type == 'LATTICE'
-                        and lattice_toggle_editmode.initial_mode == 'EDIT_MESH'):
-                        switch_into_editmode = True
+                    # When using lattice_toggle_editmode(_prop_editor)
+                    # operator, the mode the user was in before that is
+                    # stored inside that module. That can also be
+                    # utilised here, so we can return into the correct
+                    # mode after deleting a lattice in lattice edit
+                    # mode.
+                    if ob.type == 'LATTICE':
+                        if context.area.type == 'PROPERTIES':
+                            if lattice_toggle_editmode_prop_editor.init_mode == 'EDIT_MESH':
+                                switch_into_editmode = True
+                            else:
+                                switch_into_editmode = False
+                        elif lattice_toggle_editmode.initial_mode == 'EDIT_MESH':
+                            switch_into_editmode = True
+                        else:
+                            switch_into_editmode = False
                     else:
                         switch_into_editmode = False
 
@@ -334,18 +352,18 @@ class ModifierListActions:
                     delete_gizmo_object(self, gizmo_ob)
 
                     if active_mod.type == 'LATTICE':
-                        context.view_layer.objects.active = ob
+                        context.view_layer.objects.active = ml_active_ob
                         vert_group = get_vertex_group()
-                        delete_ml_vertex_group(ob, vert_group)
+                        delete_ml_vertex_group(ml_active_ob, vert_group)
                         if switch_into_editmode:
                             bpy.ops.object.editmode_toggle()
 
                 # Make removing modifiers possible when an object is pinned
                 override = context.copy()
-                override['object'] = ob
+                override['object'] = ml_active_ob
 
                 bpy.ops.object.modifier_remove(override, modifier=active_mod_name)
-                ob.ml_modifier_active_index = active_mod_index_up
+                ml_active_ob.ml_modifier_active_index = active_mod_index_up
 
         return {'FINISHED'}
 
@@ -601,7 +619,8 @@ def modifiers_ui(context, layout, num_of_rows=False, use_in_properties_editor=Fa
     elif active_mod.type =='SURFACE_DEFORM':
         ml_modifier_layouts.SURFACE_DEFORM(col, ob, active_mod)
     elif active_mod.type == 'LATTICE':
-        ml_modifier_layouts.LATTICE(col, ob, active_mod)
+        ml_modifier_layouts.LATTICE(col, ob, active_mod,
+                                    use_in_properties_editor=use_in_properties_editor)
     else:
         mp = DATA_PT_modifiers(context)
         getattr(mp, active_mod.type)(col, ob, active_mod)
