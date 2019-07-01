@@ -145,3 +145,18 @@ class OBJECT_OT_ml_lattice_toggle_editmode(Operator):
                     scene.ml_pinned_object = None
 
         return {'FINISHED'}
+
+
+def unregister():
+    depsgraph_handlers = bpy.app.handlers.depsgraph_update_post
+    undo_handlers = bpy.app.handlers.undo_post
+
+    try:
+        depsgraph_handlers.remove(scene_correct_state_after_editmode_toggle_ensure)
+    except ValueError:
+        pass
+
+    try:
+        undo_handlers.remove(scene_correct_state_after_undo_ensure)
+    except ValueError:
+        pass
