@@ -458,6 +458,7 @@ class OBJECT_PT_Gizmo_object_settings(Panel):
 
 def modifiers_ui(context, layout, num_of_rows=False, use_in_properties_editor=False):
     ob = context.object if use_in_properties_editor else get_ml_active_object()
+    prefs = bpy.context.preferences.addons["modifier_list"].preferences
 
     # === Favourite modifiers ===
     col = layout.column(align=True)
@@ -549,20 +550,22 @@ def modifiers_ui(context, layout, num_of_rows=False, use_in_properties_editor=Fa
 
     # === General settings ===
     box = col.box()
-    row = box.row()
-    sub = row.row()
-    sub.label(text="", icon=active_mod_icon)
-    sub.prop(active_mod, "name", text="")
 
-    sub = row.row(align=True)
-    sub_sub = sub.row(align=True)
-    sub_sub.scale_x = 1.1
-    # Hide visibility toggles for collision modifier as they are not used
-    # in the regular UI either (apparently can cause problems in some scenes).
-    if active_mod.type != 'COLLISION':
-        sub_sub.prop(active_mod, "show_render", text="")
-        sub_sub.prop(active_mod, "show_viewport", text="")
-    mod_show_editmode_and_cage(active_mod, sub, scale_x=1.1)
+    if not prefs.hide_general_settings_region:
+        row = box.row()
+        sub = row.row()
+        sub.label(text="", icon=active_mod_icon)
+        sub.prop(active_mod, "name", text="")
+
+        sub = row.row(align=True)
+        sub_sub = sub.row(align=True)
+        sub_sub.scale_x = 1.1
+        # Hide visibility toggles for collision modifier as they are not used
+        # in the regular UI either (apparently can cause problems in some scenes).
+        if active_mod.type != 'COLLISION':
+            sub_sub.prop(active_mod, "show_render", text="")
+            sub_sub.prop(active_mod, "show_viewport", text="")
+        mod_show_editmode_and_cage(active_mod, sub, scale_x=1.1)
 
     row = box.row()
     apply = row.operator("object.ml_modifier_apply", text="Apply")

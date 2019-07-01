@@ -34,6 +34,11 @@ class Preferences(AddonPreferences):
     modifier_11: StringProperty(description="Add a favourite modifier")
     modifier_12: StringProperty(description="Add a favourite modifier")
 
+    hide_general_settings_region: BoolProperty(
+        name="Hide General Settings Region",
+        description="Hide the region which shows modifier name and display settings. "
+                    "The same settings are also inside the modifier list")
+
     mod_list_def_len: IntProperty(
         name="",
         description="Default/min number of rows to display in the modifier list in the popup",
@@ -81,6 +86,12 @@ class Preferences(AddonPreferences):
             row = col.split(factor=0.5, align=True)
             row.prop_search(self, attr, wm, "ml_mesh_modifiers", text="", icon='MODIFIER')
             row.prop_search(self, next(attr_iter), wm, "ml_mesh_modifiers", text="", icon='MODIFIER')
+
+        layout.separator()
+
+        # === General settings ===
+        row = layout.row()
+        row.prop(self, "hide_general_settings_region")
 
         layout.separator()
 
