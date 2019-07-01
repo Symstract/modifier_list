@@ -14,10 +14,16 @@ from bpy.types import (
     UIList
 )
 
-from .. import icons
 from . import ml_modifier_layouts
-from .. import modifier_categories
-from..utils import get_gizmo_object, delete_gizmo_object
+from .. import icons, modifier_categories
+from ..operators import lattice_toggle_editmode, lattice_toggle_editmode_prop_editor
+from ..utils import (
+    delete_gizmo_object,
+    delete_ml_vertex_group,
+    get_gizmo_object,
+    get_ml_active_object,
+    get_vertex_group,
+)
 
 
 # UI elements
@@ -71,7 +77,7 @@ def mod_show_editmode_and_cage(modifier, layout, scale_x=1.0, use_in_list=False)
 
     # === show_on_cage ===
     if modifier.type in support_show_on_cage :
-        ob = bpy.context.object
+        ob = get_ml_active_object()
         mods = ob.modifiers
         mod_index = mods.find(modifier.name)
 
@@ -145,7 +151,7 @@ def add_modifier(self, context):
     mod_type = wm.ml_mesh_modifiers[mod_name].value
     bpy.ops.object.modifier_add(type=mod_type)
 
-    ob = context.object
+    ob = get_ml_active_object()
 
     # Enable auto smooth if modifier is weighted normal
     if mod_type == 'WEIGHTED_NORMAL':
@@ -294,35 +300,75 @@ class ModifierListActions:
     action = None
 
     def execute(self, context):
-        ob = context.object
-        mods = ob.modifiers
+        ml_active_ob = get_ml_active_object()
+
+        # Make using operators possible when an object is pinned
+        override = context.copy()
+        override['object'] = ml_active_ob
+
+        # Get the active object in 3d View so Properties Editor's
+        # context pinning won't mess things up.
+        if context.area.type == 'PROPERTIES':
+            context.area.type = 'VIEW_3D'
+            ob = context.object
+            context.area.type = 'PROPERTIES'
+        else:
+            ob = context.object
+
+        mods = ml_active_ob.modifiers
         mods_len = len(mods) - 1
-        active_mod_index = ob.ml_modifier_active_index
+        active_mod_index = ml_active_ob.ml_modifier_active_index
         active_mod_index_up = np.clip(active_mod_index - 1, 0, mods_len)
         active_mod_index_down = np.clip(active_mod_index + 1, 0, mods_len)
 
         if mods:
-            active_mod_name = ob.modifiers[active_mod_index].name
+            active_mod = ml_active_ob.modifiers[active_mod_index]
+            active_mod_name = active_mod.name
 
             if self.action == 'UP':
-                bpy.ops.object.modifier_move_up(modifier=active_mod_name)
-                ob.ml_modifier_active_index = active_mod_index_up
+                bpy.ops.object.modifier_move_up(override, modifier=active_mod_name)
+                ml_active_ob.ml_modifier_active_index = active_mod_index_up
             elif self.action == 'DOWN':
-                bpy.ops.object.modifier_move_down(modifier=active_mod_name)
-                ob.ml_modifier_active_index = active_mod_index_down
+                bpy.ops.object.modifier_move_down(override, modifier=active_mod_name)
+                ml_active_ob.ml_modifier_active_index = active_mod_index_down
             elif self.action == 'REMOVE':
-                if self.delete_gizmo:
-                    gizmo_ob = get_gizmo_object(context)
-                    delete_gizmo_object(self, context, gizmo_ob)
+                if self.shift:
+                    # When using lattice_toggle_editmode(_prop_editor)
+                    # operator, the mode the user was in before that is
+                    # stored inside that module. That can also be
+                    # utilised here, so we can return into the correct
+                    # mode after deleting a lattice in lattice edit
+                    # mode.
+                    if ob.type == 'LATTICE':
+                        if context.area.type == 'PROPERTIES':
+                            if lattice_toggle_editmode_prop_editor.init_mode == 'EDIT_MESH':
+                                switch_into_editmode = True
+                            else:
+                                switch_into_editmode = False
+                        elif lattice_toggle_editmode.init_mode == 'EDIT_MESH':
+                            switch_into_editmode = True
+                        else:
+                            switch_into_editmode = False
+                    else:
+                        switch_into_editmode = False
 
+                    gizmo_ob = get_gizmo_object()
+                    delete_gizmo_object(self, gizmo_ob)
 
-                bpy.ops.object.modifier_remove(modifier=active_mod_name)
-                ob.ml_modifier_active_index = active_mod_index_up
+                    if active_mod.type == 'LATTICE':
+                        context.view_layer.objects.active = ml_active_ob
+                        vert_group = get_vertex_group()
+                        delete_ml_vertex_group(ml_active_ob, vert_group)
+                        if switch_into_editmode:
+                            bpy.ops.object.editmode_toggle()
+
+                bpy.ops.object.modifier_remove(override, modifier=active_mod_name)
+                ml_active_ob.ml_modifier_active_index = active_mod_index_up
 
         return {'FINISHED'}
 
     def invoke(self, context, event):
-        self.delete_gizmo = True if event.shift else False
+        self.shift = True if event.shift else False
 
         return self.execute(context)
 
@@ -361,12 +407,14 @@ class OBJECT_PT_Gizmo_object_settings(Panel):
     def draw(self, context):
         layout = self.layout
 
-        ob = context.object
-        gizmo_ob = get_gizmo_object(context)
+        ob = get_ml_active_object()
+        gizmo_ob = get_gizmo_object()
 
         layout.prop(gizmo_ob, "name", text="")
-        layout.prop(gizmo_ob ,"empty_display_type", text="")
-        layout.prop(gizmo_ob ,"empty_display_size", text="Display Size")
+
+        if gizmo_ob.type == 'EMPTY':
+            layout.prop(gizmo_ob ,"empty_display_type", text="")
+            layout.prop(gizmo_ob ,"empty_display_size", text="Display Size")
 
         layout.label(text="Location:")
         col = layout.column()
@@ -408,8 +456,8 @@ class OBJECT_PT_Gizmo_object_settings(Panel):
 # UI
 #=======================================================================
 
-def modifiers_ui(context, layout, num_of_rows=False):
-    ob = context.object
+def modifiers_ui(context, layout, num_of_rows=False, use_in_properties_editor=False):
+    ob = context.object if use_in_properties_editor else get_ml_active_object()
 
     # === Favourite modifiers ===
     col = layout.column(align=True)
@@ -541,18 +589,19 @@ def modifiers_ui(context, layout, num_of_rows=False):
     if ob.type == 'MESH':
         if (active_mod.type in modifier_categories.have_gizmo_property
                 or active_mod.type == 'UV_PROJECT'):
-            gizmo_ob = get_gizmo_object(context)
+            gizmo_ob = get_gizmo_object()
 
             box = col.box()
             row = box.row(align=True)
             row.scale_x = 1.5
+            icon = 'OUTLINER_OB_LATTICE' if active_mod.type == 'LATTICE' else 'OUTLINER_OB_EMPTY'
             if not gizmo_ob:
-                row.operator("object.ml_gizmo_object_add", text="Add Gizmo", icon='EMPTY_DATA'
+                row.operator("object.ml_gizmo_object_add", text="Add Gizmo", icon=icon
                             ).modifier = active_mod.name
             else:
                 depress = not gizmo_ob.hide_viewport
                 row.operator("object.ml_gizmo_object_toggle_visibility", text="Show Gizmo",
-                                icon='EMPTY_DATA', depress=depress)
+                                icon=icon, depress=depress)
                 row.popover("OBJECT_PT_Gizmo_object_settings", text="", icon='PREFERENCES')
 
 
@@ -571,6 +620,9 @@ def modifiers_ui(context, layout, num_of_rows=False):
         ml_modifier_layouts.MESH_DEFORM(col, ob, active_mod)
     elif active_mod.type =='SURFACE_DEFORM':
         ml_modifier_layouts.SURFACE_DEFORM(col, ob, active_mod)
+    elif active_mod.type == 'LATTICE':
+        ml_modifier_layouts.LATTICE(col, ob, active_mod,
+                                    use_in_properties_editor=use_in_properties_editor)
     else:
         mp = DATA_PT_modifiers(context)
         getattr(mp, active_mod.type)(col, ob, active_mod)
@@ -625,6 +677,31 @@ def on_file_load(dummy):
     set_lattice_modifier_collection_items()
 
 
+def pinned_object_ensure_users(scene):
+    """Handler for making sure a pinned object which is only used by
+    ml_pinned_object, i.e. an object which was deleted while it was
+    pinned, really gets deleted + the property gets reset.
+    """
+    if scene.ml_pinned_object:
+        if scene.ml_pinned_object.users == 1 and not scene.ml_pinned_object.use_fake_user:
+            bpy.data.objects.remove(scene.ml_pinned_object)
+            scene.ml_pinned_object = None
+
+
+def on_pinned_object_change(self, context):
+    """Callback function for ml_pinned_object"""
+    scene = context.scene
+    depsgraph_handlers = bpy.app.handlers.depsgraph_update_pre
+
+    if scene.ml_pinned_object:
+        depsgraph_handlers.append(pinned_object_ensure_users)
+    else:
+        try:
+            depsgraph_handlers.remove(pinned_object_ensure_users)
+        except ValueError:
+            pass
+
+
 def register():
     # === Properties ===
     bpy.types.Object.ml_modifier_active_index = IntProperty()
@@ -638,6 +715,9 @@ def register():
     wm.ml_mesh_modifiers = CollectionProperty(type=MeshModifiersCollection)
     wm.ml_curve_modifiers = CollectionProperty(type=CurveModifiersCollection)
     wm.ml_lattice_modifiers = CollectionProperty(type=LatticeModifiersCollection)
+
+    scene = bpy.types.Scene
+    scene.ml_pinned_object = PointerProperty(type=bpy.types.Object, update=on_pinned_object_change)
 
     bpy.app.handlers.load_post.append(on_file_load)
 

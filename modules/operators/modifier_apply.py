@@ -4,8 +4,16 @@ import bpy
 from bpy.props import *
 from bpy.types import Operator
 
+from . import lattice_toggle_editmode, lattice_toggle_editmode_prop_editor
 from ..modifier_categories import curve_deform_names_icons_types
-from ..utils import delete_gizmo_object, get_gizmo_object
+from ..utils import (
+    delete_gizmo_object,
+    delete_ml_vertex_group,
+    get_gizmo_object,
+    get_ml_active_object,
+    get_vertex_group
+)
+
 
 class OBJECT_OT_ml_modifier_apply(Operator):
     bl_idname = "object.ml_modifier_apply"
@@ -26,19 +34,35 @@ class OBJECT_OT_ml_modifier_apply(Operator):
     )
 
     def execute(self, context):
-        ob = context.object
-        self.mod_type = ob.modifiers[self.modifier].type
+        ml_active_ob = get_ml_active_object()
 
-        # Get the gizmo object, so it can be deleted after applying the modifier
-        gizmo_ob = get_gizmo_object(context)
+        # Get the active object in 3d View so Properties Editor's
+        # context pinning won't mess things up.
+        if context.area.type == 'PROPERTIES':
+            context.area.type = 'VIEW_3D'
+            ob = context.object
+            context.area.type = 'PROPERTIES'
+        else:
+            ob = context.object
+
+        self.mod_type = ml_active_ob.modifiers[self.modifier].type
+
+        # Make applying modifiers possible when an object is pinned
+        override = context.copy()
+        override['object'] = get_ml_active_object()
+
+        # Get the gizmo object and the vertex group, so they can be
+        # deleted after applying the modifier
+        gizmo_ob = get_gizmo_object()
+        vert_group = get_vertex_group()
 
         if context.mode in {'EDIT_MESH', 'EDIT_CURVE', 'EDIT_SURFACE', 'EDIT_TEXT', 'EDIT_LATTICE'}:
             bpy.ops.object.editmode_toggle()
             bpy.ops.ed.undo_push(message="Toggle Editmode")
 
             try:
-                bpy.ops.object.modifier_apply(apply_as=self.apply_as, modifier=self.modifier)
-                if ob.type in {'CURVE', 'SURFACE'}:
+                bpy.ops.object.modifier_apply(override, apply_as=self.apply_as, modifier=self.modifier)
+                if ml_active_ob.type in {'CURVE', 'SURFACE'}:
                     self.curve_modifier_apply_report()
             except RuntimeError as rte:
                 message = str(rte).replace("Error: ", "")
@@ -48,11 +72,23 @@ class OBJECT_OT_ml_modifier_apply(Operator):
                 return {'FINISHED'}
 
             bpy.ops.ed.undo_push(message="Apply Modifier")
-            bpy.ops.object.editmode_toggle()
+
+            if ob.type == 'LATTICE':
+                # When using lattice_toggle_editmode(_prop_editor) operator, the mode
+                # the user was in before that is stored inside that
+                # module. That can also be utilised here.
+                if context.area.type == 'PROPERTIES':
+                    if lattice_toggle_editmode_prop_editor.init_mode == 'EDIT_MESH':
+                        bpy.ops.object.editmode_toggle()
+                elif lattice_toggle_editmode.init_mode == 'EDIT_MESH':
+                    bpy.ops.object.editmode_toggle()
+            else:
+                bpy.ops.object.editmode_toggle()
+
         else:
             try:
-                bpy.ops.object.modifier_apply(apply_as=self.apply_as, modifier=self.modifier)
-                if ob.type in {'CURVE', 'SURFACE'}:
+                bpy.ops.object.modifier_apply(override, apply_as=self.apply_as, modifier=self.modifier)
+                if ml_active_ob.type in {'CURVE', 'SURFACE'}:
                     self.curve_modifier_apply_report()
             except RuntimeError as rte:
                 message = str(rte).replace("Error: ", "")
@@ -62,21 +98,24 @@ class OBJECT_OT_ml_modifier_apply(Operator):
 
         # Set correct active_mod index in case the applied modifier is
         # not the first in modifier stack.
-        current_active_mod_index = ob.ml_modifier_active_index
+        current_active_mod_index = ml_active_ob.ml_modifier_active_index
         new_active_mod_index = np.clip(current_active_mod_index - 1, 0, 99)
-        ob.ml_modifier_active_index = new_active_mod_index
+        ml_active_ob.ml_modifier_active_index = new_active_mod_index
 
         if current_active_mod_index != 0:
             self.report({'INFO'}, "Applied modifier was not first, result may not be as expected")
 
-        # Delete the gizmo object
-        if self.delete_gizmo:
-            delete_gizmo_object(self, context, gizmo_ob)
+        # Delete the gizmo object and the vertex group
+        if self.shift:
+            delete_gizmo_object(self, gizmo_ob)
+            context.view_layer.objects.active = ml_active_ob
+            if self.mod_type == 'LATTICE':
+                delete_ml_vertex_group(ml_active_ob, vert_group)
 
         return {'FINISHED'}
 
     def invoke(self, context, event):
-        self.delete_gizmo = True if event.shift else False
+        self.shift = True if event.shift else False
 
         return self.execute(context)
 

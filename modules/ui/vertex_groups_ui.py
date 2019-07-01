@@ -3,11 +3,12 @@ from bl_ui.properties_data_mesh import (
     MESH_UL_vgroups
 )
 
+from ..utils import get_ml_active_object
 
 def vertex_groups_ui(context, layout, num_of_rows=5):
     # Copy-paste from Blender
 
-    ob = context.object
+    ob = get_ml_active_object()
     group = ob.vertex_groups.active
 
     row = layout.row()
