@@ -302,6 +302,10 @@ class ModifierListActions:
     def execute(self, context):
         ml_active_ob = get_ml_active_object()
 
+        # Make using operators possible when an object is pinned
+        override = context.copy()
+        override['object'] = ml_active_ob
+
         # Get the active object in 3d View so Properties Editor's
         # context pinning won't mess things up.
         if context.area.type == 'PROPERTIES':
@@ -322,10 +326,10 @@ class ModifierListActions:
             active_mod_name = active_mod.name
 
             if self.action == 'UP':
-                bpy.ops.object.modifier_move_up(modifier=active_mod_name)
+                bpy.ops.object.modifier_move_up(override, modifier=active_mod_name)
                 ml_active_ob.ml_modifier_active_index = active_mod_index_up
             elif self.action == 'DOWN':
-                bpy.ops.object.modifier_move_down(modifier=active_mod_name)
+                bpy.ops.object.modifier_move_down(override, modifier=active_mod_name)
                 ml_active_ob.ml_modifier_active_index = active_mod_index_down
             elif self.action == 'REMOVE':
                 if self.shift:
@@ -357,10 +361,6 @@ class ModifierListActions:
                         delete_ml_vertex_group(ml_active_ob, vert_group)
                         if switch_into_editmode:
                             bpy.ops.object.editmode_toggle()
-
-                # Make removing modifiers possible when an object is pinned
-                override = context.copy()
-                override['object'] = ml_active_ob
 
                 bpy.ops.object.modifier_remove(override, modifier=active_mod_name)
                 ml_active_ob.ml_modifier_active_index = active_mod_index_up
