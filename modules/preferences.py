@@ -52,6 +52,11 @@ class Preferences(AddonPreferences):
         name="Auto Parent Gizmos To Active Object",
         description="Automatically parent gizmos to the active object on addition")
 
+    always_delete_gizmo: BoolProperty(
+        name="Always Delete Gizmo",
+        description="Always delete the gizmo object when applying or removing a modifier. "
+                    "When off, the gizmo object is deleted only when holding shift")
+
     def draw(self, context):
         layout = self.layout
 
@@ -120,6 +125,7 @@ class Preferences(AddonPreferences):
 
         # === Gizmo object settings ===
         layout.prop(self, "parent_new_gizmo_to_object")
+        layout.prop(self, "always_delete_gizmo")
 
         # === Info ===
         _, is_enabled = addon_utils.check("space_view3d_modifier_tools")

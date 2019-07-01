@@ -34,6 +34,7 @@ class OBJECT_OT_ml_modifier_apply(Operator):
     )
 
     def execute(self, context):
+        prefs = bpy.context.preferences.addons["modifier_list"].preferences
         ml_active_ob = get_ml_active_object()
 
         # Get the active object in 3d View so Properties Editor's
@@ -106,7 +107,7 @@ class OBJECT_OT_ml_modifier_apply(Operator):
             self.report({'INFO'}, "Applied modifier was not first, result may not be as expected")
 
         # Delete the gizmo object and the vertex group
-        if self.shift:
+        if self.shift or prefs.always_delete_gizmo:
             delete_gizmo_object(self, gizmo_ob)
             context.view_layer.objects.active = ml_active_ob
             if self.mod_type == 'LATTICE':

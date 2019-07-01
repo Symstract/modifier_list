@@ -300,6 +300,7 @@ class ModifierListActions:
     action = None
 
     def execute(self, context):
+        prefs = bpy.context.preferences.addons["modifier_list"].preferences
         ml_active_ob = get_ml_active_object()
 
         # Make using operators possible when an object is pinned
@@ -332,7 +333,7 @@ class ModifierListActions:
                 bpy.ops.object.modifier_move_down(override, modifier=active_mod_name)
                 ml_active_ob.ml_modifier_active_index = active_mod_index_down
             elif self.action == 'REMOVE':
-                if self.shift:
+                if self.shift or prefs.always_delete_gizmo:
                     # When using lattice_toggle_editmode(_prop_editor)
                     # operator, the mode the user was in before that is
                     # stored inside that module. That can also be
