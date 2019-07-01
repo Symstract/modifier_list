@@ -126,23 +126,23 @@ class OBJECT_OT_ml_lattice_toggle_editmode(Operator):
 
             bpy.ops.object.mode_set(mode='OBJECT')
 
+            init_act_ob = bpy.data.objects[init_act_ob_name]
+
             if is_init_ob_pinned:
-                init_act_ob = bpy.data.objects[init_act_ob_name]
                 bpy.context.view_layer.objects.active = init_act_ob
 
                 if init_mode == 'EDIT_MESH':
-                    context.view_layer.objects.active = scene.ml_pinned_object
                     bpy.ops.object.mode_set(mode='EDIT')
 
             else:
                 if init_mode == 'OBJECT':
                     ob.select_set(False)
-                    context.view_layer.objects.active = scene.ml_pinned_object
-                    scene.ml_pinned_object = None
+                    context.view_layer.objects.active = init_act_ob
                 else:
-                    context.view_layer.objects.active = scene.ml_pinned_object
+                    context.view_layer.objects.active = init_act_ob
                     bpy.ops.object.mode_set(mode='EDIT')
-                    scene.ml_pinned_object = None
+
+                scene.ml_pinned_object = None
 
         return {'FINISHED'}
 
