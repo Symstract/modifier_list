@@ -341,7 +341,7 @@ class ModifierListActions:
                                 switch_into_editmode = True
                             else:
                                 switch_into_editmode = False
-                        elif lattice_toggle_editmode.initial_mode == 'EDIT_MESH':
+                        elif lattice_toggle_editmode.init_mode == 'EDIT_MESH':
                             switch_into_editmode = True
                         else:
                             switch_into_editmode = False

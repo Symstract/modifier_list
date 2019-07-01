@@ -80,7 +80,7 @@ class OBJECT_OT_ml_modifier_apply(Operator):
                 if context.area.type == 'PROPERTIES':
                     if lattice_toggle_editmode_prop_editor.init_mode == 'EDIT_MESH':
                         bpy.ops.object.editmode_toggle()
-                elif lattice_toggle_editmode.initial_mode == 'EDIT_MESH':
+                elif lattice_toggle_editmode.init_mode == 'EDIT_MESH':
                     bpy.ops.object.editmode_toggle()
             else:
                 bpy.ops.object.editmode_toggle()

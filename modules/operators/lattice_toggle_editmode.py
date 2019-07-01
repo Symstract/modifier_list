@@ -5,9 +5,9 @@ from bpy.types import Operator
 from ..utils import get_gizmo_object, get_ml_active_object
 
 
-is_initially_ob_pinned = False
-initial_mode = None
-initially_selected_ob_name = None
+is_init_ob_pinned = False
+init_mode = None
+init_act_ob_name = None
 
 
 def scene_correct_state_after_editmode_toggle_ensure(scene):
@@ -19,13 +19,13 @@ def scene_correct_state_after_editmode_toggle_ensure(scene):
     ob = bpy.context.object
     depsgraph_handlers = bpy.app.handlers.depsgraph_update_post
     undo_handlers = bpy.app.handlers.undo_post
-    init_sel_ob = bpy.data.objects[initially_selected_ob_name]
+    init_act_ob = bpy.data.objects[init_act_ob_name]
 
     if ob:
         if ob.mode == 'OBJECT':
-            if not is_initially_ob_pinned:
+            if not is_init_ob_pinned:
                 scene.ml_pinned_object = None
-            bpy.context.view_layer.objects.active = init_sel_ob
+            bpy.context.view_layer.objects.active = init_act_ob
             depsgraph_handlers.remove(scene_correct_state_after_editmode_toggle_ensure)
 
             try:
@@ -43,13 +43,13 @@ def scene_correct_state_after_undo_ensure(scene):
     ob = bpy.context.object
     depsgraph_handlers = bpy.app.handlers.depsgraph_update_post
     undo_handlers = bpy.app.handlers.undo_post
-    init_sel_ob = bpy.data.objects[initially_selected_ob_name]
+    init_act_ob = bpy.data.objects[init_act_ob_name]
 
     if ob:
         if ob.mode == 'OBJECT' or (ob.mode == 'EDIT' and ob.type != 'LATTICE'):
-            if not is_initially_ob_pinned:
+            if not is_init_ob_pinned:
                 scene.ml_pinned_object = None
-            bpy.context.view_layer.objects.active = init_sel_ob
+            bpy.context.view_layer.objects.active = init_act_ob
             undo_handlers.remove(scene_correct_state_after_undo_ensure)
 
         try:
@@ -76,9 +76,9 @@ class OBJECT_OT_ml_lattice_toggle_editmode(Operator):
         depsgraph_handlers = bpy.app.handlers.depsgraph_update_post
         undo_handlers = bpy.app.handlers.undo_post
 
-        global initial_mode
-        global is_initially_ob_pinned
-        global initially_selected_ob_name
+        global init_mode
+        global is_init_ob_pinned
+        global init_act_ob_name
 
         # Make sure the handlers are removed
         try:
@@ -97,9 +97,9 @@ class OBJECT_OT_ml_lattice_toggle_editmode(Operator):
             is_lattice_edit_mode_on = False
 
         if not is_lattice_edit_mode_on:
-            initial_mode = context.mode
-            is_initially_ob_pinned = bool(scene.ml_pinned_object)
-            initially_selected_ob_name = ob.name
+            init_mode = context.mode
+            is_init_ob_pinned = bool(scene.ml_pinned_object)
+            init_act_ob_name = ob.name
 
             scene.ml_pinned_object = get_ml_active_object()
             gizmo_ob = get_gizmo_object()
@@ -126,16 +126,16 @@ class OBJECT_OT_ml_lattice_toggle_editmode(Operator):
 
             bpy.ops.object.mode_set(mode='OBJECT')
 
-            if is_initially_ob_pinned:
-                init_sel_ob = bpy.data.objects[initially_selected_ob_name]
-                bpy.context.view_layer.objects.active = init_sel_ob
+            if is_init_ob_pinned:
+                init_act_ob = bpy.data.objects[init_act_ob_name]
+                bpy.context.view_layer.objects.active = init_act_ob
 
-                if initial_mode == 'EDIT_MESH':
+                if init_mode == 'EDIT_MESH':
                     context.view_layer.objects.active = scene.ml_pinned_object
                     bpy.ops.object.mode_set(mode='EDIT')
 
             else:
-                if initial_mode == 'OBJECT':
+                if init_mode == 'OBJECT':
                     ob.select_set(False)
                     context.view_layer.objects.active = scene.ml_pinned_object
                     scene.ml_pinned_object = None
