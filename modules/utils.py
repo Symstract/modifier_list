@@ -49,7 +49,9 @@ def _create_vertex_group_from_vertices(object, vertex_indices, group_name):
 
 
 def _position_gizmo_object(gizmo_object):
-    """Position a gizmo (empty) object"""
+    """Position a gizmo (empty) object at the active
+    object or at the selected vertex.
+    """
     ob = get_ml_active_object()
     ob.update_from_editmode()
     ob_mat = ob.matrix_world
@@ -73,7 +75,17 @@ def _position_gizmo_object(gizmo_object):
     gizmo_object.rotation_euler = ob_mat.to_euler()
 
 
-def _create_gizmo_object(self, context, modifier):
+def _position_gizmo_object_at_cursor(gizmo_object):
+    """Position a gizmo (empty) object at the 3D Cursor"""
+    context = bpy.context
+    ob = get_ml_active_object()
+    ob_mat = ob.matrix_world
+
+    gizmo_object.location = context.scene.cursor.location
+    gizmo_object.rotation_euler = ob_mat.to_euler()
+
+
+def _create_gizmo_object(self, context, modifier, place_at_cursor):
     """Create a gizmo (empty) object"""
     gizmo_ob = bpy.data.objects.new(modifier + "_Gizmo", None)
     gizmo_ob.empty_display_type = 'ARROWS'
@@ -81,7 +93,10 @@ def _create_gizmo_object(self, context, modifier):
     ml_col = _get_ml_collection(context)
     ml_col.objects.link(gizmo_ob)
 
-    _position_gizmo_object(gizmo_ob)
+    if place_at_cursor:
+        _position_gizmo_object_at_cursor(gizmo_ob)
+    else:
+        _position_gizmo_object(gizmo_ob)
 
     return gizmo_ob
 
@@ -255,7 +270,7 @@ def _create_lattice_gizmo_object(self, context, modifier):
 
 # ==========
 
-def assign_gizmo_object_to_modifier(self, context, modifier):
+def assign_gizmo_object_to_modifier(self, context, modifier, place_at_cursor=False):
     """Assign a gizmo object to the correct property of the given modifier"""
     ob = get_ml_active_object()
     mod = ob.modifiers[modifier]
@@ -269,7 +284,7 @@ def assign_gizmo_object_to_modifier(self, context, modifier):
 
         for p in projectors[0:projector_count]:
             if not p.object:
-                gizmo_ob = _create_gizmo_object(self, context, modifier)
+                gizmo_ob = _create_gizmo_object(self, context, modifier, place_at_cursor)
                 p.object = gizmo_ob
                 if parent_gizmo:
                     gizmo_ob.parent = ob
@@ -282,7 +297,7 @@ def assign_gizmo_object_to_modifier(self, context, modifier):
     if mod.type == 'LATTICE':
         gizmo_ob = _create_lattice_gizmo_object(self, context, modifier)
     else:
-        gizmo_ob = _create_gizmo_object(self, context, modifier)
+        gizmo_ob = _create_gizmo_object(self, context, modifier, place_at_cursor)
 
     if mod.type == 'ARRAY':
         mod.use_constant_offset = False
