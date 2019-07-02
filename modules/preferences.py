@@ -6,6 +6,7 @@ import rna_keymap_ui
 from bpy.props import *
 from bpy.types import AddonPreferences
 
+from .icons import reload_icons
 from .ui.properties_editor import register_DATA_PT_modifiers
 
 
@@ -33,6 +34,14 @@ class Preferences(AddonPreferences):
     modifier_10: StringProperty(description="Add a favourite modifier")
     modifier_11: StringProperty(description="Add a favourite modifier")
     modifier_12: StringProperty(description="Add a favourite modifier")
+
+    icon_color_items = [
+        ("black", "Black", "", 1),
+        ("white", "White", "", 2)
+    ]
+    icon_color: EnumProperty(items=icon_color_items, name="Icon Color",
+                             description="Color of the addon's custom icons", default="white",
+                             update=reload_icons)
 
     hide_general_settings_region: BoolProperty(
         name="Hide General Settings Region",
@@ -95,6 +104,12 @@ class Preferences(AddonPreferences):
         layout.separator()
 
         # === General settings ===
+        layout.label(text="Icon Color")
+        row = layout.row()
+        row.prop(self, "icon_color", expand=True)
+
+        layout.separator()
+
         row = layout.row()
         row.prop(self, "hide_general_settings_region")
 
