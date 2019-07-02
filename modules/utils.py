@@ -160,7 +160,7 @@ def _calc_lattice_origin(vertex_coords, plane_co, plane_no=None):
     return origin
 
 
-def set_lattice_points(lattice_object, lattice_dimensions):
+def _set_lattice_points(lattice_object, lattice_dimensions):
     """Set the number of points per axis for a lattice.
 
     If the lattice has zero lenght on an axis, the amount of points on
@@ -192,7 +192,7 @@ def _fit_lattice_to_selection(object, vertices, lattice_object):
 
     lattice_object.dimensions = ensured_dims
 
-    set_lattice_points(lattice_object, dims)
+    _set_lattice_points(lattice_object, dims)
 
 
 def _fit_lattice_to_object(object, lattice_object):
@@ -211,7 +211,7 @@ def _fit_lattice_to_object(object, lattice_object):
 
     lattice_object.dimensions = ensured_dims
 
-    set_lattice_points(lattice_object, dims)
+    _set_lattice_points(lattice_object, dims)
 
 
 def _position_lattice_gizmo_object(gizmo_object):
