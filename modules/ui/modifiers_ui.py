@@ -466,24 +466,36 @@ def modifiers_ui(context, layout, num_of_rows=False, use_in_properties_editor=Fa
 
     # Check if an item or the next item in
     # favourite_modifiers_names_icons_types has a value and add rows
-    # and buttons accordingly (two buttons per row).
+    # and buttons accordingly (2 or 3 buttons per row).
     fav_names_icons_types_iter = modifier_categories.favourite_modifiers_names_icons_types()
 
-    for name, icon, mod in fav_names_icons_types_iter:
-        next_mod = next(fav_names_icons_types_iter)
-        if name or next_mod[0] is not None:
-            row = col.split(factor=0.5, align=True)
+    place_three_per_row = prefs.favourites_per_row == '3'
 
-            if name is not None:
+    for name, icon, mod in fav_names_icons_types_iter:
+        next_mod_1 = next(fav_names_icons_types_iter)
+        if place_three_per_row:
+            next_mod_2 = next(fav_names_icons_types_iter)
+
+        if name or next_mod_1[0] or (place_three_per_row and next_mod_2[0]):
+            row = col.row(align=True)
+
+            if name:
                 row.operator("object.ml_modifier_add", text=name, icon=icon).modifier_type = mod
             else:
                 row.label(text="")
 
-            if next_mod[0] is not None:
-                row.operator("object.ml_modifier_add", text=next_mod[0],
-                             icon=next_mod[1]).modifier_type = next_mod[2]
+            if next_mod_1[0]:
+                row.operator("object.ml_modifier_add", text=next_mod_1[0],
+                                icon=next_mod_1[1]).modifier_type = next_mod_1[2]
             else:
                 row.label(text="")
+
+            if place_three_per_row:
+                if next_mod_2[0]:
+                    row.operator("object.ml_modifier_add", text=next_mod_2[0],
+                                icon=next_mod_2[1]).modifier_type = next_mod_2[2]
+                else:
+                    row.label(text="")
 
     # === Modifier search and menu ===
     col = layout.column()

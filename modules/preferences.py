@@ -22,6 +22,13 @@ class Preferences(AddonPreferences):
                                        description="Enable/disable inside Properties Editor",
                                        default=True, update=register_DATA_PT_modifiers)
 
+    favourites_per_row_items = [
+        ("2", "2", "", 1),
+        ("3", "3", "", 2)
+    ]
+    favourites_per_row: EnumProperty(items=favourites_per_row_items, name="Favourites Per Row",
+                             description="The number of favourites per row", default="2")
+
     modifier_01: StringProperty(description="Add a favourite modifier")
     modifier_02: StringProperty(description="Add a favourite modifier")
     modifier_03: StringProperty(description="Add a favourite modifier")
@@ -95,17 +102,23 @@ class Preferences(AddonPreferences):
         # === Favourite modifiers selection ===
         layout.label(text="Favourite Modifiers:")
 
+        layout.label(text="Favourites Per Row")
+        row = layout.row()
+        row.prop(self, "favourites_per_row", expand=True)
+
         col = layout.column(align=True)
 
         attr_iter = iter(get_pref_mod_attr_name())
 
         wm = bpy.context.window_manager
 
-        # Draw two property searches per row
+        # Draw 2 or 3 property searches per row
         for attr in attr_iter:
-            row = col.split(factor=0.5, align=True)
+            row = col.row(align=True)
             row.prop_search(self, attr, wm, "ml_mesh_modifiers", text="", icon='MODIFIER')
             row.prop_search(self, next(attr_iter), wm, "ml_mesh_modifiers", text="", icon='MODIFIER')
+            if self.favourites_per_row == '3':
+                row.prop_search(self, next(attr_iter), wm, "ml_mesh_modifiers", text="", icon='MODIFIER')
 
         layout.separator()
 
