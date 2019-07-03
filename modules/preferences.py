@@ -15,8 +15,8 @@ class Preferences(AddonPreferences):
 
     use_popup: BoolProperty(name="Popup", description="Enable/disable popup", default=True)
 
-    use_sidebar: BoolProperty(name="Sidebar Tab",
-                              description="Enable/disable sidebar tab", default=True)
+    use_sidebar: BoolProperty(name="Sidebar",
+                              description="Enable/disable the Sidebar tab", default=True)
 
     use_properties_editor: BoolProperty(name="Properties Editor",
                                        description="Enable/disable inside Properties Editor",
