@@ -61,6 +61,12 @@ class Preferences(AddonPreferences):
         name="Auto Parent Gizmos To Active Object",
         description="Automatically parent gizmos to the active object on addition")
 
+    match_gizmo_size_to_object: BoolProperty(
+        name="Match Gizmo Size To Active Object",
+        description="Automatically match the size of the gizmo to the largest dimension of the "
+                    "active object (before modifiers).\n"
+                    "NOTE: This can be a bit slow on heavy meshes")
+
     always_delete_gizmo: BoolProperty(
         name="Always Delete Gizmo",
         description="Always delete the gizmo object when applying or removing a modifier. "
@@ -140,6 +146,7 @@ class Preferences(AddonPreferences):
 
         # === Gizmo object settings ===
         layout.prop(self, "parent_new_gizmo_to_object")
+        layout.prop(self, "match_gizmo_size_to_object")
         layout.prop(self, "always_delete_gizmo")
 
         # === Info ===

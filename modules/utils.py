@@ -48,12 +48,11 @@ def _create_vertex_group_from_vertices(object, vertex_indices, group_name):
     return vert_group
 
 
-def _position_gizmo_object(gizmo_object):
+def _position_gizmo_object(gizmo_object, object):
     """Position a gizmo (empty) object at the active
     object or at the selected vertex.
     """
-    ob = get_ml_active_object()
-    ob.update_from_editmode()
+    ob = object
     ob_mat = ob.matrix_world
     mesh = ob.data
 
@@ -85,6 +84,27 @@ def _position_gizmo_object_at_cursor(gizmo_object):
     gizmo_object.rotation_euler = ob_mat.to_euler()
 
 
+def _match_gizmo_size_to_object(gizmo_object, object):
+    """Match the size of a gizmo to the size of the object
+    (before modifiers).
+    """
+    ob_scale = object.matrix_world.to_scale()
+    verts = object.data.vertices
+
+    max_dim = 0
+
+    for i in range(3):
+        axis = [v.co[i] for v in verts]
+        axis_dim = (max(axis) - min(axis)) * ob_scale[i]
+        if axis_dim > max_dim:
+            max_dim = axis_dim
+
+    max_dim_divided = max_dim / 2
+    max_dim_with_offset = max_dim_divided + max_dim_divided / 9
+
+    gizmo_object.empty_display_size = max_dim_with_offset
+
+
 def _create_gizmo_object(self, context, modifier, place_at_cursor):
     """Create a gizmo (empty) object"""
     gizmo_ob = bpy.data.objects.new(modifier + "_Gizmo", None)
@@ -93,10 +113,22 @@ def _create_gizmo_object(self, context, modifier, place_at_cursor):
     ml_col = _get_ml_collection(context)
     ml_col.objects.link(gizmo_ob)
 
+    prefs = bpy.context.preferences.addons["modifier_list"].preferences
+    ob = get_ml_active_object()
+
+    # Only use update_from_editmode if necessary
+    if not place_at_cursor or prefs.match_gizmo_size_to_object:
+        if ob.mode == 'EDIT':
+            ob.update_from_editmode()
+
     if place_at_cursor:
         _position_gizmo_object_at_cursor(gizmo_ob)
     else:
-        _position_gizmo_object(gizmo_ob)
+        _position_gizmo_object(gizmo_ob, ob)
+
+
+    if prefs.match_gizmo_size_to_object:
+        _match_gizmo_size_to_object(gizmo_ob, ob)
 
     return gizmo_ob
 
