@@ -5,6 +5,7 @@ from bpy.types import Operator
 from ..modifier_categories import all_modifier_names_icons_types, have_gizmo_property
 from ..utils import get_ml_active_object ,assign_gizmo_object_to_modifier
 
+
 class OBJECT_OT_ml_modifier_add(Operator):
     bl_idname = "object.ml_modifier_add"
     bl_label = "Add Modifier"
