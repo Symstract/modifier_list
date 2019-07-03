@@ -209,8 +209,8 @@ def _set_lattice_points(lattice_object, lattice_dimensions):
 
 def _fit_lattice_to_selection(object, vertices, lattice_object):
     ob_mat = object.matrix_world
-    ob_loc, ob_rot, _ = ob_mat.decompose()
-    vert_locs = [v.co for v in vertices]
+    ob_loc, ob_rot, ob_scale = ob_mat.decompose()
+    vert_locs = [Matrix.Diagonal(ob_scale) @ v.co for v in vertices]
     avg_vert_loc = sum(vert_locs, Vector()) / len(vert_locs)
     lat_origin = _calc_lattice_origin(vert_locs, avg_vert_loc)
 
