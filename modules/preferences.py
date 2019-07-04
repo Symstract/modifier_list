@@ -60,7 +60,7 @@ class Preferences(AddonPreferences):
                     "The same settings are also inside the modifier list")
 
     popup_width: IntProperty(name="Width",
-                              description="The width of the popup, excluding the navigation bar",
+                              description="Width of the popup, excluding the navigation bar",
                               default=300)
 
     mod_list_def_len: IntProperty(
@@ -107,13 +107,15 @@ class Preferences(AddonPreferences):
 
         layout.separator()
 
-        # === Favourite modifiers selection ===
+        # === Favourite modifiers ===
         layout.label(text="Favourite Modifiers:")
 
-        layout.label(text="Favourites Per Row")
-        row = layout.row()
+        split = layout.split()
+        split.label(text="Favourites Per Row")
+        row = split.row()
         row.prop(self, "favourites_per_row", expand=True)
 
+        # === Favourite modifiers selection ===
         col = layout.column(align=True)
 
         attr_iter = iter(get_pref_mod_attr_name())
@@ -128,6 +130,8 @@ class Preferences(AddonPreferences):
             if self.favourites_per_row == '3':
                 row.prop_search(self, next(attr_iter), wm, "ml_mesh_modifiers", text="", icon='MODIFIER')
 
+        # =====================================
+
         layout.separator()
 
         layout.prop(self, "use_icons_in_favourites")
@@ -137,14 +141,12 @@ class Preferences(AddonPreferences):
         # === General settings ===
         layout.label(text="General:")
 
-        layout.label(text="Icon Color")
-        row = layout.row()
+        split = layout.split()
+        split.label(text="Icon Color")
+        row = split.row()
         row.prop(self, "icon_color", expand=True)
 
-        layout.separator()
-
-        row = layout.row()
-        row.prop(self, "hide_general_settings_region")
+        layout.prop(self, "hide_general_settings_region")
 
         layout.separator()
 
@@ -159,8 +161,7 @@ class Preferences(AddonPreferences):
         row.label(text="Modifier List Default/Min Height in Popup")
         row.prop(self, "mod_list_def_len")
 
-        row = layout.row()
-        row.prop(self, "use_props_dialog")
+        layout.prop(self, "use_props_dialog")
 
         layout.separator()
 
