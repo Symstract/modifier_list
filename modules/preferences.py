@@ -131,6 +131,8 @@ class Preferences(AddonPreferences):
         layout.separator()
 
         # === General settings ===
+        layout.label(text="General:")
+
         layout.label(text="Icon Color")
         row = layout.row()
         row.prop(self, "icon_color", expand=True)
@@ -143,6 +145,8 @@ class Preferences(AddonPreferences):
         layout.separator()
 
         # === Popup settings ===
+        layout.label(text="Popup:")
+
         row = layout.row()
         row.label(text="Modifier List Default/Min Height in Popup")
         row.prop(self, "mod_list_def_len")
@@ -166,6 +170,8 @@ class Preferences(AddonPreferences):
         # layout.separator()
 
         # === Gizmo object settings ===
+        layout.label(text="Gizmo:")
+
         layout.prop(self, "parent_new_gizmo_to_object")
         layout.prop(self, "match_gizmo_size_to_object")
         layout.prop(self, "always_delete_gizmo")
