@@ -59,6 +59,10 @@ class Preferences(AddonPreferences):
         description="Hide the region which shows modifier name and display settings. "
                     "The same settings are also inside the modifier list")
 
+    popup_width: IntProperty(name="Width",
+                              description="The width of the popup, excluding the navigation bar",
+                              default=300)
+
     mod_list_def_len: IntProperty(
         name="",
         description="Default/min number of rows to display in the modifier list in the popup",
@@ -146,6 +150,10 @@ class Preferences(AddonPreferences):
 
         # === Popup settings ===
         layout.label(text="Popup:")
+
+        row = layout.row()
+        row.label(text="Popup Width")
+        row.prop(self, "popup_width", text="")
 
         row = layout.row()
         row.label(text="Modifier List Default/Min Height in Popup")
