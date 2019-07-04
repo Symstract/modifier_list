@@ -42,6 +42,10 @@ class Preferences(AddonPreferences):
     modifier_11: StringProperty(description="Add a favourite modifier")
     modifier_12: StringProperty(description="Add a favourite modifier")
 
+    use_icons_in_favourites: BoolProperty(name="Use Icons In Favourites",
+                                          description="Use icons in favourite modifier buttons",
+                                          default=True)
+
     icon_color_items = [
         ("black", "Black", "", 1),
         ("white", "White", "", 2)
@@ -119,6 +123,10 @@ class Preferences(AddonPreferences):
             row.prop_search(self, next(attr_iter), wm, "ml_mesh_modifiers", text="", icon='MODIFIER')
             if self.favourites_per_row == '3':
                 row.prop_search(self, next(attr_iter), wm, "ml_mesh_modifiers", text="", icon='MODIFIER')
+
+        layout.separator()
+
+        layout.prop(self, "use_icons_in_favourites")
 
         layout.separator()
 

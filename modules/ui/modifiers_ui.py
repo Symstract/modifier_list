@@ -481,20 +481,23 @@ def modifiers_ui(context, layout, num_of_rows=False, use_in_properties_editor=Fa
             row = col.row(align=True)
 
             if name:
+                icon = icon if prefs.use_icons_in_favourites else 'NONE'
                 row.operator("object.ml_modifier_add", text=name, icon=icon).modifier_type = mod
             else:
                 row.label(text="")
 
             if next_mod_1[0]:
+                icon = next_mod_1[1] if prefs.use_icons_in_favourites else 'NONE'
                 row.operator("object.ml_modifier_add", text=next_mod_1[0],
-                                icon=next_mod_1[1]).modifier_type = next_mod_1[2]
+                                icon=icon).modifier_type = next_mod_1[2]
             else:
                 row.label(text="")
 
             if place_three_per_row:
                 if next_mod_2[0]:
+                    icon = next_mod_2[1] if prefs.use_icons_in_favourites else 'NONE'
                     row.operator("object.ml_modifier_add", text=next_mod_2[0],
-                                icon=next_mod_2[1]).modifier_type = next_mod_2[2]
+                                icon=icon).modifier_type = next_mod_2[2]
                 else:
                     row.label(text="")
 
