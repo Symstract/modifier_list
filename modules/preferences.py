@@ -22,6 +22,13 @@ class Preferences(AddonPreferences):
                                        description="Enable/disable inside Properties Editor",
                                        default=True, update=register_DATA_PT_modifiers)
 
+    favourites_per_row_items = [
+        ("2", "2", "", 1),
+        ("3", "3", "", 2)
+    ]
+    favourites_per_row: EnumProperty(items=favourites_per_row_items, name="Favourites Per Row",
+                             description="The number of favourites per row", default="2")
+
     modifier_01: StringProperty(description="Add a favourite modifier")
     modifier_02: StringProperty(description="Add a favourite modifier")
     modifier_03: StringProperty(description="Add a favourite modifier")
@@ -34,6 +41,10 @@ class Preferences(AddonPreferences):
     modifier_10: StringProperty(description="Add a favourite modifier")
     modifier_11: StringProperty(description="Add a favourite modifier")
     modifier_12: StringProperty(description="Add a favourite modifier")
+
+    use_icons_in_favourites: BoolProperty(name="Use Icons In Favourites",
+                                          description="Use icons in favourite modifier buttons",
+                                          default=True)
 
     icon_color_items = [
         ("black", "Black", "", 1),
@@ -53,6 +64,10 @@ class Preferences(AddonPreferences):
         description="Show confirmation popups when using Apply All Modifiers"
                     "and Remove All Modifiers operators",
         default=True)
+
+    popup_width: IntProperty(name="Width",
+                              description="Width of the popup, excluding the navigation bar",
+                              default=300)
 
     mod_list_def_len: IntProperty(
         name="",
@@ -98,43 +113,62 @@ class Preferences(AddonPreferences):
 
         layout.separator()
 
-        # === Favourite modifiers selection ===
+        # === Favourite modifiers ===
         layout.label(text="Favourite Modifiers:")
 
+        split = layout.split()
+        split.label(text="Favourites Per Row")
+        row = split.row()
+        row.prop(self, "favourites_per_row", expand=True)
+
+        # === Favourite modifiers selection ===
         col = layout.column(align=True)
 
         attr_iter = iter(get_pref_mod_attr_name())
 
         wm = bpy.context.window_manager
 
-        # Draw two property searches per row
+        # Draw 2 or 3 property searches per row
         for attr in attr_iter:
-            row = col.split(factor=0.5, align=True)
+            row = col.row(align=True)
             row.prop_search(self, attr, wm, "ml_mesh_modifiers", text="", icon='MODIFIER')
             row.prop_search(self, next(attr_iter), wm, "ml_mesh_modifiers", text="", icon='MODIFIER')
+            if self.favourites_per_row == '3':
+                row.prop_search(self, next(attr_iter), wm, "ml_mesh_modifiers", text="", icon='MODIFIER')
+
+        # =====================================
+
+        layout.separator()
+
+        layout.prop(self, "use_icons_in_favourites")
 
         layout.separator()
 
         # === General settings ===
-        layout.label(text="Icon Color")
-        row = layout.row()
+        layout.label(text="General:")
+
+        split = layout.split()
+        split.label(text="Icon Color")
+        row = split.row()
         row.prop(self, "icon_color", expand=True)
 
-        layout.separator()
-
-        row = layout.row()
-        row.prop(self, "hide_general_settings_region")
+        layout.prop(self, "hide_general_settings_region")
         layout.prop(self, "show_confirmation_popups")
 
         layout.separator()
 
         # === Popup settings ===
+        layout.label(text="Popup:")
+
+        row = layout.row()
+        row.label(text="Popup Width")
+        row.prop(self, "popup_width", text="")
+
         row = layout.row()
         row.label(text="Modifier List Default/Min Height in Popup")
         row.prop(self, "mod_list_def_len")
 
-        row = layout.row()
-        row.prop(self, "use_props_dialog")
+        layout.prop(self, "use_props_dialog")
 
         layout.separator()
 
@@ -152,6 +186,8 @@ class Preferences(AddonPreferences):
         # layout.separator()
 
         # === Gizmo object settings ===
+        layout.label(text="Gizmo:")
+
         layout.prop(self, "parent_new_gizmo_to_object")
         layout.prop(self, "match_gizmo_size_to_object")
         layout.prop(self, "always_delete_gizmo")

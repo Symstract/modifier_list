@@ -460,30 +460,46 @@ class OBJECT_PT_Gizmo_object_settings(Panel):
 def modifiers_ui(context, layout, num_of_rows=False, use_in_properties_editor=False):
     ob = context.object if use_in_properties_editor else get_ml_active_object()
     prefs = bpy.context.preferences.addons["modifier_list"].preferences
+    pcoll = icons.preview_collections["main"]
 
     # === Favourite modifiers ===
     col = layout.column(align=True)
 
     # Check if an item or the next item in
     # favourite_modifiers_names_icons_types has a value and add rows
-    # and buttons accordingly (two buttons per row).
+    # and buttons accordingly (2 or 3 buttons per row).
     fav_names_icons_types_iter = modifier_categories.favourite_modifiers_names_icons_types()
 
-    for name, icon, mod in fav_names_icons_types_iter:
-        next_mod = next(fav_names_icons_types_iter)
-        if name or next_mod[0] is not None:
-            row = col.split(factor=0.5, align=True)
+    place_three_per_row = prefs.favourites_per_row == '3'
 
-            if name is not None:
+    for name, icon, mod in fav_names_icons_types_iter:
+        next_mod_1 = next(fav_names_icons_types_iter)
+        if place_three_per_row:
+            next_mod_2 = next(fav_names_icons_types_iter)
+
+        if name or next_mod_1[0] or (place_three_per_row and next_mod_2[0]):
+            row = col.row(align=True)
+
+            if name:
+                icon = icon if prefs.use_icons_in_favourites else 'NONE'
                 row.operator("object.ml_modifier_add", text=name, icon=icon).modifier_type = mod
             else:
                 row.label(text="")
 
-            if next_mod[0] is not None:
-                row.operator("object.ml_modifier_add", text=next_mod[0],
-                             icon=next_mod[1]).modifier_type = next_mod[2]
+            if next_mod_1[0]:
+                icon = next_mod_1[1] if prefs.use_icons_in_favourites else 'NONE'
+                row.operator("object.ml_modifier_add", text=next_mod_1[0],
+                                icon=icon).modifier_type = next_mod_1[2]
             else:
                 row.label(text="")
+
+            if place_three_per_row:
+                if next_mod_2[0]:
+                    icon = next_mod_2[1] if prefs.use_icons_in_favourites else 'NONE'
+                    row.operator("object.ml_modifier_add", text=next_mod_2[0],
+                                icon=icon).modifier_type = next_mod_2[2]
+                else:
+                    row.label(text="")
 
     # === Modifier search and menu ===
     col = layout.column()
@@ -511,8 +527,6 @@ def modifiers_ui(context, layout, num_of_rows=False, use_in_properties_editor=Fa
     # Note: In 2.79, this is what scale 2.0 looks like. Here 2.0 causes list ordering
     # buttons to get tiny. 2.8 Bug?
     sub.scale_x = 1.5
-
-    pcoll = icons.preview_collections["main"]
 
     icon = pcoll['TOGGLE_ALL_MODIFIERS_VISIBILITY']
     sub.operator("object.ml_toggle_all_modifiers", icon_value=icon.icon_id, text="")
@@ -567,25 +581,24 @@ def modifiers_ui(context, layout, num_of_rows=False, use_in_properties_editor=Fa
         mod_show_editmode_and_cage(active_mod, sub, scale_x=1.1)
 
     row = box.row()
-    apply = row.operator("object.ml_modifier_apply", text="Apply")
+
+    sub = row.row(align=True)
+    sub.scale_x = 5
+    icon = pcoll['APPLY_MODIFIER']
+    apply = sub.operator("object.ml_modifier_apply", text="", icon_value=icon.icon_id)
     apply.modifier = active_mod.name
     apply.apply_as = 'DATA'
 
-    sub = row.row()
-    # Cloth and Soft Body have "Apply As Shape Key" but no "Copy Modifier" .
-    # In those cases "Apply As Shape Key" doesn't need to be scaled up.
-    if active_mod.type not in {'CLOTH', 'SOFT_BODY'}:
-        sub.scale_x = 1.3
-
     if active_mod.type in modifier_categories.support_apply_as_shape_key:
+        icon = pcoll['APPLY_MODIFIER_AS_SHAPEKEY']
         apply_as_shape_key = sub.operator("object.ml_modifier_apply",
-                                            text="Apply as Shape Key")
+                                          text="", icon_value=icon.icon_id)
         apply_as_shape_key.modifier=active_mod.name
         apply_as_shape_key.apply_as='SHAPE'
 
     if active_mod.type not in modifier_categories.dont_support_copy:
-        row.operator("object.ml_modifier_copy",
-                        text="Copy").modifier = active_mod.name
+        sub.operator("object.ml_modifier_copy",
+                     text="", icon='DUPLICATE').modifier = active_mod.name
 
     # === Gizmo object settings ===
     if ob.type == 'MESH':
@@ -593,18 +606,23 @@ def modifiers_ui(context, layout, num_of_rows=False, use_in_properties_editor=Fa
                 or active_mod.type == 'UV_PROJECT'):
             gizmo_ob = get_gizmo_object()
 
-            box = col.box()
-            row = box.row(align=True)
-            row.scale_x = 1.5
-            icon = 'OUTLINER_OB_LATTICE' if active_mod.type == 'LATTICE' else 'OUTLINER_OB_EMPTY'
+            sub = row.row(align=True)
+            sub.alignment = 'RIGHT'
+
+            # icon = 'OUTLINER_OB_LATTICE' if active_mod.type == 'LATTICE' else 'OUTLINER_OB_EMPTY'
             if not gizmo_ob:
-                row.operator("object.ml_gizmo_object_add", text="Add Gizmo", icon=icon
+                sub_sub = sub.row()
+                sub_sub.scale_x = 4
+                icon = pcoll['ADD_GIZMO']
+                sub_sub.operator("object.ml_gizmo_object_add", text="", icon_value=icon.icon_id
                             ).modifier = active_mod.name
             else:
+                sub_sub = sub.row(align=True)
+                sub_sub.scale_x = 1.2
                 depress = not gizmo_ob.hide_viewport
-                row.operator("object.ml_gizmo_object_toggle_visibility", text="Show Gizmo",
-                                icon=icon, depress=depress)
-                row.popover("OBJECT_PT_Gizmo_object_settings", text="", icon='PREFERENCES')
+                sub_sub.operator("object.ml_gizmo_object_toggle_visibility", text="",
+                                icon='EMPTY_ARROWS', depress=depress)
+                sub.popover("OBJECT_PT_Gizmo_object_settings", text="")
 
 
     # === Modifier specific settings ===

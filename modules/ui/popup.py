@@ -8,11 +8,6 @@ from .vertex_groups_ui import vertex_groups_ui
 from ..utils import get_ml_active_object
 
 
-panel_width = 300
-tabs_width = 26
-overall_width = panel_width + tabs_width
-
-
 class VIEW3D_OT_ml_modifier_popup(Operator):
     bl_idname = "view3d.modifier_popup"
     bl_label = "Modifier Popup"
@@ -24,10 +19,14 @@ class VIEW3D_OT_ml_modifier_popup(Operator):
     def invoke(self, context, event):
         prefs = bpy.context.preferences.addons["modifier_list"].preferences
 
-        if prefs.use_props_dialog:
-            return context.window_manager.invoke_props_dialog(self, width=overall_width)
+        self.panel_width = prefs.popup_width
+        TABS_WIDTH = 26
+        self.overall_width = self.panel_width + TABS_WIDTH
 
-        return context.window_manager.invoke_popup(self, width=overall_width)
+        if prefs.use_props_dialog:
+            return context.window_manager.invoke_props_dialog(self, width=self.overall_width)
+
+        return context.window_manager.invoke_popup(self, width=self.overall_width)
 
     def check(self, context):
         return True
@@ -54,7 +53,7 @@ class VIEW3D_OT_ml_modifier_popup(Operator):
                 pin_object_button(context, row)
                 row.label(text="Modifier Popup")
 
-            split_factor = panel_width / overall_width
+            split_factor = self.panel_width / self.overall_width
             split = layout.split(factor=split_factor)
 
             # === Content ===
