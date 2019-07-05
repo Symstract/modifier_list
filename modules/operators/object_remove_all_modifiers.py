@@ -1,3 +1,9 @@
+"""
+This operator is inspired by Modifier Tools add-on, thanks for the authors
+meta-androcto, saidenka and lijenstina.
+https://wiki.blender.org/wiki/Extensions:2.6/Py/Scripts/3D_interaction/modifier_tools
+"""
+
 import bpy
 from bpy.props import *
 from bpy.types import Operator
