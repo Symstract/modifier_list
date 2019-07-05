@@ -606,7 +606,6 @@ def modifiers_ui(context, layout, num_of_rows=False, use_in_properties_editor=Fa
             sub = row.row(align=True)
             sub.alignment = 'RIGHT'
 
-            # icon = 'OUTLINER_OB_LATTICE' if active_mod.type == 'LATTICE' else 'OUTLINER_OB_EMPTY'
             if not gizmo_ob:
                 sub_sub = sub.row()
                 sub_sub.scale_x = 4
