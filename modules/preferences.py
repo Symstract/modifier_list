@@ -149,12 +149,6 @@ class Preferences(AddonPreferences):
         layout.prop(self, "match_gizmo_size_to_object")
         layout.prop(self, "always_delete_gizmo")
 
-        # === Info ===
-        _, is_enabled = addon_utils.check("space_view3d_modifier_tools")
-        if not is_enabled:
-            layout.label(icon='INFO',
-                         text="Enable Modifier Tools addon for modifier batch operators.")
-
 
 def get_pref_mod_attr_name():
     """List of the names of favourite modifier attributes in Preferences

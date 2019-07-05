@@ -506,24 +506,22 @@ def modifiers_ui(context, layout, num_of_rows=False, use_in_properties_editor=Fa
 
     row = layout.row()
 
-    # === Modifier tools (from the addon) ===
-    is_loaded, is_enabled = addon_utils.check("space_view3d_modifier_tools")
-    if is_loaded and is_enabled:
-        sub = row.row(align=True)
-        # Note: In 2.79, this is what scale 2.0 looks like. Here 2.0 causes list ordering
-        # buttons to get tiny. 2.8 Bug?
-        sub.scale_x = 1.5
+    # === Modifier batch operators ===
+    sub = row.row(align=True)
+    # Note: In 2.79, this is what scale 2.0 looks like. Here 2.0 causes list ordering
+    # buttons to get tiny. 2.8 Bug?
+    sub.scale_x = 1.5
 
-        pcoll = icons.preview_collections["main"]
+    pcoll = icons.preview_collections["main"]
 
-        icon = pcoll['TOGGLE_ALL_MODIFIERS_VISIBILITY']
-        sub.operator("object.ml_toggle_all_modifiers", icon_value=icon.icon_id, text="")
+    icon = pcoll['TOGGLE_ALL_MODIFIERS_VISIBILITY']
+    sub.operator("object.ml_toggle_all_modifiers", icon_value=icon.icon_id, text="")
 
-        icon = pcoll['APPLY_ALL_MODIFIERS']
-        sub.operator("object.ml_apply_all_modifiers", icon_value=icon.icon_id, text="")
+    icon = pcoll['APPLY_ALL_MODIFIERS']
+    sub.operator("object.ml_apply_all_modifiers", icon_value=icon.icon_id, text="")
 
-        icon = pcoll['DELETE_ALL_MODIFIERS']
-        sub.operator("object.ml_remove_all_modifiers", icon_value=icon.icon_id, text="")
+    icon = pcoll['DELETE_ALL_MODIFIERS']
+    sub.operator("object.ml_remove_all_modifiers", icon_value=icon.icon_id, text="")
 
     # === List manipulation ===
     sub = row.row(align=True)
