@@ -11,17 +11,12 @@ class OBJECT_OT_ml_remove_all_modifiers(Operator):
     bl_description = "Remove all modifiers from the selected object(s)"
     bl_options = {'REGISTER', 'UNDO'}
 
-    @classmethod
-    def poll(self, context):
-        return get_ml_active_object() is not None
-
     def execute(self, context):
-        ml_act_ob = get_ml_active_object()
-        sel_obs = context.selected_objects
-        obs = sel_obs.copy()
+        obs = context.selected_objects
 
-        if ml_act_ob not in obs:
-            obs.append(ml_act_ob)
+        if not obs:
+            self.report({'INFO'}, "No selection")
+            return {'CANCELLED'}
 
         obs_have_mods = False
 
