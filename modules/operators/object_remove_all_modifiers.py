@@ -38,3 +38,11 @@ class OBJECT_OT_ml_remove_all_modifiers(Operator):
         self.report({'INFO'}, "Removed all modifiers")
 
         return {'FINISHED'}
+
+    def invoke(self, context, event):
+        prefs = bpy.context.preferences.addons["modifier_list"].preferences
+
+        if prefs.show_confirmation_popups:
+            return context.window_manager.invoke_confirm(self, event)
+        else:
+            return self.execute(context)

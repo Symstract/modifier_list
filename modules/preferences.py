@@ -48,6 +48,12 @@ class Preferences(AddonPreferences):
         description="Hide the region which shows modifier name and display settings. "
                     "The same settings are also inside the modifier list")
 
+    show_confirmation_popups: BoolProperty(
+        name="Show Confirmation Popups",
+        description="Show confirmation popups when using Apply All Modifiers"
+                    "and Remove All Modifiers operators",
+        default=True)
+
     mod_list_def_len: IntProperty(
         name="",
         description="Default/min number of rows to display in the modifier list in the popup",
@@ -118,6 +124,7 @@ class Preferences(AddonPreferences):
 
         row = layout.row()
         row.prop(self, "hide_general_settings_region")
+        layout.prop(self, "show_confirmation_popups")
 
         layout.separator()
 
