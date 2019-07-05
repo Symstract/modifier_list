@@ -15,7 +15,8 @@ from ..utils import (
 )
 
 
-class OBJECT_OT_ml_modifier_apply(Operator):
+class ApplyModifier:
+    """Base operator for applying a modifier"""
     bl_idname = "object.ml_modifier_apply"
     bl_label = "Apply Modifier"
     bl_description = ("Apply modifier and remove from the stack.\n"
@@ -25,13 +26,7 @@ class OBJECT_OT_ml_modifier_apply(Operator):
 
     modifier: StringProperty()
 
-    apply_as: EnumProperty(
-        items=(
-            ('DATA', "Data", ""),
-            ('SHAPE', "Shape", "")
-        ),
-        default='DATA'
-    )
+    apply_as: None
 
     def execute(self, context):
         prefs = bpy.context.preferences.addons["modifier_list"].preferences
@@ -125,3 +120,23 @@ class OBJECT_OT_ml_modifier_apply(Operator):
         if self.mod_type in curve_deform_mods:
             self.report({'INFO'}, "Applied modifier only changed CV points, "
                         "not tessellated/bevel vertices")
+
+
+class OBJECT_OT_ml_modifier_apply(Operator, ApplyModifier):
+    bl_idname = "object.ml_modifier_apply"
+    bl_label = "Apply Modifier"
+    bl_description = ("Apply modifier and remove from the stack.\n"
+                      "\n"
+                      "Hold shift to also delete its gizmo object (if it has one)")
+
+    apply_as = 'DATA'
+
+
+class OBJECT_OT_ml_modifier_apply_as_shapekey(Operator, ApplyModifier):
+    bl_idname = "object.ml_modifier_apply_as_shapekey"
+    bl_label = "Apply Modifier As Shape Key"
+    bl_description =  ("Apply modifier as a shape key and remove from the stack.\n"
+                      "\n"
+                      "Hold shift to also delete its gizmo object (if it has one)")
+
+    apply_as = 'SHAPE'

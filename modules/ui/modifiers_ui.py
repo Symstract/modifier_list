@@ -585,16 +585,13 @@ def modifiers_ui(context, layout, num_of_rows=False, use_in_properties_editor=Fa
     sub = row.row(align=True)
     sub.scale_x = 5
     icon = pcoll['APPLY_MODIFIER']
-    apply = sub.operator("object.ml_modifier_apply", text="", icon_value=icon.icon_id)
-    apply.modifier = active_mod.name
-    apply.apply_as = 'DATA'
+    sub.operator("object.ml_modifier_apply", text="",
+                 icon_value=icon.icon_id).modifier = active_mod.name
 
     if active_mod.type in modifier_categories.support_apply_as_shape_key:
         icon = pcoll['APPLY_MODIFIER_AS_SHAPEKEY']
-        apply_as_shape_key = sub.operator("object.ml_modifier_apply",
-                                          text="", icon_value=icon.icon_id)
-        apply_as_shape_key.modifier=active_mod.name
-        apply_as_shape_key.apply_as='SHAPE'
+        sub.operator("object.ml_modifier_apply_as_shapekey", text="",
+                     icon_value=icon.icon_id).modifier=active_mod.name
 
     if active_mod.type not in modifier_categories.dont_support_copy:
         sub.operator("object.ml_modifier_copy",
