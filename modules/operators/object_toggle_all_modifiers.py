@@ -32,6 +32,9 @@ class OBJECT_OT_ml_toggle_all_modifiers(Operator):
 
         for ob in obs:
             for mod in ob.modifiers:
-                mod.show_viewport = show_mods
+                # Dont toggle the visibility of collision modifiers as that
+                # can apparently cause problems in some scenes.
+                if not mod.type == 'COLLISION':
+                    mod.show_viewport = show_mods
 
         return {'FINISHED'}
