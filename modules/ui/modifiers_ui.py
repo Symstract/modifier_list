@@ -517,7 +517,7 @@ def modifiers_ui(context, layout, num_of_rows=False, use_in_properties_editor=Fa
         pcoll = icons.preview_collections["main"]
 
         icon = pcoll['TOGGLE_ALL_MODIFIERS_VISIBILITY']
-        sub.operator("object.toggle_apply_modifiers_view", icon_value=icon.icon_id, text="")
+        sub.operator("object.ml_toggle_all_modifiers", icon_value=icon.icon_id, text="")
 
         icon = pcoll['APPLY_ALL_MODIFIERS']
         sub.operator("object.apply_all_modifiers", icon_value=icon.icon_id, text="")
