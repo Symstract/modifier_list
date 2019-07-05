@@ -520,7 +520,7 @@ def modifiers_ui(context, layout, num_of_rows=False, use_in_properties_editor=Fa
         sub.operator("object.ml_toggle_all_modifiers", icon_value=icon.icon_id, text="")
 
         icon = pcoll['APPLY_ALL_MODIFIERS']
-        sub.operator("object.apply_all_modifiers", icon_value=icon.icon_id, text="")
+        sub.operator("object.ml_apply_all_modifiers", icon_value=icon.icon_id, text="")
 
         icon = pcoll['DELETE_ALL_MODIFIERS']
         sub.operator("object.ml_remove_all_modifiers", icon_value=icon.icon_id, text="")
