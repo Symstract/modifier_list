@@ -457,8 +457,9 @@ class OBJECT_PT_Gizmo_object_settings(Panel):
 # UI
 #=======================================================================
 
-def modifiers_ui(context, layout, num_of_rows=False, use_in_properties_editor=False):
-    ob = context.object if use_in_properties_editor else get_ml_active_object()
+def modifiers_ui(context, layout, num_of_rows=False, use_in_popup=False):
+
+    ob = context.object if context.area.type == 'PROPERTIES' else get_ml_active_object()
     prefs = bpy.context.preferences.addons["modifier_list"].preferences
     pcoll = icons.preview_collections["main"]
 
@@ -520,13 +521,24 @@ def modifiers_ui(context, layout, num_of_rows=False, use_in_properties_editor=Fa
     layout.template_list("OBJECT_UL_modifier_list", "", ob, "modifiers",
                          ob, "ml_modifier_active_index", rows=num_of_rows)
 
-    row = layout.row()
+    # When sub.scale_x is 1.5 and the area/region is narrow, the buttons
+    # don't align properly, so some manual work is needed.
+    if use_in_popup:
+        align_button_groups = prefs.popup_width <= 278
+    elif context.area.type == 'VIEW_3D':
+        align_button_groups = context.region.width <= 308
+    else:
+        align_button_groups = context.area.width <= 308
+
+    sub_scale = 3 if align_button_groups else 1.5
+
+    row = layout.row(align=align_button_groups)
 
     # === Modifier batch operators ===
     sub = row.row(align=True)
     # Note: In 2.79, this is what scale 2.0 looks like. Here 2.0 causes list ordering
     # buttons to get tiny. 2.8 Bug?
-    sub.scale_x = 1.5
+    sub.scale_x = sub_scale
 
     icon = pcoll['TOGGLE_ALL_MODIFIERS_VISIBILITY']
     sub.operator("object.ml_toggle_all_modifiers", icon_value=icon.icon_id, text="")
@@ -541,8 +553,9 @@ def modifiers_ui(context, layout, num_of_rows=False, use_in_properties_editor=Fa
     sub = row.row(align=True)
     #  Note: In 2.79, this is what scale 2.0 looks like. Here 2.0 causes list ordering
     # buttons to get tiny. 2.8 Bug?
-    sub.scale_x = 1.5
-    sub.alignment = 'RIGHT'
+    sub.scale_x = sub_scale
+    if not align_button_groups:
+        sub.alignment = 'RIGHT'
     sub.operator(OBJECT_OT_ml_modifier_move_up.bl_idname, icon='TRIA_UP', text="")
     sub.operator(OBJECT_OT_ml_modifier_move_down.bl_idname, icon='TRIA_DOWN', text="")
     sub.operator(OBJECT_OT_ml_modifier_remove.bl_idname, icon='REMOVE', text="")
@@ -637,8 +650,7 @@ def modifiers_ui(context, layout, num_of_rows=False, use_in_properties_editor=Fa
     elif active_mod.type =='SURFACE_DEFORM':
         ml_modifier_layouts.SURFACE_DEFORM(col, ob, active_mod)
     elif active_mod.type == 'LATTICE':
-        ml_modifier_layouts.LATTICE(col, ob, active_mod,
-                                    use_in_properties_editor=use_in_properties_editor)
+        ml_modifier_layouts.LATTICE(col, ob, active_mod)
     else:
         mp = DATA_PT_modifiers(context)
         getattr(mp, active_mod.type)(col, ob, active_mod)

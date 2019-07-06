@@ -60,7 +60,7 @@ class VIEW3D_OT_ml_modifier_popup(Operator):
             col = split.column()
             if popup_tab == 'MODIFIERS':
                 num_of_rows = prefs.mod_list_def_len
-                modifiers_ui(context, col, num_of_rows=num_of_rows)
+                modifiers_ui(context, col, num_of_rows=num_of_rows, use_in_popup=True)
             elif popup_tab == 'OBJECT_DATA':
                 vertex_groups_ui(context, col, num_of_rows=7)
 

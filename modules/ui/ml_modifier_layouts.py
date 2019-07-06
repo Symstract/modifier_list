@@ -6,7 +6,7 @@ from..utils import get_gizmo_object
 
 # Modified to improve
 # ======================================================================
-def LATTICE(layout, ob, md, use_in_properties_editor=False):
+def LATTICE(layout, ob, md):
     context = bpy.context
     gizmo_ob = get_gizmo_object()
 
@@ -16,7 +16,7 @@ def LATTICE(layout, ob, md, use_in_properties_editor=False):
         row = layout.row()
         row.enabled = not gizmo_ob.hide_viewport
         depress = gizmo_ob.mode == 'EDIT'
-        if use_in_properties_editor:
+        if context.area.type == 'PROPERTIES':
             row.operator("object.lattice_toggle_editmode_prop_editor", text="Edit Lattice",
                          depress=depress)
         else:

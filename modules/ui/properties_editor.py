@@ -22,7 +22,7 @@ class DATA_PT_modifiers(Panel):
 
     def draw(self, context):
         layout = self.layout
-        modifiers_ui(context, layout, use_in_properties_editor=True)
+        modifiers_ui(context, layout)
 
 
 def register_DATA_PT_modifiers(self, context):
