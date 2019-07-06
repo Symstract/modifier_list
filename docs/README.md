@@ -25,9 +25,9 @@
 - **Ability to apply modifiers in edit mode (kind of).** The apply operator acts as a macro when used in edit mode and automatically switches to object mode, applies the modifier and switches back to edit mode.
 - **Modifier batch operators from built-in Modifier Tools add-on** (when that addon is enabled). Enable that addon before Modifier List, so you don't have the buttons twice inside Properties Editor, because the order in which these addons are enabled matters.
 - **Sidebar tab and popup**, which contain also a vertex group list. The sidebar tab can be disabled from addon preferences.
-- **Easy way to add a control object** - or as I decided to call them, **a gizmo object** - to a modifier
+- **Easy way to add a control object** - or as I decided to call them, **a gizmo object** - to a modifier (currently only for meshes)
   - There is Add Gizmo button for adding a "gizmo object" to a modifier. It basically just adds an empty and assings it to the appropriate property of the modifier (Mirror Object for Mirror modifier for example).
-  - All gizmos go to a gizmo objects collection.
+  - All gizmos go to a gizmo object collection.
   -  By default, the gizmo is placed at the origin of the active object. But if you are in edit mode and have a single vertex selected, the gizmo is placed at the vertex location.
   - You can also hold shift when adding a modifier to add a gizmo at the same time, so you can save an extra click :)
   - After adding a gizmo, the Add Gizmo button changes to a visibility toggle and a settings popover, in which you can change some gizmo setting, such as its location, rotation and parenting. You can also select or delete the gizmo from the popover. Note: selecting and deleting give some (harmless) errors/glitches when used from the modifier popup.
