@@ -67,7 +67,8 @@ def LAPLACIANDEFORM(layout, ob, md):
 
     row = layout.row()
     row.enabled = bool(md.vertex_group)
-    row.operator("object.laplaciandeform_bind", text="Unbind" if is_bind else "Bind").modifier = md.name # Changed
+    row.operator("object.laplaciandeform_bind",
+                 text="Unbind" if is_bind else "Bind").modifier = md.name # Changed
 
 
 def MESH_DEFORM(layout, ob, md):

@@ -85,7 +85,8 @@ def register():
     ]
 
     wm = bpy.types.WindowManager
-    wm.ml_popup_active_tab = EnumProperty(items=popup_tabs_items, name="Popup Tabs", default='MODIFIERS')
+    wm.ml_popup_active_tab = EnumProperty(items=popup_tabs_items, name="Popup Tabs",
+                                          default='MODIFIERS')
 
 
 
