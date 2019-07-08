@@ -1,5 +1,37 @@
 # Changelog
 
+## 1.3 - 8.7.2019
+
+### New Features and Changes
+
+- **Objects can now be pinned to the sidebar tab and to the popup** by clicking the pin icon in the header. When an object is pinned, the panels don't follow object selection but keep showing the modifiers (and vertex groups) of the pinned object instead. It works the same way as context pinning in Properties Editor.
+- **Lattice modifier's UI/UX has been improved**
+  - A lattice object can now be added to a lattice modifier by using the Add Gizmo operator or by holding shift when adding the modifier.
+  - It goes into the gizmo object collection
+  - It's automatically scaled to fit to the active object or to the selected elements if the object is in edit mode and at least two vertices are selected. A vertex group is also automatically created from the selection.
+  - The lattice is aligned to the object. Unfortunately, there's no auto alignment or any way to define the alignment currently.
+  - The lattice automatically goes into edit mode when it's added.
+  - You can go in and out of lattice edit mode by by using the Edit Lattice button. It automatically utilizes object pinning, so the modifier settings keep being shown also when you're editing the lattice. Note: this operator doesn't fully support redo.
+  - The settings of the lattice object are shown among the modifier settings, so everything is in the same place.
+  - When applying or removing the modifier, hold shift to remove the lattice object and the vertex group (unless the group was manually created and its name doesn't start with "ML") at the same time.
+  - If for some reason the context pinning doesn't automatically turn back off, just click the pin icon in the header to unpin the context.
+- **Modifier Tools addon is no longer needed with this addon.** Similar batch operators are now included in this addon. Also, Apply All Modifiers now works in edit mode too.
+- **Gizmo object can now be added to the location of the 3D Cursor** when holding shift while clicking the Add Gizmo button.
+- **UI layout has been improved to use less space**
+  - Apply, Apply As Shape Key, Copy and Add Gizmo buttons now use icons only.
+  - The Add Gizmo button is moved into the same row with Apply, Apply As Shape Key and Copy buttons.
+  - The row which shows modifier icon, name and visibility toggles can now be hidden from the addon preferences.
+- **There is now a setting to use black icons**
+- **Setting to adjust the width of the popup**
+- **Setting for showing three favourites in a row**
+- **Setting to not use icons in favourites** (to save space)
+- **Setting to automatically match the size of the gizmo to the object.** Note: this can be a bit slow on heavy meshes.
+- **Setting for always deleting the gizmo even when shift is not held**
+
+### Fixes
+
+- List ordering buttons behave better when the panel is narrow.
+
 ## 1.2.2 - 17.6.2019
 
 - Fixed Multiresolution modifier operators not working.
