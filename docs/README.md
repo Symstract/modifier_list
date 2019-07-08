@@ -18,38 +18,51 @@
 
 ## Features
 
-- **List view of modifiers.** Popup's default list size can be set in addon preferences.
+- **Modifier list**. The settings of the active modifier are shown under the list, so you will see only one modifier at a time. The default list size inside the popup can be set in the addon preferences.
 - **Modifier search**
 - **Modifier menu**
-- **Favourite modifiers** which can be set in addon preferences
+- **Favourite modifiers** which can be set in the addon preferences
 - **Ability to apply modifiers in edit mode (kind of).** The apply operator acts as a macro when used in edit mode and automatically switches to object mode, applies the modifier and switches back to edit mode.
-- **Modifier batch operators from built-in Modifier Tools add-on** (when that addon is enabled). Enable that addon before Modifier List, so you don't have the buttons twice inside Properties Editor, because the order in which these addons are enabled matters.
-- **Sidebar tab and popup**, which contain also a vertex group list. The sidebar tab can be disabled from addon preferences.
+- **Modifier batch operators** Toggle All Modifiers, Apply All Modifiers and Remove All Modifiers. Apply All Modifiers works also in edit mode.
+- **Sidebar tab and a popup**, which contain also a vertex group list. The sidebar tab can be disabled from the addon preferences.
+- **Object pinning for the sidebar tab and for the popup** by clicking the pin icon in the header. When an object is pinned, the panels don't follow object selection but keep showing the modifiers (and vertex groups) of the pinned object instead. It works the same way as context pinning in Properties Editor.
 - **Easy way to add a control object** - or as I decided to call them, **a gizmo object** - to a modifier (currently only for meshes)
   - There is Add Gizmo button for adding a "gizmo object" to a modifier. It basically just adds an empty and assings it to the appropriate property of the modifier (Mirror Object for Mirror modifier for example).
-  - All gizmos go to a gizmo object collection.
+  - All gizmos go into a gizmo object collection.
   -  By default, the gizmo is placed at the origin of the active object. But if you are in edit mode and have a single vertex selected, the gizmo is placed at the vertex location.
+  - If you hold shift while you click the Add Gizmo button, the gizmo is placed to the location of the 3D Cursor
   - You can also hold shift when adding a modifier to add a gizmo at the same time, so you can save an extra click :)
   - After adding a gizmo, the Add Gizmo button changes to a visibility toggle and a settings popover, in which you can change some gizmo setting, such as its location, rotation and parenting. You can also select or delete the gizmo from the popover. Note: selecting and deleting give some (harmless) errors/glitches when used from the modifier popup.
-  - There is a setting in addon preferences for automatically parenting the gizmo to the active object on addition.
+  - There is a setting in the addon preferences for automatically parenting the gizmo to the active object on addition.
+  - There is also a setting to automatically match the size of the gizmo to the object. Note: this can be a bit slow on heavy meshes.
   - You can hold shift when applying or removing a modifier to also delete its gizmo.
-- **Auto Smooth is enabled automatically when you add a Weighted Normal modifier**.
+- **Improved UI/UX for Lattice modifier**
+  - A lattice object can be added to a lattice modifier by using the Add Gizmo operator or by holding shift when adding the modifier.
+  - It goes into the gizmo object collection.
+  - It's automatically scaled to fit to the active object or to the selected elements if the object is in edit mode and at least two vertices are selected. A vertex group is also automatically created from the selection.
+  - The lattice is aligned to the object. Unfortunately, there's no auto alignment or any way to define the alignment currently.
+  - The lattice automatically goes into edit mode when it's added.
+  - You can go in and out of lattice edit mode by by using the Edit Lattice button. It automatically utilizes object pinning, so the modifier settings keep being shown also when you're editing the lattice. Note: this operator doesn't fully support redo.
+  - The settings of the lattice object are shown among the modifier settings, so everything is in the same place.
+  - When applying or removing the modifier, hold shift to remove the lattice object and the vertex group (unless the group was manually created and its name doesn't start with "ML") at the same time.
+  - If for some reason the context pinning doesn't automatically turn back off, just click the pin icon in the header to unpin the context.
+- **Auto Smooth is enabled automatically when you add a Weighted Normal modifier**
+- **Black and white icons** to choose between
 
 ## Popup Hotkey
 
-Default hotkey is **alt + space**. In the keymap editor, you can find it under 3D View > 3D View (Global) > Modifier Popup Panel.
+Default hotkey is **Alt + Space**. Inside the keymap editor, you can find it under 3D View > 3D View (Global) > Modifier Popup Panel.
 
 ## Installation
 
 1. Go to Edit menu (File menu in 2.79) and open user preferences
 2. Switch to Addons tab and click Install...
 3. Navigate to where you downloaded the zip file to, select it and click Install Add-on from File
-4. (Optional but recommended) Search for Modifier Tools add-on and enable it (by ticking the check box next to its name) to get modifier batch operators under the modifier list
-   - This should be done before, not after, the next step to avoid duplicate buttons inside Properties Editor, because the order in which these addons are enabled matters.
-5. Enable the add-on.
-6. Save user preferences
+4. Enable the add-on by ticking the check box next to its name
+5. Save user preferences
 
 ## Known Issues and Limitations
 
-- In the popup, lists don't remember their sizes when they are resized. Popups are not really ment for this kind of stuff, so that's a limitation of Blender.
-- Using the popup, picking an object from viewport is not possible. A limitation of popups. Hopefully that could be possible at some point because that applies also to the driver editor popup. We’ll see.
+- Inside the popup, lists don't remember their sizes after they are resized. Popups are not really ment for this kind of stuff, so that's a limitation of Blender.
+- Using the popup, picking an object from viewport is not possible. A limitation of popups. Hopefully that could be possible at some point because that applies also to the driver editor popup and there's an open bug report about it in the bug tracker.
+- Add Modifier's tooltip doesn't fit to Lattice.
