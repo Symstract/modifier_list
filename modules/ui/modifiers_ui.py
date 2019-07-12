@@ -596,19 +596,25 @@ def modifiers_ui(context, layout, num_of_rows=False, use_in_popup=False):
     row = box.row()
 
     sub = row.row(align=True)
-    sub.scale_x = 5
-    icon = pcoll['APPLY_MODIFIER']
-    sub.operator("object.ml_modifier_apply", text="",
-                 icon_value=icon.icon_id).modifier = active_mod.name
 
-    if active_mod.type in modifier_categories.support_apply_as_shape_key:
-        icon = pcoll['APPLY_MODIFIER_AS_SHAPEKEY']
-        sub.operator("object.ml_modifier_apply_as_shapekey", text="",
-                     icon_value=icon.icon_id).modifier=active_mod.name
+    if active_mod.type == 'PARTICLE_SYSTEM':
+        ps = active_mod.particle_system
+        if ps.settings.render_type in {'COLLECTION', 'OBJECT', 'PATH'}:
+            sub.operator("object.duplicates_make_real", text="Convert")
+    else:
+        sub.scale_x = 5
+        icon = pcoll['APPLY_MODIFIER']
+        sub.operator("object.ml_modifier_apply", text="",
+                    icon_value=icon.icon_id).modifier = active_mod.name
 
-    if active_mod.type not in modifier_categories.dont_support_copy:
-        sub.operator("object.ml_modifier_copy",
-                     text="", icon='DUPLICATE').modifier = active_mod.name
+        if active_mod.type in modifier_categories.support_apply_as_shape_key:
+            icon = pcoll['APPLY_MODIFIER_AS_SHAPEKEY']
+            sub.operator("object.ml_modifier_apply_as_shapekey", text="",
+                        icon_value=icon.icon_id).modifier=active_mod.name
+
+        if active_mod.type not in modifier_categories.dont_support_copy:
+            sub.operator("object.ml_modifier_copy",
+                        text="", icon='DUPLICATE').modifier = active_mod.name
 
     # === Gizmo object settings ===
     if ob.type == 'MESH':
