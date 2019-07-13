@@ -1,5 +1,20 @@
 # Changelog
 
+## 1.3.1 - 13.7.2019
+
+- Fixed Multiresolution modifier missing its layout
+- Fixed Particle System modifier missing "Convert" button
+- Fixed the following modifiers still having operators that don't work:
+  - Corrective Smooth
+  - Data Transfer ("Generate Data Layers" doesn't work perfectly though: it's not automatic, it opens a menu instead),
+  - Explode,
+  - Hook,
+  - Ocean,
+  - Skin
+- Added the missing button that changes Properties Editor's tab for simulation modifiers that use it (for Properties Editor)
+- Fixed the regular UI not being restored when disabling the addon
+
+
 ## 1.3 - 8.7.2019
 
 ### New Features and Changes
@@ -32,6 +47,7 @@
 
 - List ordering buttons behave better when the panel is narrow.
 
+
 ## 1.2.2 - 17.6.2019
 
 - Fixed Multiresolution modifier operators not working.
@@ -39,6 +55,7 @@
 ## 1.2.1 - 13.6.2019
 
 - Fixed the effect of a gizmo object not being taken into account when applying a modifier if the gizmo is deleted at the same time (by holding shift).
+
 
 ## 1.2 - 11.6.2019
 
@@ -64,9 +81,11 @@
 - Bind buttons of Mesh Deform, Laplacian Deform and Surface Deform now work.
 - Various small fixes.
 
+
 ## 1.1.1 - 22.3.2019
 
 - Fixed ModuleNotFoundError on Linux and Mac
+
 
 ## 1.1 - 21.3.2019
 
@@ -79,6 +98,7 @@ By the way, the popup is now vertically a bit more compact. A bit too compact, I
 - This addon now has a tab in the sidebar (which can be disabled from addon preferences)
 - Popup now has tabs
 - Added a tab for vertex groups to the popup and a panel for them to the sidebar
+
 
 ## 1.0.1 - 28-2-2019
 
