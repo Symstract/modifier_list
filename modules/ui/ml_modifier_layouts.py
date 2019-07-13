@@ -51,39 +51,208 @@ def LATTICE(layout, ob, md):
 # ======================================================================
 
 
-def MULTIRES(layout, ob, md):
-    layout.row().prop(md, "subdivision_type", expand=True)
+def CORRECTIVE_SMOOTH(layout, ob, md):
+    is_bind = md.is_bind
+
+    layout.prop(md, "factor", text="Factor")
+    layout.prop(md, "iterations")
+
+    row = layout.row()
+    row.prop(md, "smooth_type")
 
     split = layout.split()
-    col = split.column()
-    col.prop(md, "levels", text="Preview")
-    col.prop(md, "sculpt_levels", text="Sculpt")
-    col.prop(md, "render_levels", text="Render")
-    col.prop(md, "quality")
 
     col = split.column()
+    col.label(text="Vertex Group:")
+    row = col.row(align=True)
+    row.prop_search(md, "vertex_group", ob, "vertex_groups", text="")
+    row.prop(md, "invert_vertex_group", text="", icon='ARROW_LEFTRIGHT')
 
-    col.enabled = ob.mode != 'EDIT'
-    col.operator("object.multires_subdivide", text="Subdivide").modifier = md.name # Changed
-    col.operator("object.multires_higher_levels_delete", text="Delete Higher").modifier = md.name # Changed
-    col.operator("object.multires_reshape", text="Reshape").modifier = md.name # Changed
-    col.operator("object.multires_base_apply", text="Apply Base").modifier = md.name # Changed
-    col.prop(md, "uv_smooth", text="")
-    col.prop(md, "show_only_control_edges")
-    col.prop(md, "use_creases")
+    col = split.column()
+    col.prop(md, "use_only_smooth")
+    col.prop(md, "use_pin_boundary")
+
+    layout.prop(md, "rest_source")
+    if md.rest_source == 'BIND':
+        layout.operator("object.correctivesmooth_bind",
+                        text="Unbind" if is_bind else "Bind").modifier = md.name # Changed
+
+
+def DATA_TRANSFER(layout, ob, md):
+    row = layout.row(align=True)
+    row.prop(md, "object")
+    sub = row.row(align=True)
+    sub.active = bool(md.object)
+    sub.prop(md, "use_object_transform", text="", icon='GROUP')
 
     layout.separator()
 
-    col = layout.column()
+    split = layout.split(factor=0.333)
+    split.prop(md, "use_vert_data")
+    use_vert = md.use_vert_data
+    row = split.row()
+    row.active = use_vert
+    row.prop(md, "vert_mapping", text="")
+    if use_vert:
+        col = layout.column(align=True)
+        split = col.split(factor=0.333, align=True)
+        sub = split.column(align=True)
+        sub.prop(md, "data_types_verts")
+        sub = split.column(align=True)
+        row = sub.row(align=True)
+        row.prop(md, "layers_vgroup_select_src", text="")
+        row.label(icon='RIGHTARROW')
+        row.prop(md, "layers_vgroup_select_dst", text="")
+        row = sub.row(align=True)
+        row.label(text="", icon='NONE')
+
+    layout.separator()
+
+    split = layout.split(factor=0.333)
+    split.prop(md, "use_edge_data")
+    use_edge = md.use_edge_data
+    row = split.row()
+    row.active = use_edge
+    row.prop(md, "edge_mapping", text="")
+    if use_edge:
+        col = layout.column(align=True)
+        split = col.split(factor=0.333, align=True)
+        sub = split.column(align=True)
+        sub.prop(md, "data_types_edges")
+
+    layout.separator()
+
+    split = layout.split(factor=0.333)
+    split.prop(md, "use_loop_data")
+    use_loop = md.use_loop_data
+    row = split.row()
+    row.active = use_loop
+    row.prop(md, "loop_mapping", text="")
+    if use_loop:
+        col = layout.column(align=True)
+        split = col.split(factor=0.333, align=True)
+        sub = split.column(align=True)
+        sub.prop(md, "data_types_loops")
+        sub = split.column(align=True)
+        row = sub.row(align=True)
+        row.label(text="", icon='NONE')
+        row = sub.row(align=True)
+        row.prop(md, "layers_vcol_select_src", text="")
+        row.label(icon='RIGHTARROW')
+        row.prop(md, "layers_vcol_select_dst", text="")
+        row = sub.row(align=True)
+        row.prop(md, "layers_uv_select_src", text="")
+        row.label(icon='RIGHTARROW')
+        row.prop(md, "layers_uv_select_dst", text="")
+        col.prop(md, "islands_precision")
+
+    layout.separator()
+
+    split = layout.split(factor=0.333)
+    split.prop(md, "use_poly_data")
+    use_poly = md.use_poly_data
+    row = split.row()
+    row.active = use_poly
+    row.prop(md, "poly_mapping", text="")
+    if use_poly:
+        col = layout.column(align=True)
+        split = col.split(factor=0.333, align=True)
+        sub = split.column(align=True)
+        sub.prop(md, "data_types_polys")
+
+    layout.separator()
+
+    split = layout.split()
+    col = split.column()
+    row = col.row(align=True)
+    sub = row.row(align=True)
+    sub.active = md.use_max_distance
+    sub.prop(md, "max_distance")
+    row.prop(md, "use_max_distance", text="", icon='STYLUS_PRESSURE')
+
+    col = split.column()
+    col.prop(md, "ray_radius")
+
+    layout.separator()
+
+    split = layout.split()
+    col = split.column()
+    col.prop(md, "mix_mode")
+    col.prop(md, "mix_factor")
+
+    col = split.column()
     row = col.row()
-    if md.is_external:
-        row.operator("object.multires_external_pack", text="Pack External").modifier = md.name # Changed
-        row.label()
-        row = col.row()
-        row.prop(md, "filepath", text="")
-    else:
-        row.operator("object.multires_external_save", text="Save External...").modifier = md.name # Changed
-        row.label()
+    row.active = bool(md.object)
+    row.operator("object.datalayout_transfer", text="Generate Data Layers").modifier = md.name # Changed
+    row = col.row(align=True)
+    row.prop_search(md, "vertex_group", ob, "vertex_groups", text="")
+    sub = row.row(align=True)
+    sub.active = bool(md.vertex_group)
+    sub.prop(md, "invert_vertex_group", text="", icon='ARROW_LEFTRIGHT')
+
+
+def EXPLODE(layout, ob, md):
+    split = layout.split()
+
+    col = split.column()
+    col.label(text="Vertex Group:")
+    col.prop_search(md, "vertex_group", ob, "vertex_groups", text="")
+    sub = col.column()
+    sub.active = bool(md.vertex_group)
+    sub.prop(md, "protect")
+    col.label(text="Particle UV")
+    col.prop_search(md, "particle_uv", ob.data, "uv_layers", text="")
+
+    col = split.column()
+    col.prop(md, "use_edge_cut")
+    col.prop(md, "show_unborn")
+    col.prop(md, "show_alive")
+    col.prop(md, "show_dead")
+    col.prop(md, "use_size")
+
+    layout.operator("object.explode_refresh", text="Refresh").modifier = md.name # Changed
+
+
+def HOOK(layout, ob, md):
+    use_falloff = (md.falloff_type != 'NONE')
+    split = layout.split()
+
+    col = split.column()
+    col.label(text="Object:")
+    col.prop(md, "object", text="")
+    if md.object and md.object.type == 'ARMATURE':
+        col.label(text="Bone:")
+        col.prop_search(md, "subtarget", md.object.data, "bones", text="")
+    col = split.column()
+    col.label(text="Vertex Group:")
+    col.prop_search(md, "vertex_group", ob, "vertex_groups", text="")
+
+    layout.separator()
+
+    row = layout.row(align=True)
+    if use_falloff:
+        row.prop(md, "falloff_radius")
+    row.prop(md, "strength", slider=True)
+    layout.prop(md, "falloff_type")
+
+    col = layout.column()
+    if use_falloff:
+        if md.falloff_type == 'CURVE':
+            col.template_curve_mapping(md, "falloff_curve")
+
+    split = layout.split()
+
+    col = split.column()
+    col.prop(md, "use_falloff_uniform")
+
+    if ob.mode == 'EDIT':
+        row = col.row(align=True)
+        row.operator("object.hook_reset", text="Reset").modifier = md.name # Changed
+        row.operator("object.hook_recenter", text="Recenter").modifier = md.name # Changed
+
+        row = layout.row(align=True)
+        row.operator("object.hook_select", text="Select").modifier = md.name # Changed
+        row.operator("object.hook_assign", text="Assign").modifier = md.name # Changed
 
 
 def LAPLACIANDEFORM(layout, ob, md):
@@ -134,6 +303,164 @@ def MESH_DEFORM(layout, ob, md):
         layout.operator("object.meshdeform_bind", text="Unbind").modifier = md.name # Changed
     else:
         layout.operator("object.meshdeform_bind", text="Bind").modifier = md.name # Changed
+
+
+def MULTIRES(layout, ob, md):
+    layout.row().prop(md, "subdivision_type", expand=True)
+
+    split = layout.split()
+    col = split.column()
+    col.prop(md, "levels", text="Preview")
+    col.prop(md, "sculpt_levels", text="Sculpt")
+    col.prop(md, "render_levels", text="Render")
+    col.prop(md, "quality")
+
+    col = split.column()
+
+    col.enabled = ob.mode != 'EDIT'
+    col.operator("object.multires_subdivide", text="Subdivide").modifier = md.name # Changed
+    col.operator("object.multires_higher_levels_delete", text="Delete Higher").modifier = md.name # Changed
+    col.operator("object.multires_reshape", text="Reshape").modifier = md.name # Changed
+    col.operator("object.multires_base_apply", text="Apply Base").modifier = md.name # Changed
+    col.prop(md, "uv_smooth", text="")
+    col.prop(md, "show_only_control_edges")
+    col.prop(md, "use_creases")
+
+    layout.separator()
+
+    col = layout.column()
+    row = col.row()
+    if md.is_external:
+        row.operator("object.multires_external_pack", text="Pack External").modifier = md.name # Changed
+        row.label()
+        row = col.row()
+        row.prop(md, "filepath", text="")
+    else:
+        row.operator("object.multires_external_save", text="Save External...").modifier = md.name # Changed
+        row.label()
+
+
+def OCEAN(layout, _ob, md):
+    if not bpy.app.build_options.mod_oceansim:
+        layout.label(text="Built without OceanSim modifier")
+        return
+
+    layout.prop(md, "geometry_mode")
+
+    if md.geometry_mode == 'GENERATE':
+        row = layout.row()
+        row.prop(md, "repeat_x")
+        row.prop(md, "repeat_y")
+
+    layout.separator()
+
+    split = layout.split()
+
+    col = split.column()
+    col.prop(md, "time")
+    col.prop(md, "depth")
+    col.prop(md, "random_seed")
+
+    col = split.column()
+    col.prop(md, "resolution")
+    col.prop(md, "size")
+    col.prop(md, "spatial_size")
+
+    layout.label(text="Waves:")
+
+    split = layout.split()
+
+    col = split.column()
+    col.prop(md, "choppiness")
+    col.prop(md, "wave_scale", text="Scale")
+    col.prop(md, "wave_scale_min")
+    col.prop(md, "wind_velocity")
+
+    col = split.column()
+    col.prop(md, "wave_alignment", text="Alignment")
+    sub = col.column()
+    sub.active = (md.wave_alignment > 0.0)
+    sub.prop(md, "wave_direction", text="Direction")
+    sub.prop(md, "damping")
+
+    layout.separator()
+
+    layout.prop(md, "use_normals")
+
+    split = layout.split()
+
+    col = split.column()
+    col.prop(md, "use_foam")
+    sub = col.row()
+    sub.active = md.use_foam
+    sub.prop(md, "foam_coverage", text="Coverage")
+
+    col = split.column()
+    col.active = md.use_foam
+    col.label(text="Foam Data Layer Name:")
+    col.prop(md, "foam_layer_name", text="")
+
+    layout.separator()
+
+    # Changed:
+    if md.is_cached:
+        bake = layout.operator("object.ocean_bake", text="Delete Bake")
+        bake.free = True
+        bake.modifier = md.name
+    else:
+        bake = layout.operator("object.ocean_bake")
+        bake.free = False
+        bake.modifier = md.name
+
+    split = layout.split()
+    split.enabled = not md.is_cached
+
+    col = split.column(align=True)
+    col.prop(md, "frame_start", text="Start")
+    col.prop(md, "frame_end", text="End")
+
+    col = split.column(align=True)
+    col.label(text="Cache path:")
+    col.prop(md, "filepath", text="")
+
+    split = layout.split()
+    split.enabled = not md.is_cached
+
+    col = split.column()
+    col.active = md.use_foam
+    col.prop(md, "bake_foam_fade")
+
+    col = split.column()
+
+
+def SKIN(layout, _ob, md):
+    row = layout.row()
+    row.operator("object.skin_armature_create", text="Create Armature").modifier = md.name # Changed
+    row.operator("mesh.customdata_skin_add")
+
+    layout.separator()
+
+    row = layout.row(align=True)
+    row.prop(md, "branch_smoothing")
+    row.prop(md, "use_smooth_shade")
+
+    split = layout.split()
+
+    col = split.column()
+    col.label(text="Selected Vertices:")
+    sub = col.column(align=True)
+    sub.operator("object.skin_loose_mark_clear", text="Mark Loose").action = 'MARK'
+    sub.operator("object.skin_loose_mark_clear", text="Clear Loose").action = 'CLEAR'
+
+    sub = col.column()
+    sub.operator("object.skin_root_mark", text="Mark Root")
+    sub.operator("object.skin_radii_equalize", text="Equalize Radii")
+
+    col = split.column()
+    col.label(text="Symmetry Axes:")
+    col.prop(md, "use_x_symmetry")
+    col.prop(md, "use_y_symmetry")
+    col.prop(md, "use_z_symmetry")
 
 
 def SURFACE_DEFORM(layout, _ob, md):
