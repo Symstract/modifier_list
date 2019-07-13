@@ -32,8 +32,11 @@ from ..utils import (
 def mod_show_editmode_and_cage(modifier, layout, scale_x=1.0, use_in_list=False):
     """This handles showing, hiding and activating/deactivating
     show_in_editmode and show_on_cage buttons to match the behaviour of
-    the regular UI. When called, adds those buttons, for the specified
+    the regular UI.
+
+    When called, this adds those buttons, for the specified
     modifier, in their correct state, to the specified (sub-)layout.
+
     Note: some modifiers show show_on_cage in the regular UI only if,
     for example, an object to use for deforming is specified. Eg.
     Armatature modifier requires an armature object to be specified in
@@ -45,7 +48,6 @@ def mod_show_editmode_and_cage(modifier, layout, scale_x=1.0, use_in_list=False)
     # in inactive state, so custom dimmer icons are needed.
     # SHOW_IN_EDITMODE_ON_INACTIVE_BUTTON and
     # SHOW_ON_CAGE_ON_INACTIVE_BUTTON are used here for that reason.
-    # Is it a bug or just how icon_value works?
 
     dont_support_show_in_editmode  = modifier_categories.dont_support_show_in_editmode
     support_show_on_cage  = modifier_categories.support_show_on_cage
@@ -55,8 +57,10 @@ def mod_show_editmode_and_cage(modifier, layout, scale_x=1.0, use_in_list=False)
     # === show_in_editmode ===
     sub = layout.row(align=True)
     sub.scale_x = scale_x
+
     if not use_in_list:
         sub.active = modifier.show_viewport
+
     if modifier.type not in dont_support_show_in_editmode :
         if not modifier.show_viewport and use_in_list:
             show_in_editmode_on = pcoll['SHOW_IN_EDITMODE_ON_INACTIVE']
@@ -67,16 +71,18 @@ def mod_show_editmode_and_cage(modifier, layout, scale_x=1.0, use_in_list=False)
         else:
             show_in_editmode_on = pcoll['SHOW_IN_EDITMODE_ON']
             show_in_editmode_off = pcoll['SHOW_IN_EDITMODE_OFF']
+
         icon = show_in_editmode_on.icon_id if modifier.show_in_editmode else show_in_editmode_off.icon_id
         sub.prop(modifier, "show_in_editmode", text="", icon_value=icon,
                  emboss=not use_in_list)
+
     else:
         # Make icons align nicely
         empy_icon = pcoll['EMPTY_SPACE']
         sub.label(text="", translate=False, icon_value=empy_icon.icon_id)
 
     # === show_on_cage ===
-    if modifier.type in support_show_on_cage :
+    if modifier.type in support_show_on_cage:
         ob = get_ml_active_object()
         mods = ob.modifiers
         mod_index = mods.find(modifier.name)
@@ -85,6 +91,7 @@ def mod_show_editmode_and_cage(modifier, layout, scale_x=1.0, use_in_list=False)
         # and doesn't have show_on_cage setting.
         is_before_show_in_editmode_on = False
         end_index = np.clip(mod_index, 1, 99)
+
         for mod in mods[0:end_index]:
             if mod.show_in_editmode and mod.type not in support_show_on_cage :
                 is_before_show_in_editmode_on = True
@@ -93,6 +100,7 @@ def mod_show_editmode_and_cage(modifier, layout, scale_x=1.0, use_in_list=False)
         # Check if some modifier after this has show_in_editmode and
         # show_on_cage both on and also is visible in the viewport.
         is_after_show_on_cage_on = False
+
         for mod in mods[(mod_index + 1):(len(mods))]:
             if (mod.show_viewport and mod.show_in_editmode
                     and mod.show_on_cage):
@@ -105,6 +113,7 @@ def mod_show_editmode_and_cage(modifier, layout, scale_x=1.0, use_in_list=False)
             sub.scale_x = scale_x
             show_on_cage_on = pcoll['SHOW_ON_CAGE_ON']
             show_on_cage_off = pcoll['SHOW_ON_CAGE_OFF']
+
             if (not modifier.show_viewport or not modifier.show_in_editmode
                     or is_after_show_on_cage_on):
                 if use_in_list:
@@ -113,16 +122,26 @@ def mod_show_editmode_and_cage(modifier, layout, scale_x=1.0, use_in_list=False)
                 else:
                     sub.active = False
                     show_on_cage_on = pcoll['SHOW_ON_CAGE_ON_INACTIVE_BUTTON']
+
             icon = show_on_cage_on.icon_id if modifier.show_on_cage else show_on_cage_off.icon_id
             sub.prop(modifier, "show_on_cage", text="", icon_value=icon, emboss=not use_in_list)
-        else:
-            # Make icons align nicely
-            empy_icon = pcoll['EMPTY_SPACE']
-            sub.label(text="", translate=False, icon_value=empy_icon.icon_id)
+
+            return
+
     else:
-        # Make icons align nicely
-        empy_icon = pcoll['EMPTY_SPACE']
-        sub.label(text="", translate=False, icon_value=empy_icon.icon_id)
+        if bpy.context.area.type == 'PROPERTIES' and not use_in_list:
+            if modifier.type in {'CLOTH', 'COLLISION', 'FLUID_SIMULATION', 'DYNAMIC_PAINT', 'SMOKE', 'SOFT_BODY'}:
+                sub.operator("wm.properties_context_change", icon='PROPERTIES',
+                             emboss=False).context="PHYSICS"
+                return
+            elif modifier.type == 'PARTICLE_SYSTEM':
+                sub.operator("wm.properties_context_change", icon='PROPERTIES',
+                             emboss=False).context="PARTICLES"
+                return
+
+    # Make icons align nicely if modifier.type is not in support_show_on_cage
+    empy_icon = pcoll['EMPTY_SPACE']
+    sub.label(text="", translate=False, icon_value=empy_icon.icon_id)
 
 
 class MeshModifiersCollection(PropertyGroup):
