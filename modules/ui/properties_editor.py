@@ -55,9 +55,10 @@ def register():
 
 
 def unregister():
-    from bpy.utils import unregister_class
+    from bpy.utils import register_class, unregister_class
 
     try:
         unregister_class(DATA_PT_modifiers)
+        register_class(original_DATA_PT_modifiers)
     except RuntimeError:
         pass
