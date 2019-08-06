@@ -26,6 +26,95 @@ from ..utils import (
 )
 
 
+# Utility functions
+#=======================================================================
+
+def is_modifier_disabled(mod):
+    """Checks if the name of the modifier should be diplayed with a red
+    background.
+    """
+    if mod.type == 'ARMATURE' and not mod.object:
+        return True
+
+    elif mod.type == 'BOOLEAN' and not mod.object:
+        return True
+
+    elif mod.type == 'CAST':
+        if not any((mod.use_x, mod.use_y, mod.use_z)) or mod.factor == 0:
+            return True
+
+    elif mod.type == 'CURVE' and not mod.object:
+        return True
+
+    elif mod.type == 'DATA_TRANSFER' and not mod.object:
+        return True
+
+    elif mod.type == 'DISPLACE':
+        if (mod.direction == 'RGB_TO_XYZ' and not mod.texture) or mod.strength == 0:
+            return True
+
+    elif mod.type == 'HOOK' and not mod.object:
+        return True
+
+    elif mod.type == 'LAPLACIANDEFORM' and not mod.vertex_group:
+        return True
+
+    elif mod.type == 'LAPLACIANSMOOTH':
+        if not any((mod.use_x, mod.use_y, mod.use_z)) or mod.lambda_factor == 0:
+            return True
+
+    elif mod.type == 'LATTICE' and not mod.object:
+        return True
+
+    elif mod.type == 'MESH_CACHE' and (not mod.filepath or mod.factor == 0):
+        return True
+
+    elif mod.type == 'MESH_DEFORM' and not mod.object:
+        return True
+
+    elif mod.type == 'MESH_SEQUENCE_CACHE' and (not mod.cache_file or not mod.object_path):
+        return True
+
+    elif mod.type == 'NORMAL_EDIT' and (mod.mode == 'DIRECTIONAL' and not mod.target):
+        return True
+
+    elif mod.type == 'PARTICLE_INSTANCE':
+        if not mod.object:
+            return True
+
+        if not mod.object.particle_systems:
+            return True
+        else:
+            for m in mod.object.modifiers:
+                if m.type == 'PARTICLE_SYSTEM' and m.particle_system == mod.particle_system:
+                    if not m.show_viewport:
+                        return True
+
+    elif mod.type == 'SHRINKWRAP' and not mod.target:
+        return True
+
+    elif mod.type == 'SMOOTH':
+        if not any((mod.use_x, mod.use_y, mod.use_z)) or mod.factor == 0:
+            return True
+
+    elif mod.type == 'SUBSURF' and mod.levels == 0:
+        return True
+
+    elif mod.type == 'SURFACE_DEFORM' and not mod.target:
+        return True
+
+    elif mod.type == 'VERTEX_WEIGHT_EDIT' and not mod.vertex_group:
+        return True
+
+    elif mod.type == 'VERTEX_WEIGHT_MIX' and not mod.vertex_group_a:
+        return True
+
+    elif mod.type == 'VERTEX_WEIGHT_PROXIMITY' and (not mod.vertex_group or not mod.target):
+        return True
+
+    return False
+
+
 # UI elements
 #=======================================================================
 
@@ -292,7 +381,10 @@ class OBJECT_UL_modifier_list(UIList):
 
         if self.layout_type in {'DEFAULT', 'COMPACT'}:
             if mod:
-                layout.label(text="", translate=False, icon_value=layout.icon(mod))
+                row = layout.row()
+                row.alert = is_modifier_disabled(mod)
+                row.label(text="", translate=False, icon_value=layout.icon(mod))
+
                 layout.prop(mod, "name", text="", emboss=False, icon_value=icon)
 
                 # Hide visibility toggles for collision modifier as they are not used
@@ -598,7 +690,9 @@ def modifiers_ui(context, layout, num_of_rows=False, use_in_popup=False):
 
     if not prefs.hide_general_settings_region:
         row = box.row()
+
         sub = row.row()
+        sub.alert = is_modifier_disabled(active_mod)
         sub.label(text="", icon=active_mod_icon)
         sub.prop(active_mod, "name", text="")
 
