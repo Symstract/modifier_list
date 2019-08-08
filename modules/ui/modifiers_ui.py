@@ -773,28 +773,22 @@ def modifiers_ui(context, layout, num_of_rows=False, use_in_popup=False):
     # Some mofifiers require a custom layout because otherwise their
     # operators don't work. Lattice on the other hand has an improved
     # layout.
-    if active_mod.type == 'CORRECTIVE_SMOOTH':
-        ml_modifier_layouts.CORRECTIVE_SMOOTH(col, ob, active_mod)
-    elif active_mod.type == 'DATA_TRANSFER':
-        ml_modifier_layouts.DATA_TRANSFER(col, ob, active_mod)
-    elif active_mod.type == 'EXPLODE':
-        ml_modifier_layouts.EXPLODE(col, ob, active_mod)
-    elif active_mod.type == 'HOOK':
-        ml_modifier_layouts.HOOK(col, ob, active_mod)
-    elif active_mod.type == 'LAPLACIANDEFORM':
-        ml_modifier_layouts.LAPLACIANDEFORM(col, ob, active_mod)
-    elif active_mod.type == 'LATTICE':
-        ml_modifier_layouts.LATTICE(col, ob, active_mod)
-    elif active_mod.type == 'MESH_DEFORM':
-        ml_modifier_layouts.MESH_DEFORM(col, ob, active_mod)
-    elif active_mod.type == 'MULTIRES':
-        ml_modifier_layouts.MULTIRES(col, ob, active_mod)
-    elif active_mod.type == 'OCEAN':
-        ml_modifier_layouts.OCEAN(col, ob, active_mod)
-    elif active_mod.type == 'SKIN':
-        ml_modifier_layouts.SKIN(col, ob, active_mod)
-    elif active_mod.type =='SURFACE_DEFORM':
-        ml_modifier_layouts.SURFACE_DEFORM(col, ob, active_mod)
+    have_custom_layout = (
+        'CORRECTIVE_SMOOTH',
+        'DATA_TRANSFER',
+        'EXPLODE',
+        'HOOK',
+        'LAPLACIANDEFORM',
+        'LATTICE',
+        'MESH_DEFORM',
+        'MULTIRES',
+        'OCEAN',
+        'SKIN',
+        'SURFACE_DEFORM'
+    )
+
+    if active_mod.type in have_custom_layout:
+        getattr(ml_modifier_layouts, active_mod.type)(col, ob, active_mod)
     else:
         mp = DATA_PT_modifiers(context)
         getattr(mp, active_mod.type)(col, ob, active_mod)

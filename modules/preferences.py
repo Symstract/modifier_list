@@ -56,8 +56,9 @@ class Preferences(AddonPreferences):
                              description="Color of the addon's custom icons", default="white",
                              update=reload_icons)
 
-    reverse_list: BoolProperty(name="Reverse List",
-                               description="Reverse the order of the list (requires restart)")
+    reverse_list: BoolProperty(
+        name="Reverse List",
+        description="Reverse the order of the list persistently (requires restart)")
 
     hide_general_settings_region: BoolProperty(
         name="Hide General Settings Region",
