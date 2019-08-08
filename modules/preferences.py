@@ -13,6 +13,7 @@ from .ui.properties_editor import register_DATA_PT_modifiers
 class Preferences(AddonPreferences):
     bl_idname = "modifier_list"
 
+    # === General settings ===
     use_popup: BoolProperty(name="Popup", description="Enable/disable popup", default=True)
 
     use_sidebar: BoolProperty(name="Sidebar",
@@ -46,6 +47,7 @@ class Preferences(AddonPreferences):
                                           description="Use icons in favourite modifier buttons",
                                           default=True)
 
+
     icon_color_items = [
         ("black", "Black", "", 1),
         ("white", "White", "", 2)
@@ -53,6 +55,9 @@ class Preferences(AddonPreferences):
     icon_color: EnumProperty(items=icon_color_items, name="Icon Color",
                              description="Color of the addon's custom icons", default="white",
                              update=reload_icons)
+
+    reverse_list: BoolProperty(name="Reverse List",
+                               description="Reverse the order of the list (requires restart)")
 
     hide_general_settings_region: BoolProperty(
         name="Hide General Settings Region",
@@ -65,6 +70,7 @@ class Preferences(AddonPreferences):
                     "and Remove All Modifiers operators",
         default=True)
 
+    # === Popup settings ===
     popup_width: IntProperty(name="Width",
                               description="Width of the popup, excluding the navigation bar",
                               default=300)
@@ -78,6 +84,7 @@ class Preferences(AddonPreferences):
         name="Use Dialog Type Popup",
         description="Use a dialog type popup which doesn't close when you are not hovering over it")
 
+    # === Gizmo object settings ===
     parent_new_gizmo_to_object: BoolProperty(
         name="Auto Parent Gizmos To Active Object",
         description="Automatically parent gizmos to the active object on addition")
@@ -151,6 +158,8 @@ class Preferences(AddonPreferences):
         split.label(text="Icon Color")
         row = split.row()
         row.prop(self, "icon_color", expand=True)
+
+        layout.prop(self, "reverse_list")
 
         layout.prop(self, "hide_general_settings_region")
         layout.prop(self, "show_confirmation_popups")

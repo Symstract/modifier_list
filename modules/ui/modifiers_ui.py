@@ -630,7 +630,8 @@ def modifiers_ui(context, layout, num_of_rows=False, use_in_popup=False):
 
     # === Modifier list ===
     layout.template_list("OBJECT_UL_modifier_list", "", ob, "modifiers",
-                         ob, "ml_modifier_active_index", rows=num_of_rows)
+                         ob, "ml_modifier_active_index", rows=num_of_rows,
+                         sort_reverse=prefs.reverse_list)
 
     # When sub.scale_x is 1.5 and the area/region is narrow, the buttons
     # don't align properly, so some manual work is needed.
@@ -667,9 +668,18 @@ def modifiers_ui(context, layout, num_of_rows=False, use_in_popup=False):
     sub.scale_x = sub_scale
     if not align_button_groups:
         sub.alignment = 'RIGHT'
-    sub.operator(OBJECT_OT_ml_modifier_move_up.bl_idname, icon='TRIA_UP', text="")
-    sub.operator(OBJECT_OT_ml_modifier_move_down.bl_idname, icon='TRIA_DOWN', text="")
-    sub.operator(OBJECT_OT_ml_modifier_remove.bl_idname, icon='REMOVE', text="")
+
+    move_up_icon = 'TRIA_DOWN' if prefs.reverse_list else 'TRIA_UP'
+    move_down_icon = 'TRIA_UP' if prefs.reverse_list else 'TRIA_DOWN'
+
+    if not prefs.reverse_list:
+        sub.operator("object.ml_modifier_move_up", icon=move_up_icon, text="")
+        sub.operator("object.ml_modifier_move_down", icon=move_down_icon, text="")
+    else:
+        sub.operator("object.ml_modifier_move_down", icon=move_down_icon, text="")
+        sub.operator("object.ml_modifier_move_up", icon=move_up_icon, text="")
+
+    sub.operator("object.ml_modifier_remove", icon='REMOVE', text="")
 
     # === Modifier settings ===
     if not ob.modifiers:
