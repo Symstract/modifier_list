@@ -19,9 +19,14 @@ class OBJECT_OT_ml_modifier_add(Operator):
     modifier_type: StringProperty()
 
     def execute(self, context):
+        ob = get_ml_active_object()
+
+        # Store initial active_index
+        init_active_mod_index = ob.ml_modifier_active_index
+
         # Make adding modifiers possible when an object is pinned
         override = context.copy()
-        override['object'] = get_ml_active_object()
+        override['object'] = ob
 
         try:
             bpy.ops.object.modifier_add(override, type=self.modifier_type)
@@ -32,8 +37,6 @@ class OBJECT_OT_ml_modifier_add(Operator):
                     break
             self.report({'ERROR'}, f"Cannot add {modifier_name} modifier for this object type")
             return {'FINISHED'}
-
-        ob = get_ml_active_object()
 
         # Enable auto smooth if modifier is weighted normal
         if self.modifier_type == 'WEIGHTED_NORMAL':
@@ -50,9 +53,20 @@ class OBJECT_OT_ml_modifier_add(Operator):
             if mod.type in have_gizmo_property or mod.type == 'UV_PROJECT':
                 assign_gizmo_object_to_modifier(self, context, mod.name)
 
+        # Move modifier into place
+        if self.insert_modifier_after_active:
+            times_to_move = mods_len - 1 - init_active_mod_index
+
+            for _ in range (times_to_move):
+                bpy.ops.object.ml_modifier_move_up()
+
         return {'FINISHED'}
 
     def invoke(self, context, event):
         self.add_gizmo = True if event.shift else False
+
+        ctrl = True if event.ctrl else False
+        prefs = bpy.context.preferences.addons["modifier_list"].preferences
+        self.insert_modifier_after_active = not ctrl if prefs.insert_modifier_after_active else ctrl
 
         return self.execute(context)

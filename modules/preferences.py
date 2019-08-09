@@ -47,11 +47,17 @@ class Preferences(AddonPreferences):
                                           description="Use icons in favourite modifier buttons",
                                           default=True)
 
-
     icon_color_items = [
         ("black", "Black", "", 1),
         ("white", "White", "", 2)
     ]
+
+    insert_modifier_after_active: BoolProperty(
+        name="Insert New Modifier After Active",
+        description="When adding a new modifier, insert it after the active one. \n"
+                    "Hold control to override this. (When off, the behaviour is reversed). \n"
+                    "NOTE: This is really slow on heavy meshes")
+
     icon_color: EnumProperty(items=icon_color_items, name="Icon Color",
                              description="Color of the addon's custom icons", default="white",
                              update=reload_icons)
@@ -155,13 +161,14 @@ class Preferences(AddonPreferences):
         # === General settings ===
         layout.label(text="General:")
 
+        layout.prop(self, "insert_modifier_after_active")
+
         split = layout.split()
         split.label(text="Icon Color")
         row = split.row()
         row.prop(self, "icon_color", expand=True)
 
         layout.prop(self, "reverse_list")
-
         layout.prop(self, "hide_general_settings_region")
         layout.prop(self, "show_confirmation_popups")
 
@@ -208,5 +215,5 @@ def get_pref_mod_attr_name():
     class for making drawing favourite modifier selection rows in
     preferences easy.
     """
-    attr_name_list = [attr for attr in Preferences.__annotations__ if "modifier_" in attr]
+    attr_name_list = [attr for attr in Preferences.__annotations__ if attr.startswith("modifier_")]
     return attr_name_list

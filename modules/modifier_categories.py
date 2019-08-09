@@ -17,7 +17,7 @@ def get_favourite_modifiers_names():
     """List of the names of the favourite modifiers"""
     prefs = bpy.context.preferences.addons["modifier_list"].preferences
     # get correct class attributes and then their values
-    attr_list = [attr for attr in dir(prefs) if "modifier_" in attr]
+    attr_list = [attr for attr in dir(prefs) if  attr.startswith("modifier_")]
     attr_value_list = [getattr(prefs, attr) for attr in attr_list]
     return attr_value_list
 
