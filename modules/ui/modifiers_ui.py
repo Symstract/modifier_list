@@ -257,18 +257,7 @@ def add_modifier(self, context):
         return None
 
     mod_type = wm.ml_mesh_modifiers[mod_name].value
-    bpy.ops.object.modifier_add(type=mod_type)
-
-    ob = get_ml_active_object()
-
-    # Enable auto smooth if modifier is weighted normal
-    if mod_type == 'WEIGHTED_NORMAL':
-        ob.data.use_auto_smooth = True
-
-    # Set correct active_mod index
-    mods = ob.modifiers
-    mods_len = len(mods) - 1
-    ob.ml_modifier_active_index = mods_len
+    bpy.ops.object.ml_modifier_add(modifier_type=mod_type)
 
     # Executing an operator via a function doesn't create an undo event,
     # so it needs to be added manually.

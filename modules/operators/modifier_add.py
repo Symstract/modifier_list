@@ -47,14 +47,27 @@ class OBJECT_OT_ml_modifier_add(Operator):
         mods_len = len(mods) - 1
         ob.ml_modifier_active_index = mods_len
 
-        # Add a gizmo object
+        # === Add a gizmo object ===
         mod = ob.modifiers[-1]
-        if self.add_gizmo and ob.type == 'MESH':
-            if mod.type in have_gizmo_property or mod.type == 'UV_PROJECT':
-                assign_gizmo_object_to_modifier(self, context, mod.name)
 
-        # Move modifier into place
-        if self.insert_modifier_after_active:
+        # Search doesn't call invoke, so check if self.add_gizmo exists
+        if hasattr(self, "add_gizmo"):
+            if self.add_gizmo and ob.type == 'MESH':
+                if mod.type in have_gizmo_property or mod.type == 'UV_PROJECT':
+                    assign_gizmo_object_to_modifier(self, context, mod.name)
+
+        # === Move modifier into place ===
+        # Search doesn't call invoke, so check if self.ctrl exists.
+        # If not, can't support overriding insert_modifier_after_active
+        # by holding control.
+        prefs = bpy.context.preferences.addons["modifier_list"].preferences
+
+        if hasattr(self, "ctrl"):
+            move = not self.ctrl if prefs.insert_modifier_after_active else self.ctrl
+        else:
+            move = prefs.insert_modifier_after_active
+
+        if move:
             times_to_move = mods_len - 1 - init_active_mod_index
 
             for _ in range (times_to_move):
@@ -64,9 +77,6 @@ class OBJECT_OT_ml_modifier_add(Operator):
 
     def invoke(self, context, event):
         self.add_gizmo = True if event.shift else False
-
-        ctrl = True if event.ctrl else False
-        prefs = bpy.context.preferences.addons["modifier_list"].preferences
-        self.insert_modifier_after_active = not ctrl if prefs.insert_modifier_after_active else ctrl
+        self.ctrl = True if event.ctrl else False
 
         return self.execute(context)
