@@ -50,7 +50,7 @@ def _create_vertex_group_from_vertices(object, vertex_indices, group_name):
 
 def _position_gizmo_object(gizmo_object, object):
     """Position a gizmo (empty) object at the active
-    object or at the selected vertex.
+    object or at the selected vertices.
     """
     ob = object
     ob_mat = ob.matrix_world
@@ -58,16 +58,18 @@ def _position_gizmo_object(gizmo_object, object):
 
     if ob.mode == 'EDIT':
         sel_verts = [v for v in mesh.vertices if v.select]
-        if len(sel_verts) == 1:
-            place_at_vertex = True
-            vert_loc = ob_mat @ sel_verts[0].co
+        if sel_verts:
+            place_at_verts = True
+            sel_verts_coords = [v.co for v in sel_verts]
+            average_vert_co = sum(sel_verts_coords,  Vector()) / len(sel_verts_coords)
+            global_average_vert_co = ob_mat @ average_vert_co
         else:
-            place_at_vertex = False
+            place_at_verts = False
     else:
-        place_at_vertex = False
+        place_at_verts = False
 
-    if place_at_vertex:
-        gizmo_object.location = vert_loc
+    if place_at_verts:
+        gizmo_object.location = global_average_vert_co
     else:
         gizmo_object.location = ob_mat.to_translation()
 
