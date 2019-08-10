@@ -76,6 +76,17 @@ class Preferences(AddonPreferences):
                     "and Remove All Modifiers operators",
         default=True)
 
+    batch_ops_reports_items = [
+        ("APPLY", "Apply", ""),
+        ("REMOVE", "Remove", ""),
+        ("TOGGLE_VISIBILITY", "Toggle visibility", "")
+    ]
+    batch_ops_reports: EnumProperty(items=batch_ops_reports_items,
+                                    name="Show Info Messages For",
+                                    description="Show batch operator info messages for",
+                                    default={'APPLY', 'REMOVE', 'TOGGLE_VISIBILITY'},
+                                    options={'ENUM_FLAG'})
+
     # === Popup settings ===
     popup_width: IntProperty(name="Width",
                               description="Width of the popup, excluding the navigation bar",
@@ -170,6 +181,11 @@ class Preferences(AddonPreferences):
         layout.prop(self, "reverse_list")
         layout.prop(self, "hide_general_settings_region")
         layout.prop(self, "show_confirmation_popups")
+
+        split = layout.split()
+        split.label(text="Show Info Messages For")
+        row = split.row()
+        row.prop(self, "batch_ops_reports", expand=True)
 
         layout.separator()
 

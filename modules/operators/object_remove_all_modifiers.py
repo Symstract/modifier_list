@@ -35,7 +35,10 @@ class OBJECT_OT_ml_remove_all_modifiers(Operator):
             self.report({'INFO'}, "No modifiers to remove")
             return {'CANCELLED'}
 
-        self.report({'INFO'}, "Removed all modifiers")
+        prefs = bpy.context.preferences.addons["modifier_list"].preferences
+
+        if 'REMOVE' in prefs.batch_ops_reports:
+            self.report({'INFO'}, "Removed all modifiers")
 
         return {'FINISHED'}
 

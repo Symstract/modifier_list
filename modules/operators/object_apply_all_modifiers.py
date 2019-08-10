@@ -71,7 +71,9 @@ class OBJECT_OT_ml_apply_all_modifiers(Operator):
                                       "console for a list of the objects.")
                 print(f"Some modifier(s) couldn't be applied on {failed_obs}")
         else:
-            self.report({'INFO'}, "Applied all modifiers")
+            prefs = bpy.context.preferences.addons["modifier_list"].preferences
+            if 'APPLY' in prefs.batch_ops_reports:
+                self.report({'INFO'}, "Applied all modifiers")
 
         return {'FINISHED'}
 

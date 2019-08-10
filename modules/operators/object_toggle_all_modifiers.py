@@ -26,6 +26,7 @@ class OBJECT_OT_ml_toggle_all_modifiers(Operator):
         sel_obs = context.selected_objects
 
         if not ml_act_ob.modifiers:
+            self.report({'INFO'}, "Active object has no modifiers")
             return {'CANCELLED'}
 
         obs = sel_obs.copy()
@@ -42,5 +43,11 @@ class OBJECT_OT_ml_toggle_all_modifiers(Operator):
                 # can apparently cause problems in some scenes.
                 if not mod.type == 'COLLISION':
                     mod.show_viewport = show_mods
+
+        prefs = bpy.context.preferences.addons["modifier_list"].preferences
+
+        if 'TOGGLE_VISIBILITY' in prefs.batch_ops_reports:
+            message = "Displaying all modifiers" if show_mods else "Hiding all modifiers"
+            self.report({'INFO'}, message)
 
         return {'FINISHED'}
