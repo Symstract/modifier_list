@@ -73,7 +73,7 @@ class Preferences(AddonPreferences):
 
     show_confirmation_popups: BoolProperty(
         name="Show Confirmation Popups",
-        description="Show confirmation popups when using Apply All Modifiers"
+        description="Show confirmation popups for Apply All Modifiers "
                     "and Remove All Modifiers operators",
         default=True)
 
