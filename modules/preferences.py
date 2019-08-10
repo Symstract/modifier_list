@@ -47,17 +47,16 @@ class Preferences(AddonPreferences):
                                           description="Use icons in favourite modifier buttons",
                                           default=True)
 
-    icon_color_items = [
-        ("black", "Black", "", 1),
-        ("white", "White", "", 2)
-    ]
-
     insert_modifier_after_active: BoolProperty(
         name="Insert New Modifier After Active",
         description="When adding a new modifier, insert it after the active one. \n"
                     "Hold control to override this. (When off, the behaviour is reversed). \n"
                     "NOTE: This is really slow on heavy meshes")
 
+    icon_color_items = [
+        ("black", "Black", "", 1),
+        ("white", "White", "", 2)
+    ]
     icon_color: EnumProperty(items=icon_color_items, name="Icon Color",
                              description="Color of the addon's custom icons", default="white",
                              update=reload_icons)
