@@ -14,7 +14,9 @@ class Preferences(AddonPreferences):
     bl_idname = "modifier_list"
 
     # === General settings ===
-    use_popup: BoolProperty(name="Popup", description="Enable/disable popup", default=True)
+    # Disabled for now because of a bug in 2.8.
+    # https://developer.blender.org/T60766
+    # use_popup: BoolProperty(name="Popup", description="Enable/disable popup", default=True)
 
     use_sidebar: BoolProperty(name="Sidebar",
                               description="Enable/disable the Sidebar tab", default=True)
