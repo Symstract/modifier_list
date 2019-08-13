@@ -12,6 +12,22 @@ from .icons import reload_icons
 from .ui.properties_editor import register_DATA_PT_modifiers
 
 
+def read_prefs(prefs_file):
+    if not os.path.exists(prefs_file) or not prefs_file.endswith(".json"):
+        return
+
+    prefs = bpy.context.preferences.addons["modifier_list"].preferences
+
+    with open(prefs_file) as f:
+        prefs_dict = json.load(f)
+
+        for prop in prefs_dict.keys():
+            if prop in prefs.__annotations__:
+                value = prefs_dict[prop]
+                ensured_value = set(value) if type(value) is list else value
+                setattr(prefs, prop, ensured_value)
+
+
 class Preferences(AddonPreferences):
     bl_idname = "modifier_list"
 
@@ -123,6 +139,12 @@ class Preferences(AddonPreferences):
 
     def draw(self, context):
         layout = self.layout
+
+        # === Import ===
+        filepath = os.path.dirname(bpy.utils.resource_path('USER')) + os.path.sep
+        layout.operator("wm.ml_preferences_import").filepath=filepath
+
+        layout.separator()
 
         # === Enable/disable popup and sidebar
         row = layout.row()
@@ -275,22 +297,10 @@ def register():
     # === Read preferences from a json ===
     config_dir = bpy.utils.user_resource('CONFIG')
     prefs_file = os.path.join(config_dir, "modifier_list", "preferences.json")
-
-    if not os.path.exists(prefs_file):
-        return
-
-    prefs = bpy.context.preferences.addons["modifier_list"].preferences
-
-    with open(prefs_file) as f:
-        prefs_dict = json.load(f)
-
-        for prop in prefs_dict.keys():
-            if prop in prefs.__annotations__:
-                value = prefs_dict[prop]
-                ensured_value = set(value) if type(value) is list else value
-                setattr(prefs, prop, ensured_value)
+    read_prefs(prefs_file)
 
     # === Subscribe to prefs ===
+    prefs = bpy.context.preferences.addons["modifier_list"].preferences
     subscribe_to_prefs(prefs)
 
 
