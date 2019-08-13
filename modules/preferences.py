@@ -1,4 +1,6 @@
+import json
 import math
+import os
 
 import bpy
 import addon_utils
@@ -234,3 +236,68 @@ def get_pref_mod_attr_name():
     """
     attr_name_list = [attr for attr in Preferences.__annotations__ if attr.startswith("modifier_")]
     return attr_name_list
+
+
+def write_prefs():
+    # === Write preferences into a json ===
+    prefs = bpy.context.preferences.addons["modifier_list"].preferences
+
+    prefs_dict = {}
+
+    for prop in prefs.__annotations__:
+        value = getattr(prefs, prop)
+        ensured_value = list(value) if type(value) is set else value
+        prefs_dict[prop] = ensured_value
+
+    config_dir = bpy.utils.user_resource('CONFIG')
+    ml_config_dir = os.path.join(config_dir, "modifier_list")
+
+    if not os.path.exists(ml_config_dir):
+        os.mkdir(ml_config_dir)
+
+    prefs_file = os.path.join(ml_config_dir, "preferences.json")
+
+    with open(prefs_file, 'w', encoding='utf-8') as f:
+        json.dump(prefs_dict, f, ensure_ascii=False, indent=4)
+
+
+def subscribe_to_prefs(prefs):
+    bpy.msgbus.subscribe_rna(
+        key=prefs,
+        owner=prefs,
+        args=(),
+        notify=write_prefs,
+        options={'PERSISTENT'}
+    )
+
+
+def register():
+    # === Read preferences from a json ===
+    config_dir = bpy.utils.user_resource('CONFIG')
+    prefs_file = os.path.join(config_dir, "modifier_list", "preferences.json")
+
+    if not os.path.exists(prefs_file):
+        return
+
+    prefs = bpy.context.preferences.addons["modifier_list"].preferences
+
+    with open(prefs_file) as f:
+        prefs_dict = json.load(f)
+
+        for prop in prefs_dict.keys():
+            if prop in prefs.__annotations__:
+                value = prefs_dict[prop]
+                ensured_value = set(value) if type(value) is list else value
+                setattr(prefs, prop, ensured_value)
+
+    # === Subscribe to prefs ===
+    subscribe_to_prefs(prefs)
+
+
+def unregister():
+    # === Write preferences into a json ===
+    write_prefs()
+
+    # === Unsubscribe to prefs ===
+    prefs = bpy.context.preferences.addons["modifier_list"].preferences
+    bpy.msgbus.clear_by_owner(prefs)

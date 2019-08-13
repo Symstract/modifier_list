@@ -35,7 +35,10 @@ def register_DATA_PT_modifiers(self, context):
     use_properties_editor = prefs.use_properties_editor
 
     if use_properties_editor:
-        register_class(DATA_PT_modifiers)
+        try:
+            register_class(DATA_PT_modifiers)
+        except ValueError:
+            pass
     else:
         try:
             unregister_class(DATA_PT_modifiers)
@@ -51,7 +54,10 @@ def register():
     if use_properties_editor:
         from bpy.utils import register_class
 
-        register_class(DATA_PT_modifiers)
+        try:
+            register_class(DATA_PT_modifiers)
+        except ValueError:
+            pass
 
 
 def unregister():

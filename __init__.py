@@ -73,7 +73,8 @@ def unregister():
 
     from .addon_registration import unregister_bl_classes, call_unregister
 
+    call_unregister("modules")
+
     unregister_bl_classes(addon_name_for_counter=bl_info["name"])
 
-    call_unregister("modules")
 
