@@ -1,5 +1,23 @@
 # Changelog
 
+## 1.4 - 14.8.2019
+
+### New Features and Changes
+
+- **Preferences are now auto saved into your Blender config folder**, eg: "...\AppData\Roaming\Blender Foundation\Blender\ < blender version > \config\modifier_list\preferences.json"
+  - Preferences from another version can be imported using the "Import Preferences" operator
+  - This means installing a new version or disabling this addon will no longer make you lose your settings
+- **Gizmos are now placed at the average location of the selected elements in edit mode.**
+- **New modifiers can now be inserted after the active one** by enabling the "Insert New Modifier After Active" setting.
+  - Hold control to override this. (When off, the behaviour is reversed).
+  - Modifier search doesn't support overriding
+  - This is really slow on heavy meshes.
+- **The order of the list can now be reversed persistently** by enabling the "Reverse List" setting.
+- **Disabled modifiers (eg. Boolean with no object assigned) now have their icon shown in red inside the list as well as their name field inside the settings region.**
+- **Remesh Modifier in Pablo Dobarro's sculpting branch is now fully supported**
+-  **You can now choose which batch operator's show info messages**
+
+
 ## 1.3.1 - 13.7.2019
 
 - Fixed Multiresolution modifier missing its layout
