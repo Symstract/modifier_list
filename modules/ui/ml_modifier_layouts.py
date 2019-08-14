@@ -433,6 +433,92 @@ def OCEAN(layout, _ob, md):
     col = split.column()
 
 
+def REMESH(layout, _ob, md):
+    # Layout for sculpt-mode-features branch
+
+    if not bpy.app.build_options.mod_remesh:
+        layout.label(text="Built without Remesh modifier")
+        return
+
+    layout.prop(md, "mode")
+
+    if md.mode not in {'VOXEL', 'QUAD'}:
+        row = layout.row()
+        row.prop(md, "octree_depth")
+        row.prop(md, "scale")
+
+    if md.mode == 'SHARP':
+        layout.prop(md, "sharpness")
+
+    if md.mode == 'VOXEL':
+        col = layout.column(align=True)
+        col.prop(md, "voxel_size")
+        col.prop(md, "isovalue")
+        col.prop(md, "adaptivity")
+        layout.prop(md, "filter_type")
+        if md.filter_type != "NONE":
+            layout.prop(md, "filter_bias")
+            if md.filter_type in {"GAUSSIAN", "MEDIAN", "MEAN"}:
+                layout.prop(md, "filter_width")
+            if md.filter_type in {"DILATE", "ERODE"}:
+                layout.prop(md, "filter_offset_distance")
+        row = layout.row()
+        row.prop(md, "live_remesh")
+        row.prop(md, "smooth_normals")
+        row = layout.row()
+        row.prop(md, "relax_triangles")
+        row.prop(md, "reproject_vertex_paint")
+        layout.label(text="CSG Operands")
+        layout.operator("remesh.csg_add", text="", icon="ADD").modifier = md.name # Changed
+        for i,csg in enumerate(md.csg_operands):
+            box = layout.box()
+            row = box.row(align=True)
+            icon = "HIDE_ON"
+            if csg.enabled:
+                icon = "HIDE_OFF"
+            row.prop(csg, "enabled", text="", icon=icon, emboss=True)
+            row.prop(csg, "object", text="")
+            row.prop(csg, "operation", text="")
+            row = box.row(align=True)
+            icon = "RESTRICT_VIEW_ON"
+            if csg.sync_voxel_size:
+                icon = "RESTRICT_VIEW_OFF"
+            row.prop(csg, "use_voxel_percentage", text="", icon='CANCEL', emboss=True)
+            if not csg.use_voxel_percentage:
+                row.prop(csg, "sync_voxel_size", text="", icon=icon, emboss=True)
+                row.prop(csg, "voxel_size")
+            else:
+                row.prop(csg, "voxel_percentage")
+            row.prop(csg, "sampler", text="")
+
+            # Changed:
+            csg_remove = row.operator("remesh.csg_remove", text="", icon="REMOVE")
+            csg_remove.modifier = md.name
+            csg_remove.index = i
+
+            csg_move_up = row.operator("remesh.csg_move_up", text="", icon="TRIA_UP")
+            csg_move_up.modifier = md.name
+            csg_move_up.index = i
+
+            csg_move_down = row.operator("remesh.csg_move_down", text="", icon="TRIA_DOWN")
+            csg_move_down.modifier = md.name
+            csg_move_down.index = i
+    elif md.mode == 'QUAD':
+        col = layout.column(align=True)
+        col.prop(md, "gradient_size")
+        col.prop(md, "stiffness")
+        col.prop(md, "iterations")
+        row = layout.row()
+        row.prop(md, "live_remesh")
+        row.prop(md, "direct_round")
+    else:
+        layout.prop(md, "use_smooth_shade")
+        layout.prop(md, "use_remove_disconnected")
+        row = layout.row()
+        row.active = md.use_remove_disconnected
+        row.prop(md, "threshold")
+
+
 def SKIN(layout, _ob, md):
     row = layout.row()
     row.operator("object.skin_armature_create", text="Create Armature").modifier = md.name # Changed
