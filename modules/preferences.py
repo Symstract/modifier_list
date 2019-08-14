@@ -205,6 +205,15 @@ class Preferences(AddonPreferences):
     def draw(self, context):
         layout = self.layout
 
+        # === Info ===
+        col = layout.column()
+        col.label(icon='INFO',
+                  text="Preferences are auto saved into your Blender config folder, eg:")
+        col.label(text="      '...\Blender Foundation\Blender\<blender version>"
+                       "\config\modifier_list\preferences.json'")
+
+        layout.separator()
+
         # === Import ===
         filepath = os.path.dirname(bpy.utils.resource_path('USER')) + os.path.sep
         layout.operator("wm.ml_preferences_import").filepath=filepath
