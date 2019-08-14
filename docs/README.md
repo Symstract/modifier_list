@@ -63,7 +63,7 @@ Default hotkey is **Alt + Space**. Inside the keymap editor, you can find it und
 ## Preferences are auto saved into your Blender config folder
 - Example path: "...\AppData\Roaming\Blender Foundation\Blender\ < blender version > \config\modifier_list\preferences.json"
 - Preferences from another version can be imported using the "Import Preferences" operator
-- This means installing a new version or disabling this addon won't make you lose your settings
+- This means disabling Modifier List won't make you lose your settings
 
 ## Installation
 

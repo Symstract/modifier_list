@@ -6,7 +6,7 @@
 
 - **Preferences are now auto saved into your Blender config folder**, eg: "...\AppData\Roaming\Blender Foundation\Blender\ < blender version > \config\modifier_list\preferences.json"
   - Preferences from another version can be imported using the "Import Preferences" operator
-  - This means installing a new version or disabling this addon will no longer make you lose your settings
+  - This means disabling this addon will no longer make you lose your settings
 - **Gizmos are now placed at the average location of the selected elements in edit mode.**
 - **New modifiers can now be inserted after the active one** by enabling the "Insert New Modifier After Active" setting.
   - Hold control to override this. (When off, the behaviour is reversed).
