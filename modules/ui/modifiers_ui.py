@@ -711,8 +711,10 @@ def modifiers_ui(context, layout, num_of_rows=False, use_in_popup=False):
 
     if active_mod.type == 'PARTICLE_SYSTEM':
         ps = active_mod.particle_system
-        if ps.settings.render_type in {'COLLECTION', 'OBJECT', 'PATH'}:
+        if ps.settings.render_type in {'COLLECTION', 'OBJECT'}:
             sub.operator("object.duplicates_make_real", text="Convert")
+        elif ps.settings.render_type == 'PATH':
+            sub.operator("object.modifier_convert", text="Convert").modifier=active_mod.name
     else:
         sub.scale_x = 5
         icon = pcoll['APPLY_MODIFIER']
