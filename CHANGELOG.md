@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.4.1 - 25.8.2019
+
+- Fixed converting particles to mesh not working if render type is "Path"
+- Fixed only Remesh modifier working in sculpting branch
+
 ## 1.4 - 14.8.2019
 
 ### New Features and Changes
