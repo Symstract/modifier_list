@@ -780,7 +780,7 @@ def modifiers_ui(context, layout, num_of_rows=False, use_in_popup=False):
 
     if active_mod.type in have_custom_layout:
         getattr(ml_modifier_layouts, active_mod.type)(col, ob, active_mod)
-    elif str(bpy.app.build_branch) == "b'sculpt-mode-features'":
+    elif active_mod.type == 'REMESH' and str(bpy.app.build_branch) == "b'sculpt-mode-features'":
         ml_modifier_layouts.REMESH(col, ob, active_mod)
     else:
         mp = DATA_PT_modifiers(context)
