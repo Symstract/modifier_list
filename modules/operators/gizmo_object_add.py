@@ -9,7 +9,9 @@ class OBJECT_OT_ml_gizmo_object_add(Operator):
     bl_label = "Add Gizmo"
     bl_description = ("Add a gizmo object to the modifier.\n"
                       "\n"
-                      "• When a single vertex is selected, the gizmo is placed at the vertex location.\n"
+                      "• In Edit Mode, if there is a selection, the gizmo is placed at the"
+                      "average\n"
+                      "   location of the selected elements.\n"
                       "• When holding shift, the gizmo is placed at the 3D Cursor")
     bl_options = {'REGISTER', 'INTERNAL', 'UNDO'}
 

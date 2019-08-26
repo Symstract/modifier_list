@@ -12,8 +12,8 @@ class OBJECT_OT_ml_modifier_add(Operator):
     bl_description = ("Add a procedural operation/effect to the active object\n"
                      "\n"
                      "Hold shift to add the modifier with a gizmo object (for certain modifiers).\n"
-                     "When a single vertex is selected, the gizmo is placed at the vertex location.\n"
-                     "NOTE: This is only for meshes")
+                     "In Edit Mode, if there is a selection, the gizmo is placed at the average\n"
+                     "location of the selected elements.\n")
     bl_options = {'REGISTER', 'INTERNAL', 'UNDO'}
 
     modifier_type: StringProperty()
