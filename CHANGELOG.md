@@ -1,5 +1,13 @@
 # Changelog
 
+## 1.4.1 - 26.8.2019
+
+- Fixed converting particles to mesh not working if render type is "Path"
+- Fixed only Remesh modifier working in the sculpting branch
+- Fixed Hook Gizmo having parent transformation applied
+- Fixed error when removing a modifier and its gizmo from a pinned object if there's no active object
+- Some tooltip fixes
+
 ## 1.4 - 14.8.2019
 
 ### New Features and Changes
