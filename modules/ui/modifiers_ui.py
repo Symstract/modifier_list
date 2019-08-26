@@ -440,7 +440,7 @@ class ModifierListActions:
                     # utilised here, so we can return into the correct
                     # mode after deleting a lattice in lattice edit
                     # mode.
-                    if ob.type == 'LATTICE':
+                    if ob and ob.type == 'LATTICE':
                         if context.area.type == 'PROPERTIES':
                             if lattice_toggle_editmode_prop_editor.init_mode == 'EDIT_MESH':
                                 switch_into_editmode = True
