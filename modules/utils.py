@@ -338,19 +338,28 @@ def assign_gizmo_object_to_modifier(self, context, modifier, place_at_cursor=Fal
         mod.use_relative_offset = False
         mod.use_object_offset = True
 
+    if parent_gizmo:
+        gizmo_ob.parent = ob
+        gizmo_ob.matrix_parent_inverse = ob.matrix_world.inverted()
+
+        # Make sure modifiers use the updated transformation
+        # (needed at least for Hook)
+        bpy.context.view_layer.update()
+
     gizmo_ob_prop = have_gizmo_property[mod.type]
 
     setattr(mod, gizmo_ob_prop, gizmo_ob)
+
+    # If gizmo is parented in edit mode, Hook has wrong tranformation
+    # if it isn't explicitly reset here.
+    if mod.type == 'HOOK' and ob.mode == 'EDIT':
+        bpy.ops.object.hook_reset(modifier=mod.name)
 
     if mod.type == 'LATTICE':
         if context.area.type == 'PROPERTIES':
             bpy.ops.object.lattice_toggle_editmode_prop_editor()
         else:
             bpy.ops.object.lattice_toggle_editmode()
-
-    if parent_gizmo:
-        gizmo_ob.parent = ob
-        gizmo_ob.matrix_parent_inverse = ob.matrix_world.inverted()
 
 
 # Other gizmo functions
