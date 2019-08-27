@@ -25,6 +25,8 @@ from ..utils import (
     get_vertex_group,
 )
 
+from gpu_extras.batch import batch_for_shader
+import gpu
 
 # Utility functions
 #=======================================================================
@@ -365,14 +367,16 @@ class LATTICE_MT_ml_add_modifier_menu(Menu):
 
 class OBJECT_UL_modifier_list(UIList):
 
-    def draw_item(self, context, layout, data, item, icon, active_data, active_propname):
+    def draw_item(self, context, layout, data, item, icon, active_data, active_propname, index):
         mod = item
 
         if self.layout_type in {'DEFAULT', 'COMPACT'}:
             if mod:
                 row = layout.row()
                 row.alert = is_modifier_disabled(mod)
-                row.label(text="", translate=False, icon_value=layout.icon(mod))
+                dd = row.operator("object.ml_modifier_mouse_drag", icon_value=layout.icon(mod),
+                    text="", emboss=False)
+                dd.index = index
 
                 layout.prop(mod, "name", text="", emboss=False, icon_value=icon)
 
@@ -498,6 +502,199 @@ class OBJECT_OT_ml_modifier_remove(Operator, ModifierListActions):
                      "Hold shift to also delete its gizmo object (if it has one)")
 
     action = 'REMOVE'
+
+
+class OBJECT_OT_ml_modifier_mouse_drag(Operator):
+    """ Drag & drop operator """
+    bl_idname = "object.ml_modifier_mouse_drag"
+    bl_label = "Mouse drag operator"
+
+    x: bpy.props.IntProperty()
+    y: bpy.props.IntProperty()
+
+    index: bpy.props.IntProperty()
+
+    def __init__(self):
+        print("Drag start")
+        self.draw_handle = None
+        self.draw_event = None
+        self.widgets = []
+
+        self.vertex_shader = '''
+            in vec3 pos;
+
+            uniform int height;
+            uniform int width;
+
+            uniform float x;
+            uniform float y;
+
+            void main()
+            {
+                vec3 minus_one = vec3(-1.0, -1.0, 0.0);
+                vec3 add_pos = vec3(x, height-y, 0.0);
+                vec3 dims = vec3(width/2, height/2, 1.0);
+                gl_Position = vec4((pos+add_pos)/dims + minus_one, 1.0f);
+            }
+        '''
+
+        self.fragment_shader = '''
+            void main()
+            {
+                gl_FragColor = vec4(1.0);
+            }
+        '''
+
+    def __del__(self):
+        print("Drag end")
+
+    def execute(self, context):
+        # print("Mouse coords are %d %d" % (self.x, self.y))
+        # print(self.index + int(self.y) // 22)
+        return {'FINISHED'}
+
+    def modal(self, context, event):
+        if context.area:
+            context.area.tag_redraw()
+
+        if event.type == 'MOUSEMOVE':
+            self.x = event.mouse_x - self.area_x
+            self.y = self.area_height - (event.mouse_y - self.area_y)
+            # self.execute(context)
+        elif event.type in {'LEFTMOUSE'}:
+            print("selected move:", self.selected_location)
+            self.unregister_handlers(context)
+
+            # prefs = bpy.context.preferences.addons["modifier_list"].preferences
+            ml_active_ob = get_ml_active_object()
+
+            # Make using operators possible when an object is pinned
+            override = context.copy()
+            override['object'] = ml_active_ob
+
+            mods = ml_active_ob.modifiers
+            mods_len = len(mods) - 1
+            active_mod_index = self.index
+
+            if self.selected_location - 1 > mods_len:
+                self.selected_location = mods_len + 1
+
+            if self.selected_location < 0:
+                return {'FINISHED'}
+
+            if mods:
+                active_mod = ml_active_ob.modifiers[active_mod_index]
+                active_mod_name = active_mod.name
+
+                if self.selected_location < self.index:
+                    if ml_active_ob.ml_modifier_active_index == self.index:
+                        ml_active_ob.ml_modifier_active_index = self.selected_location
+                    else:
+                        a_index = ml_active_ob.ml_modifier_active_index
+                        m_dn = (a_index < self.index) and (a_index >= self.selected_location)
+                        if m_dn:
+                            ml_active_ob.ml_modifier_active_index += 1
+
+                    for _ in range(self.index - self.selected_location):
+                        bpy.ops.object.modifier_move_up(override, modifier=active_mod_name)
+
+                elif self.selected_location > self.index + 1:
+                    if ml_active_ob.ml_modifier_active_index == self.index:
+                        ml_active_ob.ml_modifier_active_index = self.selected_location - 1
+                    else:
+                        a_index = ml_active_ob.ml_modifier_active_index
+                        m_up = (a_index > self.index) and (a_index < self.selected_location)
+                        if m_up:
+                            ml_active_ob.ml_modifier_active_index -= 1
+
+                    for _ in range(self.selected_location - (self.index + 1)):
+                        bpy.ops.object.modifier_move_down(override, modifier=active_mod_name)
+
+            return {'FINISHED'}
+        elif event.type in {'ESC', 'RIGHTMOUSE'}:
+            self.unregister_handlers(context)
+            return {'CANCELLED'}
+
+        return {'RUNNING_MODAL'}
+
+    def invoke(self, context, event):
+        # TODO: doesn't handle resolution scale
+        #       resolution scale does not appear to be completely linear
+        #       have to approximate
+        # TODO: offset for list index when list is scrollable
+        # TODO: context.area.width etc doesn't have to be in operator params
+
+        prefs = bpy.context.preferences.addons["modifier_list"].preferences
+        fav_names_icons_types_iter = modifier_categories.favourite_modifiers_names_icons_types()
+        step = 3 if prefs.favourites_per_row == '3' else 2
+        num_favs = len(list(i for i in fav_names_icons_types_iter if i[0]))
+        rows = math.ceil(num_favs / step)
+        print("rows:", rows, step, num_favs)
+        print("picked:", self.index)
+
+        self.area_x = context.region.x
+        self.area_y = context.region.y
+        self.area_height = context.region.height
+        self.area_width = context.region.width
+
+        # 1.06 = 21, 44
+        # 1.00 = 20, 43
+        # 1.50 = 30, 63
+
+        # height of one list item in pixels
+        ui_scale = context.preferences.system.ui_scale
+        self.step_size = int(21 * ui_scale)
+
+        # location of first list item in pixels
+        self.start_offset = self.step_size * rows + int(42 * ui_scale)
+
+        # finally read this value to know where to put the list item
+        self.selected_location = 0
+
+        self.x = event.mouse_x - self.area_x
+        self.y = self.area_height - (event.mouse_y - self.area_y)
+
+        self.create_batch()
+        args = (self, context)
+        self.register_handlers(args, context)
+
+        print(self.area_width, self.area_height)
+
+        context.window_manager.modal_handler_add(self)
+        return {'RUNNING_MODAL'}
+
+    def register_handlers(self, args, context):
+        self.draw_handle = bpy.types.SpaceProperties.draw_handler_add(
+            self.draw_callback_px, args, "WINDOW", "POST_PIXEL"
+        )
+        self.draw_event = context.window_manager.event_timer_add(0.1, window=context.window)
+
+    def unregister_handlers(self, context):
+        context.window_manager.event_timer_remove(self.draw_event)
+        bpy.types.SpaceProperties.draw_handler_remove(self.draw_handle, "WINDOW")
+        self.draw_handle = None
+        self.draw_event = None
+
+    def create_batch(self):
+        aw = self.area_width - 24
+        vertices = [(0, 0, 0), (aw, 0, 0), (aw, 1, 0), (0, 1, 0)]
+        self.shader = gpu.types.GPUShader(self.vertex_shader, self.fragment_shader)
+        self.batch = batch_for_shader(self.shader, 'LINE_STRIP', {"pos": vertices})
+
+    def draw_callback_px(self, op, context):
+        y_loc = self.y + self.step_size // 2
+        if y_loc < self.start_offset:
+            y_loc = self.start_offset
+
+        self.selected_location = (y_loc - self.start_offset) // self.step_size
+
+        self.shader.bind()
+        self.shader.uniform_int("width", self.area_width)
+        self.shader.uniform_int("height", self.area_height)
+        assert self.area_width > 0 and self.area_height > 0
+        self.shader.uniform_float("x", 12)
+        self.shader.uniform_float("y", self.start_offset + self.selected_location * self.step_size)
+        self.batch.draw(self.shader)
 
 
 class OBJECT_PT_Gizmo_object_settings(Panel):
