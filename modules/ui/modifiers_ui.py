@@ -374,9 +374,13 @@ class OBJECT_UL_modifier_list(UIList):
             if mod:
                 row = layout.row()
                 row.alert = is_modifier_disabled(mod)
-                dd = row.operator("object.ml_modifier_mouse_drag", icon_value=layout.icon(mod),
-                    text="", emboss=False)
-                dd.index = index
+                if self.use_filter_sort_alpha or self.use_filter_sort_reverse:
+                    # currently D&D only supported if no filters enabled
+                    row.label(text="", translate=False, icon_value=layout.icon(mod))
+                else:
+                    dd = row.operator("object.ml_modifier_mouse_drag", icon_value=layout.icon(mod),
+                        text="", emboss=False)
+                    dd.index = index
 
                 layout.prop(mod, "name", text="", emboss=False, icon_value=icon)
 
