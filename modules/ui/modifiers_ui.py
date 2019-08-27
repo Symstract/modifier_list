@@ -586,6 +586,7 @@ class OBJECT_OT_ml_modifier_mouse_drag(Operator):
                 active_mod = ml_active_ob.modifiers[active_mod_index]
                 active_mod_name = active_mod.name
 
+                # move up
                 if self.selected_location < self.index:
                     if ml_active_ob.ml_modifier_active_index == self.index:
                         ml_active_ob.ml_modifier_active_index = self.selected_location
@@ -598,6 +599,7 @@ class OBJECT_OT_ml_modifier_mouse_drag(Operator):
                     for _ in range(self.index - self.selected_location):
                         bpy.ops.object.modifier_move_up(override, modifier=active_mod_name)
 
+                # move down
                 elif self.selected_location > self.index + 1:
                     if ml_active_ob.ml_modifier_active_index == self.index:
                         ml_active_ob.ml_modifier_active_index = self.selected_location - 1
@@ -621,8 +623,6 @@ class OBJECT_OT_ml_modifier_mouse_drag(Operator):
         # TODO: doesn't handle resolution scale
         #       resolution scale does not appear to be completely linear
         #       have to approximate
-        # TODO: offset for list index when list is scrollable
-        # TODO: context.area.width etc doesn't have to be in operator params
 
         prefs = bpy.context.preferences.addons["modifier_list"].preferences
         fav_names_icons_types_iter = modifier_categories.favourite_modifiers_names_icons_types()
@@ -637,13 +637,19 @@ class OBJECT_OT_ml_modifier_mouse_drag(Operator):
         self.area_height = context.region.height
         self.area_width = context.region.width
 
+        self.list_offset = 0
+
         # 1.06 = 21, 44
         # 1.00 = 20, 43
         # 1.50 = 30, 63
 
         # height of one list item in pixels
         ui_scale = context.preferences.system.ui_scale
-        self.step_size = int(21 * ui_scale)
+        row_scale = ui_scale
+        if row_scale < 1.00:
+            row_scale = math.pow(row_scale, 0.4)
+
+        self.step_size = int(20 * row_scale)
 
         # location of first list item in pixels
         self.start_offset = self.step_size * rows + int(42 * ui_scale)
@@ -651,8 +657,12 @@ class OBJECT_OT_ml_modifier_mouse_drag(Operator):
         # finally read this value to know where to put the list item
         self.selected_location = 0
 
+        # calculate self.list_offset if list has been scrolled
         self.x = event.mouse_x - self.area_x
         self.y = self.area_height - (event.mouse_y - self.area_y)
+
+        self.list_offset = self.index - (self.y - self.start_offset) // self.step_size
+        print("offset:", self.list_offset)
 
         self.create_batch()
         args = (self, context)
@@ -686,14 +696,15 @@ class OBJECT_OT_ml_modifier_mouse_drag(Operator):
         if y_loc < self.start_offset:
             y_loc = self.start_offset
 
-        self.selected_location = (y_loc - self.start_offset) // self.step_size
+        line_loc = (y_loc - self.start_offset) // self.step_size
+        self.selected_location = line_loc + self.list_offset
 
         self.shader.bind()
         self.shader.uniform_int("width", self.area_width)
         self.shader.uniform_int("height", self.area_height)
         assert self.area_width > 0 and self.area_height > 0
         self.shader.uniform_float("x", 12)
-        self.shader.uniform_float("y", self.start_offset + self.selected_location * self.step_size)
+        self.shader.uniform_float("y", self.start_offset + line_loc * self.step_size)
         self.batch.draw(self.shader)
 
 
