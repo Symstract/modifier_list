@@ -6,7 +6,13 @@ import addon_utils
 from bl_ui.properties_data_modifier import DATA_PT_modifiers
 from bpy.app.handlers import persistent
 from bpy.props import *
-from bpy.types import Menu, Operator, Panel, PropertyGroup, UIList
+from bpy.types import (
+    Menu,
+    Operator,
+    Panel,
+    PropertyGroup,
+    UIList
+)
 
 from . import ml_modifier_layouts
 from .. import icons, modifier_categories
@@ -59,52 +65,52 @@ def is_modifier_disabled(mod):
     """Checks if the name of the modifier should be diplayed with a red
     background.
     """
-    if mod.type == "ARMATURE" and not mod.object:
+    if mod.type == 'ARMATURE' and not mod.object:
         return True
 
-    elif mod.type == "BOOLEAN" and not mod.object:
+    elif mod.type == 'BOOLEAN' and not mod.object:
         return True
 
-    elif mod.type == "CAST":
+    elif mod.type == 'CAST':
         if not any((mod.use_x, mod.use_y, mod.use_z)) or mod.factor == 0:
             return True
 
-    elif mod.type == "CURVE" and not mod.object:
+    elif mod.type == 'CURVE' and not mod.object:
         return True
 
-    elif mod.type == "DATA_TRANSFER" and not mod.object:
+    elif mod.type == 'DATA_TRANSFER' and not mod.object:
         return True
 
-    elif mod.type == "DISPLACE":
-        if (mod.direction == "RGB_TO_XYZ" and not mod.texture) or mod.strength == 0:
+    elif mod.type == 'DISPLACE':
+        if (mod.direction == 'RGB_TO_XYZ' and not mod.texture) or mod.strength == 0:
             return True
 
-    elif mod.type == "HOOK" and not mod.object:
+    elif mod.type == 'HOOK' and not mod.object:
         return True
 
-    elif mod.type == "LAPLACIANDEFORM" and not mod.vertex_group:
+    elif mod.type == 'LAPLACIANDEFORM' and not mod.vertex_group:
         return True
 
-    elif mod.type == "LAPLACIANSMOOTH":
+    elif mod.type == 'LAPLACIANSMOOTH':
         if not any((mod.use_x, mod.use_y, mod.use_z)) or mod.lambda_factor == 0:
             return True
 
-    elif mod.type == "LATTICE" and not mod.object:
+    elif mod.type == 'LATTICE' and not mod.object:
         return True
 
-    elif mod.type == "MESH_CACHE" and (not mod.filepath or mod.factor == 0):
+    elif mod.type == 'MESH_CACHE' and (not mod.filepath or mod.factor == 0):
         return True
 
-    elif mod.type == "MESH_DEFORM" and not mod.object:
+    elif mod.type == 'MESH_DEFORM' and not mod.object:
         return True
 
-    elif mod.type == "MESH_SEQUENCE_CACHE" and (not mod.cache_file or not mod.object_path):
+    elif mod.type == 'MESH_SEQUENCE_CACHE' and (not mod.cache_file or not mod.object_path):
         return True
 
-    elif mod.type == "NORMAL_EDIT" and (mod.mode == "DIRECTIONAL" and not mod.target):
+    elif mod.type == 'NORMAL_EDIT' and (mod.mode == 'DIRECTIONAL' and not mod.target):
         return True
 
-    elif mod.type == "PARTICLE_INSTANCE":
+    elif mod.type == 'PARTICLE_INSTANCE':
         if not mod.object:
             return True
 
@@ -112,38 +118,37 @@ def is_modifier_disabled(mod):
             return True
         else:
             for m in mod.object.modifiers:
-                if m.type == "PARTICLE_SYSTEM" and m.particle_system == mod.particle_system:
+                if m.type == 'PARTICLE_SYSTEM' and m.particle_system == mod.particle_system:
                     if not m.show_viewport:
                         return True
 
-    elif mod.type == "SHRINKWRAP" and not mod.target:
+    elif mod.type == 'SHRINKWRAP' and not mod.target:
         return True
 
-    elif mod.type == "SMOOTH":
+    elif mod.type == 'SMOOTH':
         if not any((mod.use_x, mod.use_y, mod.use_z)) or mod.factor == 0:
             return True
 
-    elif mod.type == "SUBSURF" and mod.levels == 0:
+    elif mod.type == 'SUBSURF' and mod.levels == 0:
         return True
 
-    elif mod.type == "SURFACE_DEFORM" and not mod.target:
+    elif mod.type == 'SURFACE_DEFORM' and not mod.target:
         return True
 
-    elif mod.type == "VERTEX_WEIGHT_EDIT" and not mod.vertex_group:
+    elif mod.type == 'VERTEX_WEIGHT_EDIT' and not mod.vertex_group:
         return True
 
-    elif mod.type == "VERTEX_WEIGHT_MIX" and not mod.vertex_group_a:
+    elif mod.type == 'VERTEX_WEIGHT_MIX' and not mod.vertex_group_a:
         return True
 
-    elif mod.type == "VERTEX_WEIGHT_PROXIMITY" and (not mod.vertex_group or not mod.target):
+    elif mod.type == 'VERTEX_WEIGHT_PROXIMITY' and (not mod.vertex_group or not mod.target):
         return True
 
     return False
 
 
 # UI elements
-# =======================================================================
-
+#=======================================================================
 
 def mod_show_editmode_and_cage(modifier, layout, scale_x=1.0, use_in_list=False):
     """This handles showing, hiding and activating/deactivating
@@ -165,8 +170,8 @@ def mod_show_editmode_and_cage(modifier, layout, scale_x=1.0, use_in_list=False)
     # SHOW_IN_EDITMODE_ON_INACTIVE_BUTTON and
     # SHOW_ON_CAGE_ON_INACTIVE_BUTTON are used here for that reason.
 
-    dont_support_show_in_editmode = modifier_categories.dont_support_show_in_editmode
-    support_show_on_cage = modifier_categories.support_show_on_cage
+    dont_support_show_in_editmode  = modifier_categories.dont_support_show_in_editmode
+    support_show_on_cage  = modifier_categories.support_show_on_cage
 
     pcoll = icons.preview_collections["main"]
 
@@ -177,27 +182,24 @@ def mod_show_editmode_and_cage(modifier, layout, scale_x=1.0, use_in_list=False)
     if not use_in_list:
         sub.active = modifier.show_viewport
 
-    if modifier.type not in dont_support_show_in_editmode:
+    if modifier.type not in dont_support_show_in_editmode :
         if not modifier.show_viewport and use_in_list:
-            show_in_editmode_on = pcoll["SHOW_IN_EDITMODE_ON_INACTIVE"]
-            show_in_editmode_off = pcoll["SHOW_IN_EDITMODE_OFF_INACTIVE"]
+            show_in_editmode_on = pcoll['SHOW_IN_EDITMODE_ON_INACTIVE']
+            show_in_editmode_off = pcoll['SHOW_IN_EDITMODE_OFF_INACTIVE']
         elif not modifier.show_viewport:
-            show_in_editmode_off = pcoll["SHOW_IN_EDITMODE_OFF"]
-            show_in_editmode_on = pcoll["SHOW_IN_EDITMODE_ON_INACTIVE_BUTTON"]
+            show_in_editmode_off = pcoll['SHOW_IN_EDITMODE_OFF']
+            show_in_editmode_on = pcoll['SHOW_IN_EDITMODE_ON_INACTIVE_BUTTON']
         else:
-            show_in_editmode_on = pcoll["SHOW_IN_EDITMODE_ON"]
-            show_in_editmode_off = pcoll["SHOW_IN_EDITMODE_OFF"]
+            show_in_editmode_on = pcoll['SHOW_IN_EDITMODE_ON']
+            show_in_editmode_off = pcoll['SHOW_IN_EDITMODE_OFF']
 
-        icon = (
-            show_in_editmode_on.icon_id
-            if modifier.show_in_editmode
-            else show_in_editmode_off.icon_id
-        )
-        sub.prop(modifier, "show_in_editmode", text="", icon_value=icon, emboss=not use_in_list)
+        icon = show_in_editmode_on.icon_id if modifier.show_in_editmode else show_in_editmode_off.icon_id
+        sub.prop(modifier, "show_in_editmode", text="", icon_value=icon,
+                 emboss=not use_in_list)
 
     else:
         # Make icons align nicely
-        empy_icon = pcoll["EMPTY_SPACE"]
+        empy_icon = pcoll['EMPTY_SPACE']
         sub.label(text="", translate=False, icon_value=empy_icon.icon_id)
 
     # === show_on_cage ===
@@ -212,7 +214,7 @@ def mod_show_editmode_and_cage(modifier, layout, scale_x=1.0, use_in_list=False)
         end_index = np.clip(mod_index, 1, 99)
 
         for mod in mods[0:end_index]:
-            if mod.show_in_editmode and mod.type not in support_show_on_cage:
+            if mod.show_in_editmode and mod.type not in support_show_on_cage :
                 is_before_show_in_editmode_on = True
                 break
 
@@ -220,8 +222,9 @@ def mod_show_editmode_and_cage(modifier, layout, scale_x=1.0, use_in_list=False)
         # show_on_cage both on and also is visible in the viewport.
         is_after_show_on_cage_on = False
 
-        for mod in mods[(mod_index + 1) : (len(mods))]:
-            if mod.show_viewport and mod.show_in_editmode and mod.show_on_cage:
+        for mod in mods[(mod_index + 1):(len(mods))]:
+            if (mod.show_viewport and mod.show_in_editmode
+                    and mod.show_on_cage):
                 is_after_show_on_cage_on = True
                 break
 
@@ -229,20 +232,17 @@ def mod_show_editmode_and_cage(modifier, layout, scale_x=1.0, use_in_list=False)
         if not is_before_show_in_editmode_on:
             sub = layout.row(align=True)
             sub.scale_x = scale_x
-            show_on_cage_on = pcoll["SHOW_ON_CAGE_ON"]
-            show_on_cage_off = pcoll["SHOW_ON_CAGE_OFF"]
+            show_on_cage_on = pcoll['SHOW_ON_CAGE_ON']
+            show_on_cage_off = pcoll['SHOW_ON_CAGE_OFF']
 
-            if (
-                not modifier.show_viewport
-                or not modifier.show_in_editmode
-                or is_after_show_on_cage_on
-            ):
+            if (not modifier.show_viewport or not modifier.show_in_editmode
+                    or is_after_show_on_cage_on):
                 if use_in_list:
-                    show_on_cage_on = pcoll["SHOW_ON_CAGE_ON_INACTIVE"]
-                    show_on_cage_off = pcoll["SHOW_ON_CAGE_OFF_INACTIVE"]
+                    show_on_cage_on = pcoll['SHOW_ON_CAGE_ON_INACTIVE']
+                    show_on_cage_off = pcoll['SHOW_ON_CAGE_OFF_INACTIVE']
                 else:
                     sub.active = False
-                    show_on_cage_on = pcoll["SHOW_ON_CAGE_ON_INACTIVE_BUTTON"]
+                    show_on_cage_on = pcoll['SHOW_ON_CAGE_ON_INACTIVE_BUTTON']
 
             icon = show_on_cage_on.icon_id if modifier.show_on_cage else show_on_cage_off.icon_id
             sub.prop(modifier, "show_on_cage", text="", icon_value=icon, emboss=not use_in_list)
@@ -250,27 +250,18 @@ def mod_show_editmode_and_cage(modifier, layout, scale_x=1.0, use_in_list=False)
             return
 
     else:
-        if bpy.context.area.type == "PROPERTIES" and not use_in_list:
-            if modifier.type in {
-                "CLOTH",
-                "COLLISION",
-                "FLUID_SIMULATION",
-                "DYNAMIC_PAINT",
-                "SMOKE",
-                "SOFT_BODY",
-            }:
-                sub.operator(
-                    "wm.properties_context_change", icon="PROPERTIES", emboss=False
-                ).context = "PHYSICS"
+        if bpy.context.area.type == 'PROPERTIES' and not use_in_list:
+            if modifier.type in {'CLOTH', 'COLLISION', 'FLUID_SIMULATION', 'DYNAMIC_PAINT', 'SMOKE', 'SOFT_BODY'}:
+                sub.operator("wm.properties_context_change", icon='PROPERTIES',
+                             emboss=False).context = "PHYSICS"
                 return
-            elif modifier.type == "PARTICLE_SYSTEM":
-                sub.operator(
-                    "wm.properties_context_change", icon="PROPERTIES", emboss=False
-                ).context = "PARTICLES"
+            elif modifier.type == 'PARTICLE_SYSTEM':
+                sub.operator("wm.properties_context_change", icon='PROPERTIES',
+                             emboss=False).context = "PARTICLES"
                 return
 
     # Make icons align nicely if modifier.type is not in support_show_on_cage
-    empy_icon = pcoll["EMPTY_SPACE"]
+    empy_icon = pcoll['EMPTY_SPACE']
     sub.label(text="", translate=False, icon_value=empy_icon.icon_id)
 
 
@@ -313,7 +304,7 @@ class MESH_MT_ml_add_modifier_menu(Menu):
         layout = self.layout
 
         row = layout.row()
-        row.alignment = "LEFT"
+        row.alignment = 'LEFT'
 
         col = row.column()
         col.label(text="Modify")
@@ -348,7 +339,7 @@ class CURVE_MT_ml_add_modifier_menu(Menu):
         layout = self.layout
 
         row = layout.row()
-        row.alignment = "LEFT"
+        row.alignment = 'LEFT'
 
         col = row.column()
         col.label(text="Modify")
@@ -383,7 +374,7 @@ class LATTICE_MT_ml_add_modifier_menu(Menu):
         layout = self.layout
 
         row = layout.row()
-        row.alignment = "LEFT"
+        row.alignment = 'LEFT'
 
         col = row.column()
         col.label(text="Modify")
@@ -409,7 +400,7 @@ class OBJECT_UL_modifier_list(UIList):
         mod = item
 
         global properties_list_info
-        if self.layout_type in {"DEFAULT", "COMPACT"}:
+        if self.layout_type in {'DEFAULT', 'COMPACT'}:
             if mod:
                 row = layout.row()
                 row.alert = is_modifier_disabled(mod)
@@ -438,24 +429,24 @@ class OBJECT_UL_modifier_list(UIList):
 
                 # Hide visibility toggles for collision modifier as they are not used
                 # in the regular UI either (apparently can cause problems in some scenes).
-                if mod.type != "COLLISION":
+                if mod.type != 'COLLISION':
                     row = layout.row(align=True)
-                    row.alignment = "RIGHT"
+                    row.alignment = 'RIGHT'
                     row.prop(mod, "show_render", text="", emboss=False)
                     row.prop(mod, "show_viewport", text="", emboss=False)
                     mod_show_editmode_and_cage(mod, row, use_in_list=True)
             else:
                 layout.label(text="", translate=False, icon_value=icon)
 
-        elif self.layout_type in {"GRID"}:
-            layout.alignment = "CENTER"
+        elif self.layout_type in {'GRID'}:
+            layout.alignment = 'CENTER'
             layout.label(text="", icon_value=icon)
 
 
 class ModifierListActions:
     """Base operator for list actions."""
 
-    bl_options = {"REGISTER", "INTERNAL", "UNDO"}
+    bl_options = {'REGISTER', 'INTERNAL', 'UNDO'}
 
     action = None
 
@@ -465,14 +456,14 @@ class ModifierListActions:
 
         # Make using operators possible when an object is pinned
         override = context.copy()
-        override["object"] = ml_active_ob
+        override['object'] = ml_active_ob
 
         # Get the active object in 3d View so Properties Editor's
         # context pinning won't mess things up.
-        if context.area.type == "PROPERTIES":
-            context.area.type = "VIEW_3D"
+        if context.area.type == 'PROPERTIES':
+            context.area.type = 'VIEW_3D'
             ob = context.object
-            context.area.type = "PROPERTIES"
+            context.area.type = 'PROPERTIES'
         else:
             ob = context.object
 
@@ -486,13 +477,13 @@ class ModifierListActions:
             active_mod = ml_active_ob.modifiers[active_mod_index]
             active_mod_name = active_mod.name
 
-            if self.action == "UP":
+            if self.action == 'UP':
                 bpy.ops.object.modifier_move_up(override, modifier=active_mod_name)
                 ml_active_ob.ml_modifier_active_index = active_mod_index_up
-            elif self.action == "DOWN":
+            elif self.action == 'DOWN':
                 bpy.ops.object.modifier_move_down(override, modifier=active_mod_name)
                 ml_active_ob.ml_modifier_active_index = active_mod_index_down
-            elif self.action == "REMOVE":
+            elif self.action == 'REMOVE':
                 if self.shift or prefs.always_delete_gizmo:
                     # When using lattice_toggle_editmode(_prop_editor)
                     # operator, the mode the user was in before that is
@@ -500,13 +491,13 @@ class ModifierListActions:
                     # utilised here, so we can return into the correct
                     # mode after deleting a lattice in lattice edit
                     # mode.
-                    if ob and ob.type == "LATTICE":
-                        if context.area.type == "PROPERTIES":
-                            if lattice_toggle_editmode_prop_editor.init_mode == "EDIT_MESH":
+                    if ob and ob.type == 'LATTICE':
+                        if context.area.type == 'PROPERTIES':
+                            if lattice_toggle_editmode_prop_editor.init_mode == 'EDIT_MESH':
                                 switch_into_editmode = True
                             else:
                                 switch_into_editmode = False
-                        elif lattice_toggle_editmode.init_mode == "EDIT_MESH":
+                        elif lattice_toggle_editmode.init_mode == 'EDIT_MESH':
                             switch_into_editmode = True
                         else:
                             switch_into_editmode = False
@@ -516,7 +507,7 @@ class ModifierListActions:
                     gizmo_ob = get_gizmo_object()
                     delete_gizmo_object(self, gizmo_ob)
 
-                    if active_mod.type == "LATTICE":
+                    if active_mod.type == 'LATTICE':
                         context.view_layer.objects.active = ml_active_ob
                         vert_group = get_vertex_group()
                         delete_ml_vertex_group(ml_active_ob, vert_group)
@@ -526,7 +517,7 @@ class ModifierListActions:
                 bpy.ops.object.modifier_remove(override, modifier=active_mod_name)
                 ml_active_ob.ml_modifier_active_index = active_mod_index_up
 
-        return {"FINISHED"}
+        return {'FINISHED'}
 
     def invoke(self, context, event):
         self.shift = True if event.shift else False
@@ -539,7 +530,7 @@ class OBJECT_OT_ml_modifier_move_up(Operator, ModifierListActions):
     bl_label = "Move modifier up"
     bl_description = "Move modifier up in the stack"
 
-    action = "UP"
+    action = 'UP'
 
 
 class OBJECT_OT_ml_modifier_move_down(Operator, ModifierListActions):
@@ -547,19 +538,17 @@ class OBJECT_OT_ml_modifier_move_down(Operator, ModifierListActions):
     bl_label = "Move modifier down"
     bl_description = "Move modifier down in the stack"
 
-    action = "DOWN"
+    action = 'DOWN'
 
 
 class OBJECT_OT_ml_modifier_remove(Operator, ModifierListActions):
     bl_idname = "object.ml_modifier_remove"
     bl_label = "Remove Modifier"
-    bl_description = (
-        "Remove modifier from the active object.\n"
-        "\n"
-        "Hold shift to also delete its gizmo object (if it has one)"
-    )
+    bl_description = ("Remove modifier from the active object.\n"
+                     "\n"
+                     "Hold shift to also delete its gizmo object (if it has one)")
 
-    action = "REMOVE"
+    action = 'REMOVE'
 
 
 class OBJECT_OT_ml_modifier_mouse_drag(Operator):
@@ -793,8 +782,8 @@ class OBJECT_OT_ml_modifier_mouse_drag(Operator):
 
 class OBJECT_PT_Gizmo_object_settings(Panel):
     bl_label = "Gizmo Settings"
-    bl_space_type = "VIEW_3D"
-    bl_region_type = "WINDOW"
+    bl_space_type = 'VIEW_3D'
+    bl_region_type = 'WINDOW'
 
     def draw(self, context):
         layout = self.layout
@@ -804,9 +793,9 @@ class OBJECT_PT_Gizmo_object_settings(Panel):
 
         layout.prop(gizmo_ob, "name", text="")
 
-        if gizmo_ob.type == "EMPTY":
-            layout.prop(gizmo_ob, "empty_display_type", text="")
-            layout.prop(gizmo_ob, "empty_display_size", text="Display Size")
+        if gizmo_ob.type == 'EMPTY':
+            layout.prop(gizmo_ob ,"empty_display_type", text="")
+            layout.prop(gizmo_ob ,"empty_display_size", text="Display Size")
 
         layout.label(text="Location:")
         col = layout.column()
@@ -828,18 +817,16 @@ class OBJECT_PT_Gizmo_object_settings(Panel):
             sub.enabled = False
         depress = is_gizmo_parented_to_ob
         unset = is_gizmo_parented_to_ob
-        sub.operator(
-            "object.ml_gizmo_object_parent_set", text="Gizmo To Active Object", depress=depress
-        ).unset = unset
+        sub.operator("object.ml_gizmo_object_parent_set", text="Gizmo To Active Object",
+                        depress=depress).unset = unset
 
         sub = col.row()
         if is_gizmo_parented_to_ob:
             sub.enabled = False
         depress = is_ob_parented_to_gizmo
         unset = is_ob_parented_to_gizmo
-        sub.operator(
-            "object.ml_gizmo_object_child_set", text="Active Object To Gizmo", depress=depress
-        ).unset = unset
+        sub.operator("object.ml_gizmo_object_child_set", text="Active Object To Gizmo",
+                        depress=depress).unset = unset
 
         layout.separator()
 
@@ -853,7 +840,7 @@ class OBJECT_PT_Gizmo_object_settings(Panel):
 
 def modifiers_ui(context, layout, num_of_rows=False, use_in_popup=False):
 
-    ob = context.object if context.area.type == "PROPERTIES" else get_ml_active_object()
+    ob = context.object if context.area.type == 'PROPERTIES' else get_ml_active_object()
     prefs = bpy.context.preferences.addons["modifier_list"].preferences
     pcoll = icons.preview_collections["main"]
 
@@ -865,7 +852,7 @@ def modifiers_ui(context, layout, num_of_rows=False, use_in_popup=False):
     # and buttons accordingly (2 or 3 buttons per row).
     fav_names_icons_types_iter = modifier_categories.favourite_modifiers_names_icons_types()
 
-    place_three_per_row = prefs.favourites_per_row == "3"
+    place_three_per_row = prefs.favourites_per_row == '3'
 
     for name, icon, mod in fav_names_icons_types_iter:
         next_mod_1 = next(fav_names_icons_types_iter)
@@ -876,25 +863,23 @@ def modifiers_ui(context, layout, num_of_rows=False, use_in_popup=False):
             row = col.row(align=True)
 
             if name:
-                icon = icon if prefs.use_icons_in_favourites else "NONE"
+                icon = icon if prefs.use_icons_in_favourites else 'NONE'
                 row.operator("object.ml_modifier_add", text=name, icon=icon).modifier_type = mod
             else:
                 row.label(text="")
 
             if next_mod_1[0]:
-                icon = next_mod_1[1] if prefs.use_icons_in_favourites else "NONE"
-                row.operator(
-                    "object.ml_modifier_add", text=next_mod_1[0], icon=icon
-                ).modifier_type = next_mod_1[2]
+                icon = next_mod_1[1] if prefs.use_icons_in_favourites else 'NONE'
+                row.operator("object.ml_modifier_add", text=next_mod_1[0],
+                                icon=icon).modifier_type = next_mod_1[2]
             else:
                 row.label(text="")
 
             if place_three_per_row:
                 if next_mod_2[0]:
-                    icon = next_mod_2[1] if prefs.use_icons_in_favourites else "NONE"
-                    row.operator(
-                        "object.ml_modifier_add", text=next_mod_2[0], icon=icon
-                    ).modifier_type = next_mod_2[2]
+                    icon = next_mod_2[1] if prefs.use_icons_in_favourites else 'NONE'
+                    row.operator("object.ml_modifier_add", text=next_mod_2[0],
+                                icon=icon).modifier_type = next_mod_2[2]
                 else:
                     row.label(text="")
 
@@ -902,15 +887,16 @@ def modifiers_ui(context, layout, num_of_rows=False, use_in_popup=False):
     col = layout.column()
     row = col.split(factor=0.59)
     wm = bpy.context.window_manager
-    if ob.type == "MESH":
-        row.prop_search(wm, "ml_mod_to_add", wm, "ml_mesh_modifiers", text="", icon="MODIFIER")
+    if ob.type == 'MESH':
+        row.prop_search(wm, "ml_mod_to_add", wm, "ml_mesh_modifiers", text="", icon='MODIFIER')
         row.menu("MESH_MT_ml_add_modifier_menu")
-    elif ob.type in {"CURVE", "SURFACE", "FONT"}:
-        row.prop_search(wm, "ml_mod_to_add", wm, "ml_curve_modifiers", text="", icon="MODIFIER")
+    elif ob.type in {'CURVE', 'SURFACE', 'FONT'}:
+        row.prop_search(wm, "ml_mod_to_add", wm, "ml_curve_modifiers", text="", icon='MODIFIER')
         row.menu("CURVE_MT_ml_add_modifier_menu")
-    elif ob.type == "LATTICE":
-        row.prop_search(wm, "ml_mod_to_add", wm, "ml_lattice_modifiers", text="", icon="MODIFIER")
+    elif ob.type == 'LATTICE':
+        row.prop_search(wm, "ml_mod_to_add", wm, "ml_lattice_modifiers", text="", icon='MODIFIER')
         row.menu("LATTICE_MT_ml_add_modifier_menu")
+
 
     # === Modifier list ===
     global properties_list_info
@@ -1039,34 +1025,28 @@ def modifiers_ui(context, layout, num_of_rows=False, use_in_popup=False):
             ).modifier = active_mod.name
 
     # === Gizmo object settings ===
-    if ob.type == "MESH":
-        if (
-            active_mod.type in modifier_categories.have_gizmo_property
-            or active_mod.type == "UV_PROJECT"
-        ):
+    if ob.type == 'MESH':
+        if (active_mod.type in modifier_categories.have_gizmo_property
+                or active_mod.type == 'UV_PROJECT'):
             gizmo_ob = get_gizmo_object()
 
             sub = row.row(align=True)
-            sub.alignment = "RIGHT"
+            sub.alignment = 'RIGHT'
 
             if not gizmo_ob:
                 sub_sub = sub.row()
                 sub_sub.scale_x = 4
-                icon = pcoll["ADD_GIZMO"]
-                sub_sub.operator(
-                    "object.ml_gizmo_object_add", text="", icon_value=icon.icon_id
-                ).modifier = active_mod.name
+                icon = pcoll['ADD_GIZMO']
+                sub_sub.operator("object.ml_gizmo_object_add", text="", icon_value=icon.icon_id
+                            ).modifier = active_mod.name
             else:
                 sub_sub = sub.row(align=True)
                 sub_sub.scale_x = 1.2
                 depress = not gizmo_ob.hide_viewport
-                sub_sub.operator(
-                    "object.ml_gizmo_object_toggle_visibility",
-                    text="",
-                    icon="EMPTY_ARROWS",
-                    depress=depress,
-                )
+                sub_sub.operator("object.ml_gizmo_object_toggle_visibility", text="",
+                                icon='EMPTY_ARROWS', depress=depress)
                 sub.popover("OBJECT_PT_Gizmo_object_settings", text="")
+
 
     # === Modifier specific settings ===
     box = col.box()
@@ -1079,22 +1059,22 @@ def modifiers_ui(context, layout, num_of_rows=False, use_in_popup=False):
     # operators don't work. Lattice on the other hand has an improved
     # layout.
     have_custom_layout = (
-        "CORRECTIVE_SMOOTH",
-        "DATA_TRANSFER",
-        "EXPLODE",
-        "HOOK",
-        "LAPLACIANDEFORM",
-        "LATTICE",
-        "MESH_DEFORM",
-        "MULTIRES",
-        "OCEAN",
-        "SKIN",
-        "SURFACE_DEFORM",
+        'CORRECTIVE_SMOOTH',
+        'DATA_TRANSFER',
+        'EXPLODE',
+        'HOOK',
+        'LAPLACIANDEFORM',
+        'LATTICE',
+        'MESH_DEFORM',
+        'MULTIRES',
+        'OCEAN',
+        'SKIN',
+        'SURFACE_DEFORM'
     )
 
     if active_mod.type in have_custom_layout:
         getattr(ml_modifier_layouts, active_mod.type)(col, ob, active_mod)
-    elif active_mod.type == "REMESH" and str(bpy.app.build_branch) == "b'sculpt-mode-features'":
+    elif active_mod.type == 'REMESH' and str(bpy.app.build_branch) == "b'sculpt-mode-features'":
         ml_modifier_layouts.REMESH(col, ob, active_mod)
     else:
         mp = DATA_PT_modifiers(context)
