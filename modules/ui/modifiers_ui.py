@@ -22,6 +22,8 @@ from ..utils import (
 from gpu_extras.batch import batch_for_shader
 import gpu
 
+max_list_index = 0
+
 # Utility functions
 # =======================================================================
 
@@ -379,6 +381,8 @@ class OBJECT_UL_modifier_list(UIList):
     def draw_item(self, context, layout, data, item, icon, active_data, active_propname, index):
         mod = item
 
+        global max_list_index
+        max_list_index = 0
         if self.layout_type in {"DEFAULT", "COMPACT"}:
             if mod:
                 row = layout.row()
@@ -398,6 +402,10 @@ class OBJECT_UL_modifier_list(UIList):
                         emboss=False,
                     )
                     dd.index = index
+
+                # TODO: super hacky way to find UI list size, any better way?
+                if index > max_list_index:
+                    max_list_index = index
 
                 layout.prop(mod, "name", text="", emboss=False, icon_value=icon)
 
@@ -539,10 +547,12 @@ class OBJECT_OT_ml_modifier_mouse_drag(Operator):
     index: bpy.props.IntProperty()
 
     def __init__(self):
-        print("Drag start")
         self.draw_handle = None
         self.draw_event = None
         self.widgets = []
+
+        global max_list_index
+        print(max_list_index)
 
         self.vertex_shader = """
             in vec3 pos;
@@ -568,9 +578,6 @@ class OBJECT_OT_ml_modifier_mouse_drag(Operator):
                 gl_FragColor = vec4(1.0);
             }
         """
-
-    def __del__(self):
-        print("Drag end")
 
     def execute(self, context):
         # print("Mouse coords are %d %d" % (self.x, self.y))
@@ -739,7 +746,13 @@ class OBJECT_OT_ml_modifier_mouse_drag(Operator):
         # limit drawn line location to max modifier list size
         if self.selected_location > self.list_len:
             self.selected_location = self.list_len
-            line_loc = self.selected_location - self.list_offset
+
+        # limit line location to max UI list size
+        global max_list_index
+        if self.selected_location > max_list_index + 1:
+            self.selected_location = max_list_index + 1
+
+        line_loc = self.selected_location - self.list_offset
 
         # draw line
         self.shader.bind()
