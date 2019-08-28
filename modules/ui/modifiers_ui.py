@@ -28,17 +28,27 @@ import gpu
 
 class ListInfo:
     def __init__(self):
-        self.start = 0
+        self.start = 1000
         self.end = 0
-        self.size = 0
+
+    def __repr__(self):
+        return "start:{} end:{} size:{}".format(self.start, self.end, self.get_size())
 
     def set_end_min(self, e):
+        assert type(e) == int
         if e > self.end:
             self.end = e
-        self.size = self.end - self.start
+
+    def set_start_max(self, s):
+        assert type(s) == int
+        if s < self.start:
+            self.start = s
+
+    def get_size(self):
+        return self.end - self.start
 
     def clear(self):
-        self.start = 0
+        self.start = 1000
         self.end = 0
 
 
@@ -399,7 +409,6 @@ class OBJECT_UL_modifier_list(UIList):
         mod = item
 
         global properties_list_info
-        properties_list_info.clear()
         if self.layout_type in {"DEFAULT", "COMPACT"}:
             if mod:
                 row = layout.row()
@@ -423,6 +432,7 @@ class OBJECT_UL_modifier_list(UIList):
                 # TODO: super hacky way to find UI list size, any better way?
                 if bpy.context.area.type == "PROPERTIES":
                     properties_list_info.set_end_min(index)
+                    properties_list_info.set_start_max(index)
 
                 layout.prop(mod, "name", text="", emboss=False, icon_value=icon)
 
@@ -724,11 +734,12 @@ class OBJECT_OT_ml_modifier_mouse_drag(Operator):
 
         # create batch
         global properties_list_info
-        
+
         # if list len > modifier len, increase the width of drawn line
-        aw = self.area_width - 24 - (0 if properties_list_info.end + 1 == self.list_len else 24)
+        pli = properties_list_info
+        aw = self.area_width - 24 - (0 if pli.get_size() + 1 == self.list_len else 24)
         vertices = [(0, 0, 0), (aw, 0, 0), (aw, 1, 0), (0, 1, 0)]
-        
+
         self.shader = gpu.types.GPUShader(self.vertex_shader, self.fragment_shader)
         self.batch = batch_for_shader(self.shader, "LINE_STRIP", {"pos": vertices})
 
@@ -758,18 +769,17 @@ class OBJECT_OT_ml_modifier_mouse_drag(Operator):
             y_loc = self.start_offset
 
         line_loc = (y_loc - self.start_offset) // self.step_size
+
+        # limit line location to max UI list size
+        global properties_list_info
+        if line_loc > properties_list_info.get_size() + 1:
+            line_loc = properties_list_info.get_size() + 1
+
         self.selected_location = line_loc + self.list_offset
 
         # limit drawn line location to max modifier list size
         if self.selected_location > self.list_len:
             self.selected_location = self.list_len
-
-        # limit line location to max UI list size
-        global properties_list_info
-        if self.selected_location > properties_list_info.end + 1:
-            self.selected_location = properties_list_info.end + 1
-
-        line_loc = self.selected_location - self.list_offset
 
         # draw line
         self.shader.bind()
@@ -903,6 +913,8 @@ def modifiers_ui(context, layout, num_of_rows=False, use_in_popup=False):
         row.menu("LATTICE_MT_ml_add_modifier_menu")
 
     # === Modifier list ===
+    global properties_list_info
+    properties_list_info.clear()
     layout.template_list(
         "OBJECT_UL_modifier_list",
         "",
