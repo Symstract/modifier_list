@@ -22,10 +22,27 @@ from ..utils import (
 from gpu_extras.batch import batch_for_shader
 import gpu
 
-max_list_index = 0
-
 # Utility functions
 # =======================================================================
+
+
+class ListInfo:
+    def __init__(self):
+        self.start = 0
+        self.end = 0
+        self.size = 0
+
+    def set_end_min(self, e):
+        if e > self.end:
+            self.end = e
+        self.size = self.end - self.start
+
+    def clear(self):
+        self.start = 0
+        self.end = 0
+
+
+properties_list_info = ListInfo()
 
 
 def is_modifier_disabled(mod):
@@ -381,8 +398,8 @@ class OBJECT_UL_modifier_list(UIList):
     def draw_item(self, context, layout, data, item, icon, active_data, active_propname, index):
         mod = item
 
-        global max_list_index
-        max_list_index = 0
+        global properties_list_info
+        properties_list_info.clear()
         if self.layout_type in {"DEFAULT", "COMPACT"}:
             if mod:
                 row = layout.row()
@@ -404,8 +421,8 @@ class OBJECT_UL_modifier_list(UIList):
                     dd.index = index
 
                 # TODO: super hacky way to find UI list size, any better way?
-                if index > max_list_index:
-                    max_list_index = index
+                if bpy.context.area.type == "PROPERTIES":
+                    properties_list_info.set_end_min(index)
 
                 layout.prop(mod, "name", text="", emboss=False, icon_value=icon)
 
@@ -551,9 +568,6 @@ class OBJECT_OT_ml_modifier_mouse_drag(Operator):
         self.draw_event = None
         self.widgets = []
 
-        global max_list_index
-        print(max_list_index)
-
         self.vertex_shader = """
             in vec3 pos;
 
@@ -668,8 +682,8 @@ class OBJECT_OT_ml_modifier_mouse_drag(Operator):
         step = 3 if prefs.favourites_per_row == "3" else 2
         num_favs = len(list(i for i in fav_names_icons_types_iter if i[0]))
         rows = math.ceil(num_favs / step)
-        print("rows:", rows, step, num_favs)
-        print("picked:", self.index)
+        # print("rows:", rows, step, num_favs)
+        # print("picked:", self.index)
 
         self.area_x = context.region.x
         self.area_y = context.region.y
@@ -708,7 +722,16 @@ class OBJECT_OT_ml_modifier_mouse_drag(Operator):
         self.list_offset = self.index - (self.y - self.start_offset) // self.step_size
         print("offset:", self.list_offset)
 
-        self.create_batch()
+        # create batch
+        global properties_list_info
+        
+        # if list len > modifier len, increase the width of drawn line
+        aw = self.area_width - 24 - (0 if properties_list_info.end + 1 == self.list_len else 24)
+        vertices = [(0, 0, 0), (aw, 0, 0), (aw, 1, 0), (0, 1, 0)]
+        
+        self.shader = gpu.types.GPUShader(self.vertex_shader, self.fragment_shader)
+        self.batch = batch_for_shader(self.shader, "LINE_STRIP", {"pos": vertices})
+
         args = (self, context)
         self.register_handlers(args, context)
 
@@ -729,12 +752,6 @@ class OBJECT_OT_ml_modifier_mouse_drag(Operator):
         self.draw_handle = None
         self.draw_event = None
 
-    def create_batch(self):
-        aw = self.area_width - 24
-        vertices = [(0, 0, 0), (aw, 0, 0), (aw, 1, 0), (0, 1, 0)]
-        self.shader = gpu.types.GPUShader(self.vertex_shader, self.fragment_shader)
-        self.batch = batch_for_shader(self.shader, "LINE_STRIP", {"pos": vertices})
-
     def draw_callback_px(self, op, context):
         y_loc = self.y + self.step_size // 2
         if y_loc < self.start_offset:
@@ -748,9 +765,9 @@ class OBJECT_OT_ml_modifier_mouse_drag(Operator):
             self.selected_location = self.list_len
 
         # limit line location to max UI list size
-        global max_list_index
-        if self.selected_location > max_list_index + 1:
-            self.selected_location = max_list_index + 1
+        global properties_list_info
+        if self.selected_location > properties_list_info.end + 1:
+            self.selected_location = properties_list_info.end + 1
 
         line_loc = self.selected_location - self.list_offset
 
