@@ -916,7 +916,7 @@ def modifiers_ui(context, layout, num_of_rows=False, use_in_popup=False):
     # don't align properly, so some manual work is needed.
     if use_in_popup:
         align_button_groups = prefs.popup_width <= 278
-    elif context.area.type == "VIEW_3D":
+    elif context.area.type == 'VIEW_3D':
         align_button_groups = context.region.width <= 308
     else:
         align_button_groups = context.area.width <= 308
@@ -931,13 +931,13 @@ def modifiers_ui(context, layout, num_of_rows=False, use_in_popup=False):
     # buttons to get tiny. 2.8 Bug?
     sub.scale_x = sub_scale
 
-    icon = pcoll["TOGGLE_ALL_MODIFIERS_VISIBILITY"]
+    icon = pcoll['TOGGLE_ALL_MODIFIERS_VISIBILITY']
     sub.operator("object.ml_toggle_all_modifiers", icon_value=icon.icon_id, text="")
 
-    icon = pcoll["APPLY_ALL_MODIFIERS"]
+    icon = pcoll['APPLY_ALL_MODIFIERS']
     sub.operator("object.ml_apply_all_modifiers", icon_value=icon.icon_id, text="")
 
-    icon = pcoll["DELETE_ALL_MODIFIERS"]
+    icon = pcoll['DELETE_ALL_MODIFIERS']
     sub.operator("object.ml_remove_all_modifiers", icon_value=icon.icon_id, text="")
 
     # === List manipulation ===
@@ -946,10 +946,10 @@ def modifiers_ui(context, layout, num_of_rows=False, use_in_popup=False):
     # buttons to get tiny. 2.8 Bug?
     sub.scale_x = sub_scale
     if not align_button_groups:
-        sub.alignment = "RIGHT"
+        sub.alignment = 'RIGHT'
 
-    move_up_icon = "TRIA_DOWN" if prefs.reverse_list else "TRIA_UP"
-    move_down_icon = "TRIA_UP" if prefs.reverse_list else "TRIA_DOWN"
+    move_up_icon = 'TRIA_DOWN' if prefs.reverse_list else 'TRIA_UP'
+    move_down_icon = 'TRIA_UP' if prefs.reverse_list else 'TRIA_DOWN'
 
     if not prefs.reverse_list:
         sub.operator("object.ml_modifier_move_up", icon=move_up_icon, text="")
@@ -958,7 +958,7 @@ def modifiers_ui(context, layout, num_of_rows=False, use_in_popup=False):
         sub.operator("object.ml_modifier_move_down", icon=move_down_icon, text="")
         sub.operator("object.ml_modifier_move_up", icon=move_up_icon, text="")
 
-    sub.operator("object.ml_modifier_remove", icon="REMOVE", text="")
+    sub.operator("object.ml_modifier_remove", icon='REMOVE', text="")
 
     # === Modifier settings ===
     if not ob.modifiers:
@@ -991,7 +991,7 @@ def modifiers_ui(context, layout, num_of_rows=False, use_in_popup=False):
         sub_sub.scale_x = 1.1
         # Hide visibility toggles for collision modifier as they are not used
         # in the regular UI either (apparently can cause problems in some scenes).
-        if active_mod.type != "COLLISION":
+        if active_mod.type != 'COLLISION':
             sub_sub.prop(active_mod, "show_render", text="")
             sub_sub.prop(active_mod, "show_viewport", text="")
         mod_show_editmode_and_cage(active_mod, sub, scale_x=1.1)
@@ -1000,28 +1000,28 @@ def modifiers_ui(context, layout, num_of_rows=False, use_in_popup=False):
 
     sub = row.row(align=True)
 
-    if active_mod.type == "PARTICLE_SYSTEM":
+    if active_mod.type == 'PARTICLE_SYSTEM':
         ps = active_mod.particle_system
-        if ps.settings.render_type in {"COLLECTION", "OBJECT"}:
+        if ps.settings.render_type in {'COLLECTION', 'OBJECT'}:
             sub.operator("object.duplicates_make_real", text="Convert")
-        elif ps.settings.render_type == "PATH":
+        elif ps.settings.render_type == 'PATH':
             sub.operator("object.modifier_convert", text="Convert").modifier = active_mod.name
     else:
         sub.scale_x = 5
-        icon = pcoll["APPLY_MODIFIER"]
+        icon = pcoll['APPLY_MODIFIER']
         sub.operator(
             "object.ml_modifier_apply", text="", icon_value=icon.icon_id
         ).modifier = active_mod.name
 
         if active_mod.type in modifier_categories.support_apply_as_shape_key:
-            icon = pcoll["APPLY_MODIFIER_AS_SHAPEKEY"]
+            icon = pcoll['APPLY_MODIFIER_AS_SHAPEKEY']
             sub.operator(
                 "object.ml_modifier_apply_as_shapekey", text="", icon_value=icon.icon_id
             ).modifier = active_mod.name
 
         if active_mod.type not in modifier_categories.dont_support_copy:
             sub.operator(
-                "object.ml_modifier_copy", text="", icon="DUPLICATE"
+                "object.ml_modifier_copy", text="", icon='DUPLICATE'
             ).modifier = active_mod.name
 
     # === Gizmo object settings ===
