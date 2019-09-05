@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.4.2 - 5.9.2019
+
+- Removed the offset from lattices. It was there so the lattice wouldn't overlap the mesh, but it didn't allow precise snapping. Now it does.
+
+
 ## 1.4.1 - 26.8.2019
 
 - Fixed converting particles to mesh not working if render type is "Path"
@@ -7,6 +12,7 @@
 - Fixed Hook Gizmo having parent transformation applied
 - Fixed error when removing a modifier and its gizmo from a pinned object if there's no active object
 - Some tooltip fixes
+
 
 ## 1.4 - 14.8.2019
 
