@@ -221,8 +221,7 @@ def _fit_lattice_to_selection(object, vertices, lattice_object):
 
     dims = _calc_lattice_dimensions(vert_locs, avg_vert_loc)
     # Avoid setting dimensions of a lattice to 0; it causes problems.
-    # Also add some offset to avoid overlapping.
-    ensured_dims = [d + 0.005 if d > 0 else 0.1 for d in dims]
+    ensured_dims = [d if d > 0 else 0.1 for d in dims]
 
     lattice_object.dimensions = ensured_dims
 
@@ -240,8 +239,7 @@ def _fit_lattice_to_object(object, lattice_object):
 
     dims = object.dimensions
     # Avoid setting dimensions of a lattice to 0; it causes problems.
-    # Also add some offset to avoid overlapping.
-    ensured_dims = [d + 0.005 if d > 0 else 0.1 for d in dims]
+    ensured_dims = [d if d > 0 else 0.1 for d in dims]
 
     lattice_object.dimensions = ensured_dims
 
