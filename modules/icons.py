@@ -8,8 +8,18 @@ preview_collections = {}
 
 
 def load_icons():
-    global preview_collections
+    """Loads/reloads icons from the icons directory.
 
+    This is also used in a callback function in addon preferences, which
+    makes changing icon color possible without reloading the addon.
+    """
+    # === Remove the current icons and clear preview_collections ===
+    for pcoll in preview_collections.values():
+        previews.remove(pcoll)
+
+    preview_collections.clear()
+
+    # === Load new icons ===
     pcoll = previews.new()
 
     prefs = bpy.context.preferences.addons["modifier_list"].preferences
@@ -26,17 +36,6 @@ def load_icons():
         pcoll.load(icon_name, os.path.join(icons_dir, icon_file), 'IMAGE')
 
     preview_collections["main"] = pcoll
-
-
-def reload_icons(self, context):
-    """Callback function for addon preferences that makes changing icon
-    color possible without reloading the addon.
-    """
-    for pcoll in preview_collections.values():
-        previews.remove(pcoll)
-    preview_collections.clear()
-
-    load_icons()
 
 
 def register():

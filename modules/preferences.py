@@ -8,7 +8,7 @@ import rna_keymap_ui
 from bpy.props import *
 from bpy.types import AddonPreferences
 
-from .icons import reload_icons
+from .icons import load_icons
 from .ui.properties_editor import register_DATA_PT_modifiers
 
 
@@ -62,7 +62,7 @@ def use_properties_editor_callback(self, context):
 
 
 def icon_color_callback(self, context):
-    reload_icons(self, context)
+    load_icons()
     write_prefs()
 
 
