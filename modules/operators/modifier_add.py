@@ -16,7 +16,7 @@ class OBJECT_OT_ml_modifier_add(Operator):
                      "location of the selected elements.\n")
     bl_options = {'REGISTER', 'INTERNAL', 'UNDO'}
 
-    modifier_type: StringProperty()
+    modifier_type: StringProperty(options={'HIDDEN'})
 
     def execute(self, context):
         ob = get_ml_active_object()
