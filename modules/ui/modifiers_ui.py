@@ -139,6 +139,7 @@ def mod_show_editmode_and_cage(modifier, layout, scale_x=1.0, use_in_list=False)
     # SHOW_ON_CAGE_ON_INACTIVE_BUTTON are used here for that reason.
 
     dont_support_show_in_editmode  = modifier_categories.dont_support_show_in_editmode
+    support_use_apply_on_spline = modifier_categories.support_use_apply_on_spline
     support_show_on_cage  = modifier_categories.support_show_on_cage
 
     pcoll = icons.preview_collections["main"]
@@ -170,9 +171,30 @@ def mod_show_editmode_and_cage(modifier, layout, scale_x=1.0, use_in_list=False)
         empy_icon = pcoll['EMPTY_SPACE']
         sub.label(text="", translate=False, icon_value=empy_icon.icon_id)
 
+    ob = get_ml_active_object()
+
+    # === No use_apply_on_spline or show_on_cage for lattices ===
+    if ob.type == 'LATTICE':
+        return
+
+    # === use_apply_on_spline ===
+    if ob.type != 'MESH':
+        if modifier.type in support_use_apply_on_spline:
+            sub = layout.row(align=True)
+            sub.scale_x = scale_x
+            use_apply_on_spline_on = pcoll['USE_APPLY_ON_SPLINE_ON']
+            use_apply_on_spline_off = pcoll['USE_APPLY_ON_SPLINE_OFF']
+            apply_on = modifier.use_apply_on_spline
+            icon = use_apply_on_spline_on.icon_id if apply_on else use_apply_on_spline_off.icon_id
+            sub.prop(modifier, "use_apply_on_spline", text="", icon_value=icon,
+                     emboss=not use_in_list)
+        else:
+            empy_icon = pcoll['EMPTY_SPACE']
+            sub.label(text="", translate=False, icon_value=empy_icon.icon_id)
+        return
+
     # === show_on_cage ===
     if modifier.type in support_show_on_cage:
-        ob = get_ml_active_object()
         mods = ob.modifiers
         mod_index = mods.find(modifier.name)
 

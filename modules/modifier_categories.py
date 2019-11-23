@@ -50,6 +50,19 @@ other_show_on_cage_mods = {
 }
 support_show_on_cage = deform_mods.union(other_show_on_cage_mods)
 
+# === Support use_apply_on_spline ===
+support_use_apply_on_spline = {
+'ARMATURE',
+'CAST',
+'CURVE',
+'LATTICE',
+'SHRINKWRAP',
+'SIMPLE_DEFORM',
+'SMOOTH',
+'WARP',
+'WAVE',
+}
+
 # === Support apply_as_shape_key ===
 deform_mods = {mod for name, icon, mod in all_modifier_names_icons_types()[26:42]}
 other_shape_key_mods = {'CLOTH', 'SOFT_BODY', 'MESH_CACHE'}
