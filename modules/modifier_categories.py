@@ -37,30 +37,51 @@ def favourite_modifiers_names_icons_types():
 
 # === Don't support show_in_editmode ===
 dont_support_show_in_editmode = {
-    'MESH_SEQUENCE_CACHE', 'BUILD', 'DECIMATE', 'MULTIRES', 'CLOTH', 'COLLISION',
-    'DYNAMIC_PAINT','EXPLODE', 'FLUID_SIMULATION', 'PARTICLE_SYSTEM','SMOKE', 'SOFT_BODY'
+    'MESH_SEQUENCE_CACHE',
+    'BUILD',
+    'DECIMATE',
+    'MULTIRES',
+    'CLOTH',
+    'COLLISION',
+    'DYNAMIC_PAINT',
+    'EXPLODE',
+    'FLUID_SIMULATION',
+    'PARTICLE_SYSTEM',
+    'SMOKE',
+    'SOFT_BODY'
 }
 
 # === Support show_on_cage ===
 deform_mods = {mod for _, _, mod in all_modifier_names_icons_types()[25:41]}
 other_show_on_cage_mods = {
-    'DATA_TRANSFER', 'NORMAL_EDIT', 'WEIGHTED_NORMAL', 'UV_PROJECT','VERTEX_WEIGHT_EDIT',
-    'VERTEX_WEIGHT_MIX', 'VERTEX_WEIGHT_PROXIMITY', 'ARRAY', 'EDGE_SPLIT', 'MASK', 'MIRROR',
-    'SOLIDIFY', 'SUBSURF', 'TRIANGULATE'
+    'DATA_TRANSFER',
+    'NORMAL_EDIT',
+    'WEIGHTED_NORMAL',
+    'UV_PROJECT',
+    'VERTEX_WEIGHT_EDIT',
+    'VERTEX_WEIGHT_MIX',
+    'VERTEX_WEIGHT_PROXIMITY',
+    'ARRAY',
+    'EDGE_SPLIT',
+    'MASK',
+    'MIRROR',
+    'SOLIDIFY',
+    'SUBSURF',
+    'TRIANGULATE'
 }
 support_show_on_cage = deform_mods.union(other_show_on_cage_mods)
 
 # === Support use_apply_on_spline ===
 support_use_apply_on_spline = {
-'ARMATURE',
-'CAST',
-'CURVE',
-'LATTICE',
-'SHRINKWRAP',
-'SIMPLE_DEFORM',
-'SMOOTH',
-'WARP',
-'WAVE',
+    'ARMATURE',
+    'CAST',
+    'CURVE',
+    'LATTICE',
+    'SHRINKWRAP',
+    'SIMPLE_DEFORM',
+    'SMOOTH',
+    'WARP',
+    'WAVE',
 }
 
 # === Support apply_as_shape_key ===
@@ -70,8 +91,13 @@ support_apply_as_shape_key = deform_mods.union(other_shape_key_mods)
 
 # === Don't support copy ===
 dont_support_copy = {
-    'CLOTH', 'COLLISION', 'DYNAMIC_PAINT', 'FLUID_SIMULATION',
-    'PARTICLE_SYSTEM', 'SMOKE', 'SOFT_BODY'
+    'CLOTH',
+    'COLLISION',
+    'DYNAMIC_PAINT',
+    'FLUID_SIMULATION',
+    'PARTICLE_SYSTEM',
+    'SMOKE',
+    'SOFT_BODY'
 }
 
 # === Have the ability to use an object to define the center of the effect ===
