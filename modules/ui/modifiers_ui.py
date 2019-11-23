@@ -162,7 +162,8 @@ def mod_show_editmode_and_cage(modifier, layout, scale_x=1.0, use_in_list=False)
             show_in_editmode_on = pcoll['SHOW_IN_EDITMODE_ON']
             show_in_editmode_off = pcoll['SHOW_IN_EDITMODE_OFF']
 
-        icon = show_in_editmode_on.icon_id if modifier.show_in_editmode else show_in_editmode_off.icon_id
+        show = modifier.show_in_editmode
+        icon = show_in_editmode_on.icon_id if show else show_in_editmode_off.icon_id
         sub.prop(modifier, "show_in_editmode", text="", icon_value=icon,
                  emboss=not use_in_list)
 
@@ -241,7 +242,15 @@ def mod_show_editmode_and_cage(modifier, layout, scale_x=1.0, use_in_list=False)
 
     else:
         if bpy.context.area.type == 'PROPERTIES' and not use_in_list:
-            if modifier.type in {'CLOTH', 'COLLISION', 'FLUID_SIMULATION', 'DYNAMIC_PAINT', 'SMOKE', 'SOFT_BODY'}:
+            have_phys_context_button = {
+                'CLOTH',
+                'COLLISION',
+                'FLUID_SIMULATION',
+                'DYNAMIC_PAINT',
+                'SMOKE',
+                'SOFT_BODY'
+            }
+            if modifier.type in have_phys_context_button:
                 sub.operator("wm.properties_context_change", icon='PROPERTIES',
                              emboss=False).context="PHYSICS"
                 return
