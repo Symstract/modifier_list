@@ -71,7 +71,10 @@ class OBJECT_OT_ml_modifier_add(Operator):
             times_to_move = mods_len - 1 - init_active_mod_index
 
             for _ in range (times_to_move):
-                bpy.ops.object.ml_modifier_move_up()
+                bpy.ops.object.modifier_move_up(override, modifier=mod.name)
+
+            if times_to_move > 0:
+                ob.ml_modifier_active_index = init_active_mod_index + 1
 
         return {'FINISHED'}
 
