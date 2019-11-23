@@ -38,6 +38,7 @@ def favourite_modifiers_names_icons_types():
 # === Don't support show_in_editmode ===
 dont_support_show_in_editmode = {
     'MESH_SEQUENCE_CACHE',
+    'BOOLEAN',
     'BUILD',
     'DECIMATE',
     'MULTIRES',
