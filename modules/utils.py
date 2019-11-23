@@ -399,12 +399,11 @@ def _delete_empty_ml_collection():
 
 
 def delete_gizmo_object(self, gizmo_object):
-    obs = bpy.data.objects
-
     if gizmo_object:
-        obs.remove(gizmo_object)
-        _delete_empty_ml_collection()
-        self.report({'INFO'}, "Deleted a gizmo object")
+        if gizmo_object.type == 'EMPTY' and "_Gizmo" in gizmo_object.name:
+            bpy.data.objects.remove(gizmo_object)
+            _delete_empty_ml_collection()
+            self.report({'INFO'}, "Deleted a gizmo object")
 
 
 def delete_ml_vertex_group(object, vertex_group):
