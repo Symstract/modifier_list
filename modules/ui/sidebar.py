@@ -12,12 +12,6 @@ class BasePanel:
     bl_region_type = 'UI'
     bl_category = "Modifier List"
 
-    @classmethod
-    def use_sidebar(cls):
-        prefs = bpy.context.preferences.addons["modifier_list"].preferences
-        use_sidebar = prefs.use_sidebar
-        return use_sidebar
-
 
 class VIEW3D_PT_Modifiers(Panel, BasePanel):
     # A leading space in the label, so there's separation between it
@@ -26,8 +20,13 @@ class VIEW3D_PT_Modifiers(Panel, BasePanel):
 
     @classmethod
     def poll(cls, context):
-        if not cls.use_sidebar():
+        prefs = bpy.context.preferences.addons["modifier_list"].preferences
+
+        if not prefs.use_sidebar:
             return False
+
+        if prefs.keep_sidebar_visible:
+            return True
 
         ob = get_ml_active_object()
         if ob is not None:
@@ -50,8 +49,13 @@ class VIEW3D_PT_Vertex_groups(Panel, BasePanel):
 
     @classmethod
     def poll(cls, context):
-        if not cls.use_sidebar():
+        prefs = bpy.context.preferences.addons["modifier_list"].preferences
+
+        if not prefs.use_sidebar:
             return False
+
+        if prefs.keep_sidebar_visible:
+            return True
 
         ob = get_ml_active_object()
         if ob is not None:

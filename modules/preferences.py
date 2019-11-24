@@ -86,6 +86,11 @@ class Preferences(AddonPreferences):
         default=True,
         update=use_properties_editor_callback)
 
+    keep_sidebar_visible: BoolProperty(
+        name="Keep Sidebar Tab Visible",
+        description="Keep the sidebar tab always visible",
+        update=prefs_callback)
+
     favourites_per_row_items = [
         ("2", "2", "", 1),
         ("3", "3", "", 2)
@@ -234,6 +239,8 @@ class Preferences(AddonPreferences):
 
         row.prop(self, "use_sidebar")
         row.prop(self, "use_properties_editor")
+
+        layout.prop(self, "keep_sidebar_visible")
 
         layout.separator()
 
