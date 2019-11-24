@@ -558,6 +558,10 @@ class OBJECT_PT_Gizmo_object_settings(Panel):
             layout.prop(gizmo_ob ,"empty_display_type", text="")
             layout.prop(gizmo_ob ,"empty_display_size", text="Display Size")
 
+        layout.separator()
+
+        layout.operator("object.ml_gizmo_object_reset_transform", text="Reset Transform")
+
         layout.label(text="Location:")
         col = layout.column()
         col.prop(gizmo_ob, "location", text="")
