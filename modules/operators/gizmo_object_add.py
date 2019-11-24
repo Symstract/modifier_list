@@ -9,20 +9,30 @@ class OBJECT_OT_ml_gizmo_object_add(Operator):
     bl_label = "Add Gizmo"
     bl_description = ("Add a gizmo object to the modifier.\n"
                       "\n"
-                      "• In Edit Mode, if there is a selection, the gizmo is placed at the"
-                      "average\n"
-                      "   location of the selected elements.\n"
-                      "• When holding shift, the gizmo is placed at the 3D Cursor")
+                      "Placement:\n"
+                      "Shift: 3D Cursor.\n"
+                      "Alt: world origin.\n"
+                      "If in Edit Mode and there is a selection: the average location of "
+                      "the selected elements.\n"
+                      "Else: active object's origin")
     bl_options = {'REGISTER', 'INTERNAL', 'UNDO'}
 
     modifier: StringProperty()
 
     def execute(self, context):
-        assign_gizmo_object_to_modifier(self, context, self.modifier, place_at_cursor=self.shift)
+        if self.shift:
+            placement = 'CURSOR'
+        elif self.alt:
+            placement = 'WORLD_ORIGIN'
+        else:
+            placement = 'OBJECT'
+
+        assign_gizmo_object_to_modifier(self, context, self.modifier, placement=placement)
 
         return {'FINISHED'}
 
     def invoke(self, context, event):
-        self.shift = True if event.shift else False
+        self.shift = event.shift
+        self.alt = event.alt
 
         return self.execute(context)

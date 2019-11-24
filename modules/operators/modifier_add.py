@@ -9,11 +9,13 @@ from ..utils import get_ml_active_object ,assign_gizmo_object_to_modifier
 class OBJECT_OT_ml_modifier_add(Operator):
     bl_idname = "object.ml_modifier_add"
     bl_label = "Add Modifier"
-    bl_description = ("Add a procedural operation/effect to the active object\n"
-                     "\n"
-                     "Hold shift to add the modifier with a gizmo object (for certain modifiers).\n"
-                     "In Edit Mode, if there is a selection, the gizmo is placed at the average\n"
-                     "location of the selected elements.\n")
+    bl_description = ("Hold shift to add the modifier with a gizmo object (for certain modifiers).\n"
+                      "\n"
+                      "Placement:\n"
+                      "Alt: world origin.\n"
+                      "If in Edit Mode and there is a selection: the average location of "
+                      "the selected elements.\n"
+                      "Else: active object's origin")
     bl_options = {'REGISTER', 'INTERNAL', 'UNDO'}
 
     modifier_type: StringProperty(options={'HIDDEN'})
@@ -50,11 +52,12 @@ class OBJECT_OT_ml_modifier_add(Operator):
         # === Add a gizmo object ===
         mod = ob.modifiers[-1]
 
-        # Search doesn't call invoke, so check if self.add_gizmo exists
-        if hasattr(self, "add_gizmo"):
-            if self.add_gizmo and ob.type == 'MESH':
+        # Search doesn't call invoke, so check if self.shift exists
+        if hasattr(self, "shift"):
+            if self.shift and ob.type == 'MESH':
                 if mod.type in have_gizmo_property or mod.type == 'UV_PROJECT':
-                    assign_gizmo_object_to_modifier(self, context, mod.name)
+                    placement = 'WORLD_ORIGIN' if self.alt else 'OBJECT'
+                    assign_gizmo_object_to_modifier(self, context, mod.name, placement=placement)
 
         # === Move modifier into place ===
         # Search doesn't call invoke, so check if self.ctrl exists.
@@ -79,7 +82,8 @@ class OBJECT_OT_ml_modifier_add(Operator):
         return {'FINISHED'}
 
     def invoke(self, context, event):
-        self.add_gizmo = True if event.shift else False
-        self.ctrl = True if event.ctrl else False
+        self.ctrl = event.ctrl
+        self.shift = event.shift
+        self.alt = event.alt
 
         return self.execute(context)
