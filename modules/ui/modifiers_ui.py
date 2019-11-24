@@ -541,7 +541,7 @@ class OBJECT_OT_ml_modifier_remove(Operator, ModifierListActions):
     action = 'REMOVE'
 
 
-class OBJECT_PT_Gizmo_object_settings(Panel):
+class OBJECT_PT_ml_gizmo_object_settings(Panel):
     bl_label = "Gizmo Settings"
     bl_space_type = 'VIEW_3D'
     bl_region_type = 'WINDOW'
@@ -796,7 +796,7 @@ def modifiers_ui(context, layout, num_of_rows=False, use_in_popup=False):
                 depress = not gizmo_ob.hide_viewport
                 sub_sub.operator("object.ml_gizmo_object_toggle_visibility", text="",
                                 icon='EMPTY_ARROWS', depress=depress)
-                sub.popover("OBJECT_PT_Gizmo_object_settings", text="")
+                sub.popover("OBJECT_PT_ml_gizmo_object_settings", text="")
 
 
     # === Modifier specific settings ===
