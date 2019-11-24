@@ -405,7 +405,7 @@ def _delete_empty_ml_collection():
 
 def delete_gizmo_object(self, gizmo_object):
     if gizmo_object:
-        if gizmo_object.type == 'EMPTY' and "_Gizmo" in gizmo_object.name:
+        if gizmo_object.type in {'EMPTY', 'LATTICE'} and "_Gizmo" in gizmo_object.name:
             bpy.data.objects.remove(gizmo_object)
             _delete_empty_ml_collection()
             self.report({'INFO'}, "Deleted a gizmo object")
