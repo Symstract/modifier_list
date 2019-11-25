@@ -6,6 +6,29 @@ from..utils import get_gizmo_object
 
 # Modified to improve
 # ======================================================================
+
+
+def BOOLEAN(layout, ob, md):
+    context = bpy.context
+    mp = DATA_PT_modifiers(context)
+    mp.BOOLEAN(layout, ob, md)
+
+    if not md.object:
+        return
+
+    layout.separator()
+
+    layout.label(text="Boolean Object:")
+
+    is_hidden = md.object.hide_get()
+    depress = is_hidden
+    icon = 'HIDE_ON' if is_hidden else 'HIDE_OFF'
+    layout.operator("object.ml_toggle_visibility_on_view_layer",
+                    text="Hide", icon=icon, depress=depress).object_name = md.object.name
+
+    layout.prop(md.object, "display_type")
+
+
 def LATTICE(layout, ob, md):
     context = bpy.context
     gizmo_ob = get_gizmo_object()

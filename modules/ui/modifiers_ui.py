@@ -810,6 +810,7 @@ def modifiers_ui(context, layout, num_of_rows=False, use_in_popup=False):
     # operators don't work. Lattice on the other hand has an improved
     # layout.
     have_custom_layout = (
+        'BOOLEAN',
         'CORRECTIVE_SMOOTH',
         'DATA_TRANSFER',
         'EXPLODE',
