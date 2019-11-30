@@ -26,7 +26,19 @@ def BOOLEAN(layout, ob, md):
     layout.operator("object.ml_toggle_visibility_on_view_layer",
                     text="Hide", icon=icon, depress=depress).object_name = md.object.name
 
+    layout.separator()
+
     layout.prop(md.object, "display_type")
+
+    layout.separator()
+
+    op = layout.operator("object.ml_smooth_shading_set", text="Shade Smooth")
+    op.object_name = md.object.name
+    op.shade_smooth = True
+
+    op = layout.operator("object.ml_smooth_shading_set", text="Shade Flat")
+    op.object_name = md.object.name
+    op.shade_smooth = False
 
 
 def LATTICE(layout, ob, md):
