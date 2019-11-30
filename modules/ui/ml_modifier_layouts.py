@@ -20,6 +20,8 @@ def BOOLEAN(layout, ob, md):
 
     layout.label(text="Boolean Object:")
 
+    layout.separator()
+
     is_hidden = md.object.hide_get()
     depress = is_hidden
     icon = 'HIDE_ON' if is_hidden else 'HIDE_OFF'
@@ -39,6 +41,10 @@ def BOOLEAN(layout, ob, md):
     op = layout.operator("object.ml_smooth_shading_set", text="Shade Flat")
     op.object_name = md.object.name
     op.shade_smooth = False
+
+    layout.separator()
+
+    layout.operator("object.ml_select", text="Select").object_name =  md.object.name
 
 
 def LATTICE(layout, ob, md):
