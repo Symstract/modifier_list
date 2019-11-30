@@ -521,8 +521,8 @@ class ModifierListActions:
 
 class OBJECT_OT_ml_modifier_move(Operator, ModifierListActions):
     bl_idname = "object.ml_modifier_move"
-    bl_label = "Move modifier"
-    bl_description = "Move modifier up/down in the stack"
+    bl_label = "Move Modifier"
+    bl_description = "Move modifier up/down in the stack. Hold Shift to move it to the top/bottom"
 
     action_items = [
         ("UP", "Up", ""),
