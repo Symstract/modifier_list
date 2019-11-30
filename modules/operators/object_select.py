@@ -1,25 +1,26 @@
 import bpy
+from bpy.props import *
 from bpy.types import Operator
 
-from ..utils import get_gizmo_object
 
-
-class OBJECT_OT_ml_gizmo_object_select(Operator):
-    bl_idname = "object.ml_gizmo_object_select"
-    bl_label = "Select Gizmo"
-    bl_description = ("Select the gizmo object.\n"
+class OBJECT_OT_ml_select(Operator):
+    bl_idname = "object.ml_select"
+    bl_label = "Select Object"
+    bl_description = ("Select object.\n"
                       "\n"
                       "Hold shift to extend selection")
     bl_options = {'REGISTER', 'INTERNAL', 'UNDO'}
 
+    object_name: StringProperty(options={'HIDDEN'})
+
     def execute(self, context):
-        gizmo_ob = get_gizmo_object()
+        ob = bpy.data.objects[self.object_name]
 
         if not self.extend_selection:
             bpy.ops.object.select_all(action='DESELECT')
-            context.view_layer.objects.active = gizmo_ob
+            context.view_layer.objects.active = ob
 
-        gizmo_ob.select_set(True)
+        ob.select_set(True)
 
         return {'FINISHED'}
 
