@@ -24,7 +24,7 @@ class ApplyModifier:
                       "Hold shift to also delete its gizmo object (if it has one)")
     bl_options = {'REGISTER', 'INTERNAL', 'UNDO'}
 
-    modifier: StringProperty()
+    modifier: StringProperty(options={'HIDDEN'})
 
     apply_as: None
 

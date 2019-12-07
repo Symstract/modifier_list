@@ -11,7 +11,7 @@ class OBJECT_OT_ml_modifier_copy(Operator):
     bl_description = "Duplicate modifier at the same position in the stack"
     bl_options = {'REGISTER', 'INTERNAL', 'UNDO'}
 
-    modifier: StringProperty()
+    modifier: StringProperty(options={'HIDDEN'})
 
     def execute(self, context):
         ob = get_ml_active_object()
