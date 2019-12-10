@@ -598,7 +598,9 @@ class OBJECT_PT_ml_gizmo_object_settings(Panel):
         layout.separator()
 
         layout.operator("object.ml_select", text="Select Gizmo").object_name = gizmo_ob.name
-        layout.operator("object.ml_gizmo_object_delete")
+
+        if gizmo_ob.type in {'EMPTY', 'LATTICE'} and "_Gizmo" in gizmo_ob.name:
+            layout.operator("object.ml_gizmo_object_delete")
 
 
 # UI
