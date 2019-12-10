@@ -128,6 +128,11 @@ class Preferences(AddonPreferences):
                     "NOTE: This is really slow on heavy meshes",
         update=prefs_callback)
 
+    disallow_applying_hidden_modifiers: BoolProperty(
+        name="Disallow Applying Hidden Modifiers",
+        description="Disallow applying modifier's which are hidden in the viewport",
+        update=prefs_callback)
+
     icon_color_items = [
         ("black", "Black", "", 1),
         ("white", "White", "", 2)
@@ -279,6 +284,7 @@ class Preferences(AddonPreferences):
         layout.label(text="General:")
 
         layout.prop(self, "insert_modifier_after_active")
+        layout.prop(self, "disallow_applying_hidden_modifiers")
 
         split = layout.split()
         split.label(text="Icon Color")

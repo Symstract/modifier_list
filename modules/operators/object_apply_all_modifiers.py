@@ -18,6 +18,8 @@ class OBJECT_OT_ml_apply_all_modifiers(Operator):
     bl_options = {'REGISTER', 'UNDO'}
 
     def execute(self, context):
+        prefs = bpy.context.preferences.addons["modifier_list"].preferences
+
         obs = context.selected_objects
 
         if not obs:
@@ -40,6 +42,9 @@ class OBJECT_OT_ml_apply_all_modifiers(Operator):
             override['object'] = ob
             mods = ob.modifiers
             for mod in mods:
+                if prefs.disallow_applying_hidden_modifiers and not mod.show_viewport:
+                    continue
+
                 try:
                     bpy.ops.object.modifier_apply(override, apply_as='DATA', modifier=mod.name)
                 except:
@@ -71,9 +76,11 @@ class OBJECT_OT_ml_apply_all_modifiers(Operator):
                                       "console for a list of the objects.")
                 print(f"Some modifier(s) couldn't be applied on {failed_obs}")
         else:
-            prefs = bpy.context.preferences.addons["modifier_list"].preferences
             if 'APPLY' in prefs.batch_ops_reports:
-                self.report({'INFO'}, "Applied all modifiers")
+                if prefs.disallow_applying_hidden_modifiers:
+                    self.report({'INFO'}, "Applied all visible modifiers")
+                else:
+                    self.report({'INFO'}, "Applied all modifiers")
 
         return {'FINISHED'}
 

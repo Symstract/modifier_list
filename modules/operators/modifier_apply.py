@@ -113,6 +113,15 @@ class ApplyModifier:
     def invoke(self, context, event):
         self.shift = True if event.shift else False
 
+        prefs = bpy.context.preferences.addons["modifier_list"].preferences
+
+        if prefs.disallow_applying_hidden_modifiers:
+            ml_active_ob = get_ml_active_object()
+            mod = ml_active_ob.modifiers[self.modifier]
+            if not mod.show_viewport:
+                self.report({'INFO'}, "Modifier is hidden in viewport, skipped apply")
+                return {'CANCELLED'}
+
         return self.execute(context)
 
     def curve_modifier_apply_report(self):
