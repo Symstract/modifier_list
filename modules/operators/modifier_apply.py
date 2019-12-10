@@ -111,7 +111,7 @@ class ApplyModifier:
         return {'FINISHED'}
 
     def invoke(self, context, event):
-        self.shift = True if event.shift else False
+        self.shift = event.shift
 
         prefs = bpy.context.preferences.addons["modifier_list"].preferences
 
