@@ -26,17 +26,21 @@
 - **Modifier menu**
 - **Favourite modifiers** which can be set in the addon preferences
 - **Ability to apply modifiers in edit mode (kind of).** The apply operator acts as a macro when used in edit mode and automatically switches to object mode, applies the modifier and switches back to edit mode.
+- **Ability to apply modifiers even if the object's data is used by multiple objects.** In this case, a popup with two options is shown: "Apply To Active Object Only (Break Link)" and "Apply To All Objects"
 - **Ability to inserted new modifiers after the active one** by enabling the "Insert New Modifier After Active" setting.
   - Hold control to override this. (When off, the behaviour is reversed).
   - Modifier search doesn't support overriding
   - This is really slow on heavy meshes.
+- **Setting to disallow applying hidden modifiers**, which affects both "Apply Modifier" and "Apply All Modifiers"
+- **Ability to move a modifier to top/bottom** by holding shift when pressing "Move Modifier"
 - **Modifier batch operators** Toggle All Modifiers, Apply All Modifiers and Remove All Modifiers. Apply All Modifiers works also in edit mode.
-- **Sidebar tab and a popup**, which contain also a vertex group list. The sidebar tab can be disabled from the addon preferences.
+- **Sidebar tab and a popup**, which contain also a vertex group list. The sidebar tab can be disabled from the addon preferences. There is also a setting to keep the tab always visible.
 - **Object pinning for the sidebar tab and for the popup** by clicking the pin icon in the header. When an object is pinned, the panels don't follow object selection but keep showing the modifiers (and vertex groups) of the pinned object instead. It works the same way as context pinning in Properties Editor.
 - **Easy way to add a control object** - or as I decided to call them, **a gizmo object** - to a modifier (currently only for meshes)
   - There is Add Gizmo button for adding a "gizmo object" to a modifier. It basically just adds an empty and assings it to the appropriate property of the modifier (Mirror Object for Mirror modifier for example).
   - All gizmos go into a gizmo object collection.
   -  By default, the gizmo is placed at the origin of the active object. But if you are in edit mode and have something selected, the gizmo is placed at the average location of the selected elements.
+  - If you hold alt while you click the Add Gizmo button, the gizmo is placed at world origin
   - If you hold shift while you click the Add Gizmo button, the gizmo is placed at the location of the 3D Cursor
   - You can also hold shift when adding a modifier to add a gizmo at the same time, so you can save an extra click :)
   - After adding a gizmo, the Add Gizmo button changes to a visibility toggle and a settings popover, in which you can change some gizmo setting, such as its location, rotation and parenting. You can also select or delete the gizmo from the popover. Note: selecting and deleting give some (harmless) errors/glitches when used from the modifier popup.
@@ -53,6 +57,7 @@
   - The settings of the lattice object are shown among the modifier settings, so everything is in the same place.
   - When applying or removing the modifier, hold shift to remove the lattice object and the vertex group (unless the group was manually created and its name doesn't start with "ML") at the same time.
   - If for some reason the context pinning doesn't automatically turn back off, just click the pin icon in the header to unpin the context.
+- **Extra settings/operators for boolean objects** inside Boolean layout: visibility toggle, display type, shade smooth / shade flat and select
 - **Auto Smooth is enabled automatically when you add a Weighted Normal modifier**
 - **Black and white icons** to choose between
 

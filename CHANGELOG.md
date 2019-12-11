@@ -1,5 +1,23 @@
 # Changelog
 
+
+## 1.5 - 11.12.2019
+
+- **Ability to apply modifiers even if the object's data is used by multiple objects.** In this case, a popup with two options is shown: "Apply To Active Object Only (Break Link)" and "Apply To All Objects"
+- **Extra settings/operators for boolean objects** inside Boolean layout: visibility toggle, display type, shade smooth / shade flat and select
+- **Ability to move a modifier to top/bottom** by holding shift when pressing "Move Modifier"
+- **"Reset Transform" operator inside the gizmo settings menu**
+- **Ability to directly add a gizmo at world center** by holding Shift + Alt when adding a modifier or just Alt if adding the gizmo separately
+- **Setting to keep Sidebar tab always visible**
+- **Setting to disallow applying hidden modifiers**, which affects both "Apply Modifier" and "Apply All Modifiers"
+- **"Apply on Spline" option for curve modifiers, which was missing, is now there**
+- **Deleting objects that are not actual gizmo objects (empties with "_Gizmo" in their name) is now prevented**
+- **"Move up" and "Move Down" operators have been combined**, so if someone had added shortcuts for them, they need to be added again
+- **Operators don't show unnecessary "Adjust Last Operation" panel any more**
+- **"Show In Edit Mode" is not shown for Boolean any more** (it doesn't work for it)
+- **Fix for ResourceWarning related to loading icons on register in console**
+
+
 ## 1.4.2 - 5.9.2019
 
 - Removed the offset from lattices. It was there so the lattice wouldn't overlap the mesh, but it didn't allow precise snapping. Now it does.
