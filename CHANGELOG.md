@@ -1,6 +1,11 @@
 # Changelog
 
 
+## 1.5.1 - 16.12.2019
+
+- Fix wrong modifier menu columns in 2.82 due to new Weld modifier
+
+
 ## 1.5 - 11.12.2019
 
 - **Ability to apply modifiers even if the object's data is used by multiple objects.** In this case, a popup with two options is shown: "Apply To Active Object Only (Break Link)" and "Apply To All Objects"
