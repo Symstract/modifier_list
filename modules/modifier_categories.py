@@ -116,21 +116,34 @@ have_gizmo_property = {
 }
 
 # === Mesh modifiers by categories ===
+if bpy.app.version[1] >= 82:
+    gen_end = 27
+    def_start = 27
+    def_end = 43
+    sim_start = 43
+    sim_end = 53
+else:
+    gen_end = 26
+    def_start = 26
+    def_end = 42
+    sim_start = 42
+    sim_end = 52
+
 mesh_modify_names_icons_types = [mod for mod in all_modifier_names_icons_types()[0:10]]
 
-mesh_generate_names_icons_types = [mod for mod in all_modifier_names_icons_types()[10:26]]
+mesh_generate_names_icons_types = [mod for mod in all_modifier_names_icons_types()[10:gen_end]]
 
-mesh_deform_names_icons_types = [mod for mod in all_modifier_names_icons_types()[26:42]]
+mesh_deform_names_icons_types = [mod for mod in all_modifier_names_icons_types()[def_start:def_end]]
 
-mesh_simulate_names_icons_types = [mod for mod in all_modifier_names_icons_types()[42:52]]
+mesh_simulate_names_icons_types = [mod for mod in all_modifier_names_icons_types()[sim_start:sim_end]]
 
 # === Curve, surface and text modifiers by categories ===
-curve_modify_names_icons_types = (
+curve_modify_names_icons_types = [
     ('Mesh Cache', 'MOD_MESHDEFORM', 'MESH_CACHE'),
     ('Mesh Sequence Cache', 'MOD_MESHDEFORM', 'MESH_SEQUENCE_CACHE')
-)
+]
 
-curve_generate_names_icons_types = (
+curve_generate_names_icons_types = [
     ('Array', 'MOD_ARRAY', 'ARRAY'),
     ('Bevel', 'MOD_BEVEL', 'BEVEL'),
     ('Build', 'MOD_BUILD', 'BUILD'),
@@ -141,10 +154,13 @@ curve_generate_names_icons_types = (
     ('Screw', 'MOD_SCREW', 'SCREW'),
     ('Solidify', 'MOD_SOLIDIFY', 'SOLIDIFY'),
     ('Subdivision Surface', 'MOD_SUBSURF', 'SUBSURF'),
-    ('Triangulate', 'MOD_TRIANGULATE', 'TRIANGULATE'),
-)
+    ('Triangulate', 'MOD_TRIANGULATE', 'TRIANGULATE')
+]
 
-curve_deform_names_icons_types = (
+if bpy.app.version[1] >= 82:
+    curve_generate_names_icons_types.append(('Weld', 'AUTOMERGE_OFF', 'WELD'))
+
+curve_deform_names_icons_types = [
     ('Armature', 'MOD_ARMATURE', 'ARMATURE'),
     ('Cast', 'MOD_CAST', 'CAST'),
     ('Curve', 'MOD_CURVE', 'CURVE'),
@@ -155,12 +171,12 @@ curve_deform_names_icons_types = (
     ('Simple Deform', 'MOD_SIMPLEDEFORM', 'SIMPLE_DEFORM'),
     ('Smooth', 'MOD_SMOOTH', 'SMOOTH'),
     ('Warp', 'MOD_WARP', 'WARP'),
-    ('Wave', 'MOD_WAVE', 'WAVE'),
-)
+    ('Wave', 'MOD_WAVE', 'WAVE')
+]
 
-curve_simulate_names_icons_types = (
-    ('Soft Body', 'MOD_SOFT', 'SOFT_BODY'),
-)
+curve_simulate_names_icons_types = [
+    ('Soft Body', 'MOD_SOFT', 'SOFT_BODY')
+]
 
 curve_all_names_icons_types = (
     curve_modify_names_icons_types
