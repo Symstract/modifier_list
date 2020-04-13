@@ -4,6 +4,9 @@ from bl_ui.properties_data_modifier import DATA_PT_modifiers
 from..utils import get_gizmo_object
 
 
+BL_VERSION_MINOR_NUMBER = bpy.app.version[1]
+
+
 # Modified to improve
 # ======================================================================
 
@@ -92,7 +95,10 @@ def LATTICE(layout, ob, md):
 # ======================================================================
 
 
-def CORRECTIVE_SMOOTH(layout, ob, md):
+# === Corrective Smooth ===
+
+
+def _corrective_smooth_2_82(layout, ob ,md):
     is_bind = md.is_bind
 
     layout.prop(md, "factor", text="Factor")
@@ -117,6 +123,43 @@ def CORRECTIVE_SMOOTH(layout, ob, md):
     if md.rest_source == 'BIND':
         layout.operator("object.correctivesmooth_bind",
                         text="Unbind" if is_bind else "Bind").modifier = md.name # Changed
+
+
+def _corrective_smooth_2_83(layout, ob ,md):
+    is_bind = md.is_bind
+
+    layout.prop(md, "factor", text="Factor")
+    layout.prop(md, "iterations")
+    layout.prop(md, "scale")
+    row = layout.row()
+    row.prop(md, "smooth_type")
+
+    split = layout.split()
+
+    col = split.column()
+    col.label(text="Vertex Group:")
+    row = col.row(align=True)
+    row.prop_search(md, "vertex_group", ob, "vertex_groups", text="")
+    row.prop(md, "invert_vertex_group", text="", icon='ARROW_LEFTRIGHT')
+
+    col = split.column()
+    col.prop(md, "use_only_smooth")
+    col.prop(md, "use_pin_boundary")
+
+    layout.prop(md, "rest_source")
+    if md.rest_source == 'BIND':
+        layout.operator("object.correctivesmooth_bind",
+                        text="Unbind" if is_bind else "Bind").modifier = md.name # Changed
+
+
+def CORRECTIVE_SMOOTH(layout, ob, md):
+    if BL_VERSION_MINOR_NUMBER < 83:
+        _corrective_smooth_2_82(layout, ob, md)
+    else:
+        _corrective_smooth_2_83(layout, ob, md)
+
+
+# ==========
 
 
 def DATA_TRANSFER(layout, ob, md):
@@ -232,7 +275,10 @@ def DATA_TRANSFER(layout, ob, md):
     sub.prop(md, "invert_vertex_group", text="", icon='ARROW_LEFTRIGHT')
 
 
-def EXPLODE(layout, ob, md):
+# === Explode ===
+
+
+def _explode_2_82(layout, ob, md):
     split = layout.split()
 
     col = split.column()
@@ -254,7 +300,41 @@ def EXPLODE(layout, ob, md):
     layout.operator("object.explode_refresh", text="Refresh").modifier = md.name # Changed
 
 
-def HOOK(layout, ob, md):
+def _explode_2_83(layout, ob, md):
+    split = layout.split()
+
+    col = split.column()
+    col.label(text="Vertex Group:")
+    row = col.row(align=True)
+    row.prop_search(md, "vertex_group", ob, "vertex_groups", text="")
+    row.prop(md, "invert_vertex_group", text="", icon='ARROW_LEFTRIGHT')
+    sub = col.column()
+    sub.active = bool(md.vertex_group)
+    sub.prop(md, "protect")
+    col.label(text="Particle UV")
+    col.prop_search(md, "particle_uv", ob.data, "uv_layers", text="")
+
+    col = split.column()
+    col.prop(md, "use_edge_cut")
+    col.prop(md, "show_unborn")
+    col.prop(md, "show_alive")
+    col.prop(md, "show_dead")
+    col.prop(md, "use_size")
+
+    layout.operator("object.explode_refresh", text="Refresh").modifier = md.name # Changed
+
+
+def EXPLODE(layout, ob, md):
+    if BL_VERSION_MINOR_NUMBER < 83:
+        _explode_2_82(layout, ob, md)
+    else:
+        _explode_2_83(layout, ob, md)
+
+
+# === Hook ===
+
+
+def _hook_2_82(layout, ob, md):
     use_falloff = (md.falloff_type != 'NONE')
     split = layout.split()
 
@@ -296,7 +376,61 @@ def HOOK(layout, ob, md):
         row.operator("object.hook_assign", text="Assign").modifier = md.name # Changed
 
 
-def LAPLACIANDEFORM(layout, ob, md):
+def _hook_2_83(layout, ob, md):
+    use_falloff = (md.falloff_type != 'NONE')
+    split = layout.split()
+
+    col = split.column()
+    col.label(text="Object:")
+    col.prop(md, "object", text="")
+    if md.object and md.object.type == 'ARMATURE':
+        col.label(text="Bone:")
+        col.prop_search(md, "subtarget", md.object.data, "bones", text="")
+    col = split.column()
+    col.label(text="Vertex Group:")
+    row = col.row(align=True)
+    row.prop_search(md, "vertex_group", ob, "vertex_groups", text="")
+    row.prop(md, "invert_vertex_group", text="", icon='ARROW_LEFTRIGHT')
+
+    layout.separator()
+
+    row = layout.row(align=True)
+    if use_falloff:
+        row.prop(md, "falloff_radius")
+    row.prop(md, "strength", slider=True)
+    layout.prop(md, "falloff_type")
+
+    col = layout.column()
+    if use_falloff:
+        if md.falloff_type == 'CURVE':
+            col.template_curve_mapping(md, "falloff_curve")
+
+    split = layout.split()
+
+    col = split.column()
+    col.prop(md, "use_falloff_uniform")
+
+    if ob.mode == 'EDIT':
+        row = col.row(align=True)
+        row.operator("object.hook_reset", text="Reset").modifier = md.name # Changed
+        row.operator("object.hook_recenter", text="Recenter").modifier = md.name # Changed
+
+        row = layout.row(align=True)
+        row.operator("object.hook_select", text="Select").modifier = md.name # Changed
+        row.operator("object.hook_assign", text="Assign").modifier = md.name # Changed
+
+
+def HOOK(layout, ob, md):
+    if BL_VERSION_MINOR_NUMBER < 83:
+        _hook_2_82(layout, ob, md)
+    else:
+        _hook_2_83(layout, ob, md)
+
+
+# === Laplacian Deform ===
+
+
+def _laplaciandeform_2_82(layout, ob, md):
     is_bind = md.is_bind
 
     layout.prop(md, "iterations")
@@ -315,6 +449,34 @@ def LAPLACIANDEFORM(layout, ob, md):
     row.enabled = bool(md.vertex_group)
     row.operator("object.laplaciandeform_bind",
                  text="Unbind" if is_bind else "Bind").modifier = md.name # Changed
+
+
+def _laplaciandeform_2_83(layout, ob, md):
+    is_bind = md.is_bind
+
+    layout.prop(md, "iterations")
+
+    row = layout.row(align=True)
+    row.enabled = not is_bind
+    row.prop_search(md, "vertex_group", ob, "vertex_groups")
+    row.prop(md, "invert_vertex_group", text="", icon='ARROW_LEFTRIGHT')
+
+    layout.separator()
+
+    row = layout.row()
+    row.enabled = bool(md.vertex_group)
+    row.operator("object.laplaciandeform_bind",
+                 text="Unbind" if is_bind else "Bind").modifier = md.name # Changed
+
+
+def LAPLACIANDEFORM(layout, ob, md):
+    if BL_VERSION_MINOR_NUMBER < 83:
+        _laplaciandeform_2_82(layout, ob, md)
+    else:
+        _laplaciandeform_2_83(layout, ob, md)
+
+
+# ==========
 
 
 def MESH_DEFORM(layout, ob, md):
@@ -346,13 +508,17 @@ def MESH_DEFORM(layout, ob, md):
         layout.operator("object.meshdeform_bind", text="Bind").modifier = md.name # Changed
 
 
-def MULTIRES(layout, ob, md):
+# === Multires ===
+
+
+def _multires_2_82(layout, ob, md):
     layout.row().prop(md, "subdivision_type", expand=True)
 
     split = layout.split()
     col = split.column()
     col.prop(md, "levels", text="Preview")
-    col.prop(md, "sculpt_levels", text="Sculpt")
+    # TODO(sergey): Expose it again after T58473 is solved.
+    # col.prop(md, "sculpt_levels", text="Sculpt")
     col.prop(md, "render_levels", text="Render")
     col.prop(md, "quality")
 
@@ -381,7 +547,68 @@ def MULTIRES(layout, ob, md):
         row.label()
 
 
-def OCEAN(layout, _ob, md):
+def _multires_2_83(layout, ob, md):
+    # Changing some of the properties can not be done once there is an
+    # actual displacement stored for this multires modifier. This check
+    # will disallow those properties from change.
+    # This is a bit stupid check but should be sufficient for the usual
+    # multires usage. It might become less strict and only disallow
+    # modifications if there is CD_MDISPS layer, or if there is actual
+    # non-zero displacement but such checks will be too slow to be done
+    # on every redraw.
+    have_displacement = (md.total_levels != 0)
+
+    row = layout.row()
+    row.enabled = not have_displacement
+    row.prop(md, "subdivision_type", expand=True)
+
+    split = layout.split()
+    col = split.column()
+    col.prop(md, "levels", text="Preview")
+    # TODO(sergey): Expose it again after T58473 is solved.
+    # col.prop(md, "sculpt_levels", text="Sculpt")
+    col.prop(md, "render_levels", text="Render")
+
+    row = col.row()
+    row.enabled = not have_displacement
+    row.prop(md, "quality")
+
+    col = split.column()
+
+    col.enabled = ob.mode != 'EDIT'
+    col.operator("object.multires_subdivide", text="Subdivide").modifier = md.name # Changed
+    col.operator("object.multires_higher_levels_delete", text="Delete Higher").modifier = md.name # Changed
+    col.operator("object.multires_reshape", text="Reshape").modifier = md.name # Changed
+    col.operator("object.multires_base_apply", text="Apply Base").modifier = md.name # Changed
+    col.prop(md, "uv_smooth", text="")
+    col.prop(md, "show_only_control_edges")
+    col.prop(md, "use_creases")
+
+    layout.separator()
+
+    col = layout.column()
+    row = col.row()
+    if md.is_external:
+        row.operator("object.multires_external_pack", text="Pack External").modifier = md.name # Changed
+        row.label()
+        row = col.row()
+        row.prop(md, "filepath", text="")
+    else:
+        row.operator("object.multires_external_save", text="Save External...").modifier = md.name # Changed
+        row.label()
+
+
+def MULTIRES(layout, ob, md):
+    if BL_VERSION_MINOR_NUMBER < 83:
+        _multires_2_82(layout, ob, md)
+    else:
+        _multires_2_83(layout, ob, md)
+
+
+# ==========
+
+
+def _ocean_2_82(layout, _ob, md):
     if not bpy.app.build_options.mod_oceansim:
         layout.label(text="Built without OceanSim modifier")
         return
@@ -472,6 +699,122 @@ def OCEAN(layout, _ob, md):
     col.prop(md, "bake_foam_fade")
 
     col = split.column()
+
+
+def _ocean_2_83(layout, _ob, md):
+    if not bpy.app.build_options.mod_oceansim:
+        layout.label(text="Built without OceanSim modifier")
+        return
+
+    layout.prop(md, "geometry_mode")
+
+    if md.geometry_mode == 'GENERATE':
+        row = layout.row()
+        row.prop(md, "repeat_x")
+        row.prop(md, "repeat_y")
+
+    layout.separator()
+
+    split = layout.split()
+
+    col = split.column()
+    col.prop(md, "time")
+    col.prop(md, "depth")
+    col.prop(md, "random_seed")
+
+    col = split.column()
+    col.prop(md, "resolution")
+    col.prop(md, "size")
+    col.prop(md, "spatial_size")
+
+    layout.separator()
+
+    layout.prop(md, "spectrum")
+
+    if md.spectrum in {'TEXEL_MARSEN_ARSLOE', 'JONSWAP'}:
+        split = layout.split()
+
+        col = split.column()
+        col.prop(md, "sharpen_peak_jonswap")
+
+        col = split.column()
+        col.prop(md, "fetch_jonswap")
+
+    layout.label(text="Waves:")
+
+    split = layout.split()
+
+    col = split.column()
+    col.prop(md, "choppiness")
+    col.prop(md, "wave_scale", text="Scale")
+    col.prop(md, "wave_scale_min")
+    col.prop(md, "wind_velocity")
+
+    col = split.column()
+    col.prop(md, "wave_alignment", text="Alignment")
+    sub = col.column()
+    sub.active = (md.wave_alignment > 0.0)
+    sub.prop(md, "wave_direction", text="Direction")
+    sub.prop(md, "damping")
+
+    layout.separator()
+
+    layout.prop(md, "use_normals")
+
+    split = layout.split()
+
+    col = split.column()
+    col.prop(md, "use_foam")
+    sub = col.row()
+    sub.active = md.use_foam
+    sub.prop(md, "foam_coverage", text="Coverage")
+
+    col = split.column()
+    col.active = md.use_foam
+    col.label(text="Foam Data Layer Name:")
+    col.prop(md, "foam_layer_name", text="")
+
+    layout.separator()
+
+    # Changed:
+    if md.is_cached:
+        bake = layout.operator("object.ocean_bake", text="Delete Bake")
+        bake.free = True
+        bake.modifier = md.name
+    else:
+        bake = layout.operator("object.ocean_bake")
+        bake.free = False
+        bake.modifier = md.name
+
+    split = layout.split()
+    split.enabled = not md.is_cached
+
+    col = split.column(align=True)
+    col.prop(md, "frame_start", text="Start")
+    col.prop(md, "frame_end", text="End")
+
+    col = split.column(align=True)
+    col.label(text="Cache path:")
+    col.prop(md, "filepath", text="")
+
+    split = layout.split()
+    split.enabled = not md.is_cached
+
+    col = split.column()
+    col.active = md.use_foam
+    col.prop(md, "bake_foam_fade")
+
+    col = split.column()
+
+
+def OCEAN(layout, _ob, md):
+    if BL_VERSION_MINOR_NUMBER < 83:
+        _ocean_2_82(layout, _ob, md)
+    else:
+        _ocean_2_83(layout, _ob, md)
+
+
+# ==========
 
 
 def REMESH(layout, _ob, md):
@@ -590,7 +933,10 @@ def SKIN(layout, _ob, md):
     col.prop(md, "use_z_symmetry")
 
 
-def SURFACE_DEFORM(layout, _ob, md):
+# === Surface Deform ===
+
+
+def _surface_deform_2_82(layout, _ob, md):
         col = layout.column()
         col.active = not md.is_bound
 
@@ -606,3 +952,39 @@ def SURFACE_DEFORM(layout, _ob, md):
         else:
             col.active = md.target is not None
             col.operator("object.surfacedeform_bind", text="Bind").modifier = md.name # Changed
+
+
+def _surface_deform_2_83(layout, _ob, md):
+    split = layout.split()
+    col = split.column()
+    col.active = not md.is_bound
+
+    col.label(text="Target:")
+    col.prop(md, "target", text="")
+
+    col = split.column()
+    col.label(text="Vertex Group:")
+    row = col.row(align=True)
+    row.prop_search(md, "vertex_group", _ob, "vertex_groups", text="")
+    row.prop(md, "invert_vertex_group", text="", icon='ARROW_LEFTRIGHT')
+
+    split = layout.split()
+    col = split.column()
+    col.prop(md, "falloff")
+    col = split.column()
+    col.prop(md, "strength")
+
+    col = layout.column()
+
+    if md.is_bound:
+        col.operator("object.surfacedeform_bind", text="Unbind").modifier = md.name # Changed
+    else:
+        col.active = md.target is not None
+        col.operator("object.surfacedeform_bind", text="Bind").modifier = md.name # Changed
+
+
+def SURFACE_DEFORM(layout, _ob, md):
+    if BL_VERSION_MINOR_NUMBER < 83:
+        _surface_deform_2_82(layout, _ob, md)
+    else:
+        _surface_deform_2_83(layout, _ob, md)
