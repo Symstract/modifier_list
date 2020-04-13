@@ -1,6 +1,21 @@
 # Changelog
 
 
+## 1.5.2 - 13.4.2020
+
+**Blender 2.83 and earlier**
+- Multires: don't show the sculpt level setting. Sculpting on other levels than the highest has been disabled in vanilla Blender since 2.81... I will release another patch once support for it has been added.
+
+**Blender 2.83**
+- Updated layouts for the following modifiers so they are in synch with the latest Blender:
+  - Corrective Smooth
+  - Explode
+  - Hook
+  - Laplacian Deform
+  - Multires
+  - Ocean
+  - Surface Deform
+
 ## 1.5.1 - 16.12.2019
 
 - Fix wrong modifier menu columns in 2.82 due to new Weld modifier
