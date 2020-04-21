@@ -1,6 +1,11 @@
 # Changelog
 
 
+## 1.5.3 - 21.4.2020
+
+- Fixed "Surface" modifier appearing in modifier search and menu. It's not meant to be seen by users.
+
+
 ## 1.5.2 - 13.4.2020
 
 **Blender 2.83 and earlier**
@@ -15,6 +20,7 @@
   - Multires
   - Ocean
   - Surface Deform
+
 
 ## 1.5.1 - 16.12.2019
 
