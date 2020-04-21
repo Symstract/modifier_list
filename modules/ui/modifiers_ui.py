@@ -725,11 +725,8 @@ def modifiers_ui(context, layout, num_of_rows=False, use_in_popup=False):
 
     active_mod_index = ob.ml_modifier_active_index
     active_mod = ob.modifiers[active_mod_index]
-
-    all_modifier_names_icons_types = modifier_categories.all_modifier_names_icons_types
-
-    active_mod_icon = [icon for name, icon, mod in all_modifier_names_icons_types()
-                        if mod == active_mod.type].pop()
+    all_mods = modifier_categories.ALL_MODIFIERS
+    active_mod_icon = [icon for name, icon, mod in all_mods if mod == active_mod.type].pop()
 
     col = layout.column(align=True)
 
@@ -847,7 +844,7 @@ def set_mesh_modifier_collection_items():
     mesh_modifiers = bpy.context.window_manager.ml_mesh_modifiers
 
     if not mesh_modifiers:
-        for name, _, mod in modifier_categories.all_modifier_names_icons_types():
+        for name, _, mod in modifier_categories.ALL_MODIFIERS:
             item = mesh_modifiers.add()
             item.name = name
             item.value = mod
