@@ -13,6 +13,9 @@ def all_modifier_names_icons_types():
     return all_mods_zipped
 
 
+ALL_MODIFIERS = all_modifier_names_icons_types()
+
+
 def get_favourite_modifiers_names():
     """List of the names of the favourite modifiers"""
     prefs = bpy.context.preferences.addons["modifier_list"].preferences
@@ -28,7 +31,7 @@ def favourite_modifiers_names_icons_types():
     """
     mods_enum = bpy.types.Modifier.bl_rna.properties['type'].enum_items
     all_mod_names = [modifier.name for modifier in mods_enum]
-    all_mods_dict = dict(zip(all_mod_names, all_modifier_names_icons_types()))
+    all_mods_dict = dict(zip(all_mod_names, ALL_MODIFIERS))
     fav_mods_list = [all_mods_dict[mod] if mod in all_mods_dict else (None, None, None)
                      for mod in get_favourite_modifiers_names()]
     fav_mods_iter = iter(fav_mods_list)
@@ -53,7 +56,7 @@ dont_support_show_in_editmode = {
 }
 
 # === Support show_on_cage ===
-deform_mods = {mod for _, _, mod in all_modifier_names_icons_types()[25:41]}
+deform_mods = {mod for _, _, mod in ALL_MODIFIERS[25:41]}
 other_show_on_cage_mods = {
     'DATA_TRANSFER',
     'NORMAL_EDIT',
@@ -86,7 +89,7 @@ support_use_apply_on_spline = {
 }
 
 # === Support apply_as_shape_key ===
-deform_mods = {mod for name, icon, mod in all_modifier_names_icons_types()[26:42]}
+deform_mods = {mod for name, icon, mod in ALL_MODIFIERS[26:42]}
 other_shape_key_mods = {'CLOTH', 'SOFT_BODY', 'MESH_CACHE'}
 support_apply_as_shape_key = deform_mods.union(other_shape_key_mods)
 
@@ -116,26 +119,27 @@ have_gizmo_property = {
 }
 
 # === Mesh modifiers by categories ===
-if bpy.app.version[1] >= 82:
-    gen_end = 27
-    def_start = 27
-    def_end = 43
-    sim_start = 43
-    sim_end = 53
+mods = ALL_MODIFIERS
+
+modify_end = next(mods.index(mod) + 1 for mod in mods if mod[0] == "Vertex Weight Proximity")
+gen_start = next(mods.index(mod) for mod in mods if mod[0] == "Array")
+
+# In Blender 2.82, the Weld modifier was added but it was incorrectly
+# placed before Wireframe. That's been fixed in 2.83.
+if bpy.app.version[1] == 82:
+    gen_end = next(mods.index(mod) + 1 for mod in mods if mod[0] == "Weld")
 else:
-    gen_end = 26
-    def_start = 26
-    def_end = 42
-    sim_start = 42
-    sim_end = 52
+    gen_end = next(mods.index(mod) + 1 for mod in mods if mod[0] == "Wireframe")
 
-mesh_modify_names_icons_types = [mod for mod in all_modifier_names_icons_types()[0:10]]
+def_start = next(mods.index(mod) for mod in mods if mod[0] == "Armature")
+def_end = next(mods.index(mod) + 1 for mod in mods if mod[0] == "Wave")
+sim_start = next(mods.index(mod) for mod in mods if mod[0] == "Cloth")
+sim_end = next(mods.index(mod) + 1 for mod in mods if mod[0] == "Soft Body")
 
-mesh_generate_names_icons_types = [mod for mod in all_modifier_names_icons_types()[10:gen_end]]
-
-mesh_deform_names_icons_types = [mod for mod in all_modifier_names_icons_types()[def_start:def_end]]
-
-mesh_simulate_names_icons_types = [mod for mod in all_modifier_names_icons_types()[sim_start:sim_end]]
+mesh_modify_names_icons_types = [mod for mod in ALL_MODIFIERS[0:modify_end]]
+mesh_generate_names_icons_types = [mod for mod in ALL_MODIFIERS[gen_start:gen_end]]
+mesh_deform_names_icons_types = [mod for mod in ALL_MODIFIERS[def_start:def_end]]
+mesh_simulate_names_icons_types = [mod for mod in ALL_MODIFIERS[sim_start:sim_end]]
 
 # === Curve, surface and text modifiers by categories ===
 curve_modify_names_icons_types = [
