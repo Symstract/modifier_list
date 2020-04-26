@@ -93,10 +93,6 @@ class ApplyModifier:
 
         self.mod_type = ml_active_ob.modifiers[self.modifier].type
 
-        # Make applying modifiers possible when an object is pinned
-        override = context.copy()
-        override['object'] = get_ml_active_object()
-
         # Get the gizmo object and the vertex group, so they can be
         # deleted after applying the modifier
         gizmo_ob = get_gizmo_object()
@@ -110,6 +106,10 @@ class ApplyModifier:
             # used by other objects too.
             if self.multi_user_data_apply_method != 'NONE':
                 self.assign_new_data_to_active_instance()
+
+            # Make applying modifiers possible when an object is pinned
+            override = context.copy()
+            override['object'] = get_ml_active_object()
 
             try:
                 bpy.ops.object.modifier_apply(override, apply_as=self.apply_as, modifier=self.modifier)
@@ -143,6 +143,10 @@ class ApplyModifier:
             # used by other objects too.
             if self.multi_user_data_apply_method != 'NONE':
                 self.assign_new_data_to_active_instance()
+
+            # Make applying modifiers possible when an object is pinned
+            override = context.copy()
+            override['object'] = get_ml_active_object()
 
             try:
                 bpy.ops.object.modifier_apply(override, apply_as=self.apply_as, modifier=self.modifier)
