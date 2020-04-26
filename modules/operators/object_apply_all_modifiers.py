@@ -29,7 +29,6 @@ class OBJECT_OT_ml_apply_all_modifiers(Operator):
         obs_have_mods = False
         obs_with_mods_failed_to_apply = []
 
-        override = context.copy()
 
         is_edit_mode = context.mode in {'EDIT_MESH', 'EDIT_CURVE', 'EDIT_SURFACE',
                                         'EDIT_TEXT', 'EDIT_LATTICE'}
@@ -37,6 +36,8 @@ class OBJECT_OT_ml_apply_all_modifiers(Operator):
         if is_edit_mode:
             bpy.ops.object.editmode_toggle()
             bpy.ops.ed.undo_push(message="Toggle Editmode")
+
+        override = context.copy()
 
         for ob in obs:
             override['object'] = ob
