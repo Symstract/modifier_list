@@ -901,7 +901,7 @@ def on_pinned_object_change(self, context):
 
 def register():
     # === Properties ===
-    bpy.types.Object.ml_modifier_active_index = IntProperty()
+    bpy.types.Object.ml_modifier_active_index = IntProperty(options={'LIBRARY_EDITABLE'})
 
     # Use Window Manager for storing modifier search property
     # and modifier collection because it can be accessed on
