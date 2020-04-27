@@ -612,6 +612,11 @@ def modifiers_ui(context, layout, num_of_rows=False, use_in_popup=False):
     prefs = bpy.context.preferences.addons["modifier_list"].preferences
     pcoll = icons.preview_collections["main"]
 
+    if ob.modifiers:
+        # This makes operators work without passing the active modifier
+        # to them manually as an argument.
+        layout.context_pointer_set("modifier", ob.modifiers[ob.ml_modifier_active_index])
+
     # === Favourite modifiers ===
     col = layout.column(align=True)
 
@@ -807,28 +812,14 @@ def modifiers_ui(context, layout, num_of_rows=False, use_in_popup=False):
     # because in a box separators give an unnecessarily big space.
     col = box.column()
 
-    # Some mofifiers require a custom layout because otherwise their
-    # operators don't work. Lattice on the other hand has an improved
-    # layout.
+    # Some mofifiers have an improved layout with additional settings.
     have_custom_layout = (
         'BOOLEAN',
-        'CORRECTIVE_SMOOTH',
-        'DATA_TRANSFER',
-        'EXPLODE',
-        'HOOK',
-        'LAPLACIANDEFORM',
-        'LATTICE',
-        'MESH_DEFORM',
-        'MULTIRES',
-        'OCEAN',
-        'SKIN',
-        'SURFACE_DEFORM'
+        'LATTICE'
     )
 
     if active_mod.type in have_custom_layout:
         getattr(ml_modifier_layouts, active_mod.type)(col, ob, active_mod)
-    elif active_mod.type == 'REMESH' and str(bpy.app.build_branch) == "b'sculpt-mode-features'":
-        ml_modifier_layouts.REMESH(col, ob, active_mod)
     else:
         mp = DATA_PT_modifiers(context)
         getattr(mp, active_mod.type)(col, ob, active_mod)
