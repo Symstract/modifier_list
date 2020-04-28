@@ -659,6 +659,7 @@ def modifiers_ui(context, layout, num_of_rows=False, use_in_popup=False):
     # === Modifier search and menu ===
     col = layout.column()
     row = col.split(factor=0.59)
+    row.enabled = ob.library is None or ob.override_library is not None
     wm = bpy.context.window_manager
     if ob.type == 'MESH':
         row.prop_search(wm, "ml_mod_to_add", wm, "ml_mesh_modifiers", text="", icon='MODIFIER')
