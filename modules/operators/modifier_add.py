@@ -68,6 +68,17 @@ class OBJECT_OT_ml_modifier_add(Operator):
         # Search doesn't call invoke, so check if self.ctrl exists.
         # If not, can't support overriding insert_modifier_after_active
         # by holding control.
+
+        # This doesn't work with library overrides because the context
+        # of the layout can be wrong.
+        # layout.context_pointer_set("modifier", active_modifier) is
+        # used to set the modifier for the context of the layout and
+        # modifier_move_up seems to use that modifier in it's poll,
+        # instead of the one passed as an argument. And linked modifiers
+        # can't be moved.
+        if ob.override_library:
+            return {'FINISHED'}
+
         prefs = bpy.context.preferences.addons["modifier_list"].preferences
 
         if hasattr(self, "ctrl"):
