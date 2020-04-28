@@ -78,6 +78,11 @@ class ApplyModifier:
 
     apply_as: None
 
+    @classmethod
+    def poll(cls, context):
+        ob = get_ml_active_object()
+        return ob.library is None and ob.override_library is None
+
     def execute(self, context):
         prefs = bpy.context.preferences.addons["modifier_list"].preferences
         ml_active_ob = get_ml_active_object()
