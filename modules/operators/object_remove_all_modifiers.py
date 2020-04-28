@@ -24,21 +24,44 @@ class OBJECT_OT_ml_remove_all_modifiers(Operator):
             self.report({'INFO'}, "No selection")
             return {'CANCELLED'}
 
-        obs_have_mods = False
+        obs_have_local_mods = False
+        skipped_non_local_modifiers = False
 
         for ob in obs:
-            for mod in ob.modifiers:
-                ob.modifiers.remove(mod)
-                obs_have_mods = True
+            # Skip linked objects with no library override
+            if ob.library:
+                continue
 
-        if not obs_have_mods:
+            # Store the name of the active modifier. In case it's
+            # non-local, it can be then kept active.
+            if ob.modifiers:
+                init_active_mod = ob.modifiers[ob.ml_modifier_active_index]
+                is_local = init_active_mod.is_property_overridable_library("name")
+                init_active_non_local_mod_name = None if is_local else init_active_mod.name
+
+            for mod in ob.modifiers:
+                # Skip non-local modifiers on a linked object with
+                # a library override.
+                if mod.is_property_overridable_library("name"):
+                    ob.modifiers.remove(mod)
+                    obs_have_local_mods = True
+                else:
+                    skipped_non_local_modifiers = True
+
+            # Set active modifier index
+            ob.ml_modifier_active_index = (ob.modifiers.find(init_active_non_local_mod_name)
+                                           if init_active_non_local_mod_name else 0)
+
+        if not obs_have_local_mods:
             self.report({'INFO'}, "No modifiers to remove")
             return {'CANCELLED'}
 
         prefs = bpy.context.preferences.addons["modifier_list"].preferences
 
         if 'REMOVE' in prefs.batch_ops_reports:
-            self.report({'INFO'}, "Removed all modifiers")
+            message = ("Removed all local modifiers" if skipped_non_local_modifiers
+                       else "Removed all modifiers")
+            self.report({'INFO'}, message)
 
         return {'FINISHED'}
 
