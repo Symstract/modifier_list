@@ -430,6 +430,16 @@ class ModifierListActions:
 
     action = None
 
+    @classmethod
+    def poll(cls, ontext):
+        ob = get_ml_active_object()
+
+        if ob.modifiers:
+            mod = ob.modifiers[ob.ml_modifier_active_index]
+            return mod.is_property_overridable_library("name")
+        else:
+            return False
+
     def execute(self, context):
         prefs = bpy.context.preferences.addons["modifier_list"].preferences
         ml_active_ob = get_ml_active_object()
