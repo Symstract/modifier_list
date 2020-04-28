@@ -36,8 +36,14 @@ class OBJECT_OT_ml_toggle_all_modifiers(Operator):
 
         ml_act_ob_all_mods_vis = [mod.show_viewport for mod in ml_act_ob.modifiers]
         show_mods = not any(ml_act_ob_all_mods_vis)
+        skipped_linked_obs = False
 
         for ob in obs:
+            # Skip linked objects if they don't have a library override
+            if ob.library and not ob.override_library:
+                skipped_linked_obs = True
+                continue
+
             for mod in ob.modifiers:
                 # Dont toggle the visibility of collision modifiers as that
                 # can apparently cause problems in some scenes.
@@ -47,7 +53,9 @@ class OBJECT_OT_ml_toggle_all_modifiers(Operator):
         prefs = bpy.context.preferences.addons["modifier_list"].preferences
 
         if 'TOGGLE_VISIBILITY' in prefs.batch_ops_reports:
+            skipped_linked_obs_message = (" (skipped linked objects with no override)"
+                                          if skipped_linked_obs else "")
             message = "Displaying all modifiers" if show_mods else "Hiding all modifiers"
-            self.report({'INFO'}, message)
+            self.report({'INFO'}, message + skipped_linked_obs_message)
 
         return {'FINISHED'}
