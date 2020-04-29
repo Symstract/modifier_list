@@ -819,6 +819,9 @@ def modifiers_ui(context, layout, num_of_rows=False, use_in_popup=False):
 
     # === Modifier specific settings ===
     box = col.box()
+    # Disable layout for linked modifiers here manually so in custom
+    # layouts all operators/settings are greyed out.
+    box.enabled = active_mod.is_property_overridable_library("name")
 
     # A column is needed here to keep the layout more compact,
     # because in a box separators give an unnecessarily big space.
