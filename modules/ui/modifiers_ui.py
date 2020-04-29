@@ -800,6 +800,7 @@ def modifiers_ui(context, layout, num_of_rows=False, use_in_popup=False):
 
             sub = row.row(align=True)
             sub.alignment = 'RIGHT'
+            sub.enabled = active_mod.is_property_overridable_library("name")
 
             if not gizmo_ob:
                 sub_sub = sub.row()
