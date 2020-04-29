@@ -13,6 +13,16 @@ class OBJECT_OT_ml_modifier_copy(Operator):
 
     modifier: StringProperty(options={'HIDDEN'})
 
+    @classmethod
+    def poll(cls, ontext):
+        ob = get_ml_active_object()
+
+        if ob.modifiers:
+            mod = ob.modifiers[ob.ml_modifier_active_index]
+            return mod.is_property_overridable_library("name")
+        else:
+            return False
+
     def execute(self, context):
         ob = get_ml_active_object()
 
