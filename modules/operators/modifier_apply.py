@@ -81,7 +81,18 @@ class ApplyModifier:
     @classmethod
     def poll(cls, context):
         ob = get_ml_active_object()
-        return ob.library is None and ob.override_library is None
+        data = ob.data
+        mod = ob.modifiers[ob.ml_modifier_active_index]
+
+        if not mod.is_property_overridable_library("name"):
+            return False
+
+        if ob.library:
+            return False
+        elif ob.override_library and (data.library or data.override_library):
+            return False
+
+        return True
 
     def execute(self, context):
         prefs = bpy.context.preferences.addons["modifier_list"].preferences
