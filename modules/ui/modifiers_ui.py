@@ -617,7 +617,7 @@ class OBJECT_PT_ml_gizmo_object_settings(Panel):
 #=======================================================================
 
 def modifiers_ui(context, layout, num_of_rows=False, use_in_popup=False):
-
+    wm = bpy.context.window_manager
     ob = context.object if context.area.type == 'PROPERTIES' else get_ml_active_object()
     prefs = bpy.context.preferences.addons["modifier_list"].preferences
     pcoll = icons.preview_collections["main"]
@@ -670,7 +670,6 @@ def modifiers_ui(context, layout, num_of_rows=False, use_in_popup=False):
     col = layout.column()
     row = col.split(factor=0.59)
     row.enabled = ob.library is None or ob.override_library is not None
-    wm = bpy.context.window_manager
     if ob.type == 'MESH':
         row.prop_search(wm, "ml_mod_to_add", wm, "ml_mesh_modifiers", text="", icon='MODIFIER')
         row.menu("MESH_MT_ml_add_modifier_menu")
@@ -683,8 +682,13 @@ def modifiers_ui(context, layout, num_of_rows=False, use_in_popup=False):
 
 
     # === Modifier list ===
+    # Get the list index from wm.ml_active_object_modifier_active_index
+    # instead of ob.ml_modifier_active_index because library overrides
+    # prevent editing that value directly.
+    # wm.ml_active_object_modifier_active_index has get and set methods
+    # for accessing ob.ml_modifier_active_index indirectly.
     layout.template_list("OBJECT_UL_modifier_list", "", ob, "modifiers",
-                         ob, "ml_modifier_active_index", rows=num_of_rows,
+                         wm, "ml_active_object_modifier_active_index", rows=num_of_rows,
                          sort_reverse=prefs.reverse_list)
 
     # When sub.scale_x is 1.5 and the area/region is narrow, the buttons
@@ -843,6 +847,28 @@ def modifiers_ui(context, layout, num_of_rows=False, use_in_popup=False):
 # Registering
 #=======================================================================
 
+def active_object_modifier_active_index_get(self):
+    """Function for reading ob.ml_modifier_active_index indirectly
+    to avoid problems when using library overrides.
+    """
+    ob = get_ml_active_object()
+
+    if not ob:
+        return 0
+
+    return ob.ml_modifier_active_index
+
+
+def active_object_modifier_active_index_set(self, value):
+    """Function for writing ob.ml_modifier_active_index indirectly
+    to avoid problems when using library overrides.
+    """
+    ob = get_ml_active_object()
+
+    if ob:
+        ob.ml_modifier_active_index = value
+
+
 def set_mesh_modifier_collection_items():
     """This is to be called on loading a new file or reloading addons
     to make modifiers available in search.
@@ -917,11 +943,18 @@ def on_pinned_object_change(self, context):
 def register():
     # === Properties ===
     bpy.types.Object.ml_modifier_active_index = IntProperty(options={'LIBRARY_EDITABLE'})
-
     # Use Window Manager for storing modifier search property
     # and modifier collection because it can be accessed on
     # registering and it's not scene specific.
     wm = bpy.types.WindowManager
+    # Property to access ob.ml_modifier_active_index through, to avoid
+    # the problem of modifier_active_index not being possible to be
+    # changed directly by the modifier list when using library
+    # overrides.
+    wm.ml_active_object_modifier_active_index = IntProperty(
+        get=active_object_modifier_active_index_get,
+        set=active_object_modifier_active_index_set
+    )
     wm.ml_mod_to_add = StringProperty(name="Modifier to add", update=add_modifier,
                                       description="Search for a modifier and add it to the stack")
     wm.ml_mesh_modifiers = CollectionProperty(type=MeshModifiersCollection)
