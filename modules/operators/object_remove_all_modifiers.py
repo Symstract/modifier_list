@@ -8,7 +8,7 @@ import bpy
 from bpy.props import *
 from bpy.types import Operator
 
-from ..utils import get_ml_active_object
+from ..utils import get_ml_active_object, is_modifier_local
 
 
 class OBJECT_OT_ml_remove_all_modifiers(Operator):
@@ -36,13 +36,11 @@ class OBJECT_OT_ml_remove_all_modifiers(Operator):
             # non-local, it can be then kept active.
             if ob.modifiers:
                 init_active_mod = ob.modifiers[ob.ml_modifier_active_index]
-                is_local = init_active_mod.is_property_overridable_library("name")
+                is_local = is_modifier_local(ob, init_active_mod)
                 init_active_non_local_mod_name = None if is_local else init_active_mod.name
 
             for mod in ob.modifiers:
-                # Skip non-local modifiers on a linked object with
-                # a library override.
-                if mod.is_property_overridable_library("name"):
+                if is_modifier_local(ob, mod):
                     ob.modifiers.remove(mod)
                     obs_have_local_mods = True
                 else:
