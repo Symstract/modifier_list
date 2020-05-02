@@ -50,8 +50,9 @@ class OBJECT_OT_ml_remove_all_modifiers(Operator):
                     skipped_non_local_modifiers = True
 
             # Set active modifier index
-            ob.ml_modifier_active_index = (ob.modifiers.find(init_active_non_local_mod_name)
-                                           if init_active_non_local_mod_name else 0)
+            if ob.modifiers:
+                ob.ml_modifier_active_index = (ob.modifiers.find(init_active_non_local_mod_name)
+                                               if init_active_non_local_mod_name else 0)
 
         if not obs_have_local_mods:
             if all_obs_linked_without_override or skipped_non_local_modifiers:
