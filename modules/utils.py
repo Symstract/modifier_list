@@ -24,6 +24,16 @@ def get_ml_active_object():
             return ob
 
 
+def is_modifier_local(object, modifier):
+    """Check if the given modifier is local."""
+    if object.library:
+        return False
+    elif object.override_library and not modifier.is_property_overridable_library("name"):
+        return False
+
+    return True
+
+
 # Functions for adding a gizmo object
 # ======================================================================
 
