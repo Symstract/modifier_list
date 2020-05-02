@@ -1,6 +1,13 @@
 # Changelog
 
 
+## 1.5.4 - 2.5.2020
+
+- Added support for linked objects and library overrides. Because of this, **the minimum Blender version required is now 2.81**.
+- All modifier layouts now update automatically (until they will move from Python to C in Blender, which is happening quite soon probably)
+- Fixed applying modifiers in edit mode not being possible in 2.83 and 2.90
+
+
 ## 1.5.3 - 21.4.2020
 
 - Fixed "Surface" modifier appearing in modifier search and menu. It's not meant to be seen by users.
