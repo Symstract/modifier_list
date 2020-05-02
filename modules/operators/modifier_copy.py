@@ -2,7 +2,7 @@ import bpy
 from bpy.props import *
 from bpy.types import Operator
 
-from ..utils import get_ml_active_object
+from ..utils import get_ml_active_object, is_modifier_local
 
 
 class OBJECT_OT_ml_modifier_copy(Operator):
@@ -16,12 +16,8 @@ class OBJECT_OT_ml_modifier_copy(Operator):
     @classmethod
     def poll(cls, ontext):
         ob = get_ml_active_object()
-
-        if ob.modifiers:
-            mod = ob.modifiers[ob.ml_modifier_active_index]
-            return mod.is_property_overridable_library("name")
-        else:
-            return False
+        mod = ob.modifiers[ob.ml_modifier_active_index]
+        return is_modifier_local(ob, mod)
 
     def execute(self, context):
         ob = get_ml_active_object()
