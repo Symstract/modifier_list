@@ -23,6 +23,7 @@ from ..utils import (
     get_gizmo_object,
     get_ml_active_object,
     get_vertex_group,
+    is_modifier_local
 )
 
 
@@ -434,11 +435,11 @@ class ModifierListActions:
     def poll(cls, ontext):
         ob = get_ml_active_object()
 
-        if ob.modifiers:
-            mod = ob.modifiers[ob.ml_modifier_active_index]
-            return mod.is_property_overridable_library("name")
-        else:
+        if not ob.modifiers:
             return False
+
+        mod = ob.modifiers[ob.ml_modifier_active_index]
+        return is_modifier_local(ob, mod)
 
     def execute(self, context):
         prefs = bpy.context.preferences.addons["modifier_list"].preferences
@@ -747,6 +748,7 @@ def modifiers_ui(context, layout, num_of_rows=False, use_in_popup=False):
     active_mod = ob.modifiers[active_mod_index]
     all_mods = modifier_categories.ALL_MODIFIERS
     active_mod_icon = [icon for name, icon, mod in all_mods if mod == active_mod.type].pop()
+    is_active_mod_local = is_modifier_local(ob, active_mod)
 
     col = layout.column(align=True)
 
@@ -804,7 +806,7 @@ def modifiers_ui(context, layout, num_of_rows=False, use_in_popup=False):
 
             sub = row.row(align=True)
             sub.alignment = 'RIGHT'
-            sub.enabled = active_mod.is_property_overridable_library("name")
+            sub.enabled = is_active_mod_local
 
             if not gizmo_ob:
                 sub_sub = sub.row()
@@ -825,7 +827,7 @@ def modifiers_ui(context, layout, num_of_rows=False, use_in_popup=False):
     box = col.box()
     # Disable layout for linked modifiers here manually so in custom
     # layouts all operators/settings are greyed out.
-    box.enabled = active_mod.is_property_overridable_library("name")
+    box.enabled = is_active_mod_local
 
     # A column is needed here to keep the layout more compact,
     # because in a box separators give an unnecessarily big space.
