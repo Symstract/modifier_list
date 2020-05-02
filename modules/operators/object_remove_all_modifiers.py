@@ -26,11 +26,14 @@ class OBJECT_OT_ml_remove_all_modifiers(Operator):
 
         obs_have_local_mods = False
         skipped_non_local_modifiers = False
+        all_obs_linked_without_override = True
 
         for ob in obs:
             # Skip linked objects with no library override
             if ob.library:
                 continue
+
+            all_obs_linked_without_override = False
 
             # Store the name of the active modifier. In case it's
             # non-local, it can be then kept active.
@@ -51,7 +54,10 @@ class OBJECT_OT_ml_remove_all_modifiers(Operator):
                                            if init_active_non_local_mod_name else 0)
 
         if not obs_have_local_mods:
-            self.report({'INFO'}, "No modifiers to remove")
+            if all_obs_linked_without_override or skipped_non_local_modifiers:
+                self.report({'INFO'}, "No local modifiers to remove")
+            else:
+                self.report({'INFO'}, "No modifiers to remove")
             return {'CANCELLED'}
 
         prefs = bpy.context.preferences.addons["modifier_list"].preferences
