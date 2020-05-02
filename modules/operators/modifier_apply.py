@@ -84,13 +84,13 @@ class ApplyModifier:
         data = ob.data
         mod = ob.modifiers[ob.ml_modifier_active_index]
 
-        if not mod.is_property_overridable_library("name"):
-            return False
-
         if ob.library:
             return False
         elif ob.override_library and (data.library or data.override_library):
             return False
+        elif ob.override_library and not (data.library or data.override_library):
+            if not mod.is_property_overridable_library("name"):
+                return False
 
         return True
 
