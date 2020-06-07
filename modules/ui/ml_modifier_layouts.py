@@ -1,5 +1,14 @@
 import bpy
-from bl_ui.properties_data_modifier import DATA_PT_modifiers
+
+# Check if the modifier layouts can be imported from Blender. If not,
+# import the layouts included in this addon. This is needed for 2.90 and
+# later because the modifier layouts have been moved from Python into C
+# in Blender 2.90 since 5.6.2020.
+from bl_ui import properties_data_modifier
+if hasattr(properties_data_modifier.DATA_PT_modifiers, "ARRAY"):
+    from bl_ui.properties_data_modifier import DATA_PT_modifiers
+else:
+    from .properties_data_modifier import DATA_PT_modifiers
 
 from..utils import get_gizmo_object
 
