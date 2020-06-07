@@ -636,7 +636,7 @@ def modifiers_ui(context, layout, num_of_rows=False, use_in_popup=False):
     # Ensure the active index is never out of range. That can happen if
     # a modifier gets deleted without using Modifier List, e.g. when
     # removing a Cloth modifier from within the physics panel.
-    if active_mod_index > len(ob.modifiers) - 1:
+    if ob.modifiers and active_mod_index > len(ob.modifiers) - 1:
         layout.label(text="The active modifier index has gotten out of range...")
         layout.operator("object.ml_reset_modifier_active_index")
         return
