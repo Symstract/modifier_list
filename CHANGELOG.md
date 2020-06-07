@@ -1,6 +1,14 @@
 # Changelog
 
 
+## 1.5.5 - 7.6.2020
+
+- Added support for Blender 2.90 after the new modifier panels
+- A button for resetting the active modifier index is shown now if it gets out of range. That can happen e.g. if the last modifier is a physics modifier, it's active and you remove it from within the physics panel.
+
+**Note**: currently there's one **issue with the new modifier panels**: if the active object has modifiers and you then activate Modifier List, the regular panels don't disappear from the UI. It can also lead to a crash. So if you see the regular panels there, restart Blender. I've reported the bug and it will be fixed as soon as possible.
+
+
 ## 1.5.4 - 2.5.2020
 
 - Added support for linked objects and library overrides. Because of this, **the minimum Blender version required is now 2.81**.
