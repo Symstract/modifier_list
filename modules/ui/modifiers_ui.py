@@ -629,8 +629,17 @@ class OBJECT_PT_ml_gizmo_object_settings(Panel):
 def modifiers_ui(context, layout, num_of_rows=False, use_in_popup=False):
     wm = bpy.context.window_manager
     ob = context.object if context.area.type == 'PROPERTIES' else get_ml_active_object()
+    active_mod_index = ob.ml_modifier_active_index
     prefs = bpy.context.preferences.addons["modifier_list"].preferences
     pcoll = icons.preview_collections["main"]
+
+    # Ensure the active index is never out of range. That can happen if
+    # a modifier gets deleted without using Modifier List, e.g. when
+    # removing a Cloth modifier from within the physics panel.
+    if active_mod_index > len(ob.modifiers) - 1:
+        layout.label(text="The active modifier index has gotten out of range...")
+        layout.operator("object.ml_reset_modifier_active_index")
+        return
 
     if ob.modifiers:
         # This makes operators work without passing the active modifier
@@ -753,7 +762,6 @@ def modifiers_ui(context, layout, num_of_rows=False, use_in_popup=False):
     if not ob.modifiers:
         return
 
-    active_mod_index = ob.ml_modifier_active_index
     active_mod = ob.modifiers[active_mod_index]
     all_mods = modifier_categories.ALL_MODIFIERS
     active_mod_icon = [icon for name, icon, mod in all_mods if mod == active_mod.type].pop()
