@@ -18,7 +18,7 @@ class OBJECT_OT_ml_toggle_all_modifiers(Operator):
     bl_options = {'REGISTER', 'UNDO'}
 
     @classmethod
-    def poll(self, context):
+    def poll(cls, context):
         return get_ml_active_object() is not None
 
     def execute(self, context):
