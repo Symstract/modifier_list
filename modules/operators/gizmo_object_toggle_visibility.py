@@ -1,6 +1,5 @@
 from bpy.types import Operator
 
-from ..modifier_categories import have_gizmo_property
 from ..utils import get_gizmo_object
 
 
