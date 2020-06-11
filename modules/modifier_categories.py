@@ -13,8 +13,7 @@ def get_favourite_modifiers_names():
     prefs = bpy.context.preferences.addons["modifier_list"].preferences
     # get correct class attributes and then their values
     attr_list = [attr for attr in dir(prefs) if attr.startswith("modifier_")]
-    attr_value_list = [getattr(prefs, attr) for attr in attr_list]
-    return attr_value_list
+    return [getattr(prefs, attr) for attr in attr_list]
 
 
 def favourite_modifiers_names_icons_types():
@@ -26,8 +25,7 @@ def favourite_modifiers_names_icons_types():
     all_mods_dict = dict(zip(all_mod_names, ALL_MODIFIERS))
     fav_mods_list = [all_mods_dict[mod] if mod in all_mods_dict else (None, None, None)
                      for mod in get_favourite_modifiers_names()]
-    fav_mods_iter = iter(fav_mods_list)
-    return fav_mods_iter
+    return iter(fav_mods_list)
 
 
 # === Don't support show_in_editmode ===
