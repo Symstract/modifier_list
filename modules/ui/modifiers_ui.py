@@ -142,9 +142,9 @@ def mod_show_editmode_and_cage(modifier, layout, scale_x=1.0, use_in_list=False)
     account but instead shows the button always in those cases. It's
     easier to achieve and hardly makes a difference.
     """
-    dont_support_show_in_editmode = modifier_categories.dont_support_show_in_editmode
-    support_use_apply_on_spline = modifier_categories.support_use_apply_on_spline
-    support_show_on_cage = modifier_categories.support_show_on_cage
+    dont_support_show_in_editmode = modifier_categories.DONT_SUPPORT_SHOW_IN_EDITMODE
+    support_use_apply_on_spline = modifier_categories.SUPPORT_USE_APPLY_ON_SPLINE
+    support_show_on_cage = modifier_categories.SUPPORT_SHOW_ON_CAGE
 
     pcoll = icons.preview_collections["main"]
 
@@ -309,25 +309,25 @@ class MESH_MT_ml_add_modifier_menu(Menu):
         col = row.column()
         col.label(text="Modify")
         col.separator(factor=0.3)
-        for name, icon, mod in modifier_categories.mesh_modify_names_icons_types:
+        for name, icon, mod in modifier_categories.MESH_MODIFY_NAMES_ICONS_TYPES:
             col.operator("object.ml_modifier_add", text=name, icon=icon).modifier_type = mod
 
         col = row.column()
         col.label(text="Generate")
         col.separator(factor=0.3)
-        for name, icon, mod in modifier_categories.mesh_generate_names_icons_types:
+        for name, icon, mod in modifier_categories.MESH_GENERATE_NAMES_ICONS_TYPES:
             col.operator("object.ml_modifier_add", text=name, icon=icon).modifier_type = mod
 
         col = row.column()
         col.label(text="Deform")
         col.separator(factor=0.3)
-        for name, icon, mod in modifier_categories.mesh_deform_names_icons_types:
+        for name, icon, mod in modifier_categories.MESH_DEFORM_NAMES_ICONS_TYPES:
             col.operator("object.ml_modifier_add", text=name, icon=icon).modifier_type = mod
 
         col = row.column()
         col.label(text="Simulate")
         col.separator(factor=0.3)
-        for name, icon, mod in modifier_categories.mesh_simulate_names_icons_types:
+        for name, icon, mod in modifier_categories.MESH_SIMULATE_NAMES_ICONS_TYPES:
             col.operator("object.ml_modifier_add", text=name, icon=icon).modifier_type = mod
 
 
@@ -344,25 +344,25 @@ class CURVE_MT_ml_add_modifier_menu(Menu):
         col = row.column()
         col.label(text="Modify")
         col.separator(factor=0.3)
-        for name, icon, mod in modifier_categories.curve_modify_names_icons_types:
+        for name, icon, mod in modifier_categories.CURVE_MODIFY_NAMES_ICONS_TYPES:
             col.operator("object.ml_modifier_add", text=name, icon=icon).modifier_type = mod
 
         col = row.column()
         col.label(text="Generate")
         col.separator(factor=0.3)
-        for name, icon, mod in modifier_categories.curve_generate_names_icons_types:
+        for name, icon, mod in modifier_categories.CURVE_GENERATE_NAMES_ICONS_TYPES:
             col.operator("object.ml_modifier_add", text=name, icon=icon).modifier_type = mod
 
         col = row.column()
         col.label(text="Deform")
         col.separator(factor=0.3)
-        for name, icon, mod in modifier_categories.curve_deform_names_icons_types:
+        for name, icon, mod in modifier_categories.CURVE_DEFORM_NAMES_ICONS_TYPES:
             col.operator("object.ml_modifier_add", text=name, icon=icon).modifier_type = mod
 
         col = row.column()
         col.label(text="Simulate")
         col.separator(factor=0.3)
-        for name, icon, mod in modifier_categories.curve_simulate_names_icons_types:
+        for name, icon, mod in modifier_categories.CURVE_SIMULATE_NAMES_ICONS_TYPES:
             col.operator("object.ml_modifier_add", text=name, icon=icon).modifier_type = mod
 
 
@@ -379,19 +379,19 @@ class LATTICE_MT_ml_add_modifier_menu(Menu):
         col = row.column()
         col.label(text="Modify")
         col.separator(factor=0.3)
-        for name, icon, mod in modifier_categories.lattice_modify_names_icons_types:
+        for name, icon, mod in modifier_categories.LATTICE_MODIFY_NAMES_ICONS_TYPES:
             col.operator("object.ml_modifier_add", text=name, icon=icon).modifier_type = mod
 
         col = row.column()
         col.label(text="Deform")
         col.separator(factor=0.3)
-        for name, icon, mod in modifier_categories.lattice_deform_names_icons_types:
+        for name, icon, mod in modifier_categories.LATTICE_DEFORM_NAMES_ICONS_TYPES:
             col.operator("object.ml_modifier_add", text=name, icon=icon).modifier_type = mod
 
         col = row.column()
         col.label(text="Simulate")
         col.separator(factor=0.3)
-        for name, icon, mod in modifier_categories.lattice_simulate_names_icons_types:
+        for name, icon, mod in modifier_categories.LATTICE_SIMULATE_NAMES_ICONS_TYPES:
             col.operator("object.ml_modifier_add", text=name, icon=icon).modifier_type = mod
 
 
@@ -794,18 +794,18 @@ def modifiers_ui(context, layout, num_of_rows=False, use_in_popup=False):
         sub.operator("object.ml_modifier_apply", text="",
                     icon_value=icon.icon_id).modifier = active_mod.name
 
-        if active_mod.type in modifier_categories.support_apply_as_shape_key:
+        if active_mod.type in modifier_categories.SUPPORT_APPLY_AS_SHAPE_KEY:
             icon = pcoll['APPLY_MODIFIER_AS_SHAPEKEY']
             sub.operator("object.ml_modifier_apply_as_shapekey", text="",
                         icon_value=icon.icon_id).modifier = active_mod.name
 
-        if active_mod.type not in modifier_categories.dont_support_copy:
+        if active_mod.type not in modifier_categories.DONT_SUPPORT_COPY:
             sub.operator("object.ml_modifier_copy",
                         text="", icon='DUPLICATE').modifier = active_mod.name
 
     # === Gizmo object settings ===
     if ob.type == 'MESH':
-        if (active_mod.type in modifier_categories.have_gizmo_property
+        if (active_mod.type in modifier_categories.HAVE_GIZMO_PROPERTY
                 or active_mod.type == 'UV_PROJECT'):
             gizmo_ob = get_gizmo_object()
 
@@ -895,7 +895,7 @@ def set_curve_modifier_collection_items():
     curve_modifiers = bpy.context.window_manager.ml_curve_modifiers
 
     if not curve_modifiers:
-        for name, _, mod in modifier_categories.curve_all_names_icons_types:
+        for name, _, mod in modifier_categories.CURVE_ALL_NAMES_ICONS_TYPES:
             item = curve_modifiers.add()
             item.name = name
             item.value = mod
@@ -908,7 +908,7 @@ def set_lattice_modifier_collection_items():
     lattice_modifiers = bpy.context.window_manager.ml_lattice_modifiers
 
     if not lattice_modifiers:
-        for name, _, mod in modifier_categories.lattice_all_names_icons_types:
+        for name, _, mod in modifier_categories.LATTICE_ALL_NAMES_ICONS_TYPES:
             item = lattice_modifiers.add()
             item.name = name
             item.value = mod

@@ -2,7 +2,7 @@ import bpy
 from mathutils import Matrix, Vector
 from mathutils.geometry import distance_point_to_plane
 
-from .modifier_categories import have_gizmo_property
+from .modifier_categories import HAVE_GIZMO_PROPERTY
 
 
 def get_ml_active_object():
@@ -359,7 +359,7 @@ def assign_gizmo_object_to_modifier(self, context, modifier, placement='OBJECT')
         # (needed at least for Hook)
         bpy.context.view_layer.update()
 
-    gizmo_ob_prop = have_gizmo_property[mod.type]
+    gizmo_ob_prop = HAVE_GIZMO_PROPERTY[mod.type]
 
     setattr(mod, gizmo_ob_prop, gizmo_ob)
 
@@ -383,10 +383,10 @@ def get_gizmo_object():
     active_mod_index = ob.ml_modifier_active_index
     active_mod = ob.modifiers[active_mod_index]
 
-    if active_mod.type not in have_gizmo_property:
+    if active_mod.type not in HAVE_GIZMO_PROPERTY:
         return None
 
-    gizmo_ob_prop = have_gizmo_property[active_mod.type]
+    gizmo_ob_prop = HAVE_GIZMO_PROPERTY[active_mod.type]
     gizmo_ob = getattr(active_mod, gizmo_ob_prop)
     return gizmo_ob
 

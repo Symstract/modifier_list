@@ -31,7 +31,7 @@ def favourite_modifiers_names_icons_types():
 
 
 # === Don't support show_in_editmode ===
-dont_support_show_in_editmode = {
+DONT_SUPPORT_SHOW_IN_EDITMODE = {
     'MESH_SEQUENCE_CACHE',
     'BOOLEAN',
     'BUILD',
@@ -48,8 +48,8 @@ dont_support_show_in_editmode = {
 }
 
 # === Support show_on_cage ===
-deform_mods = {mod for _, _, mod in ALL_MODIFIERS[25:41]}
-other_show_on_cage_mods = {
+_deform_mods = {mod for _, _, mod in ALL_MODIFIERS[25:41]}
+_other_show_on_cage_mods = {
     'DATA_TRANSFER',
     'NORMAL_EDIT',
     'WEIGHTED_NORMAL',
@@ -65,10 +65,10 @@ other_show_on_cage_mods = {
     'SUBSURF',
     'TRIANGULATE'
 }
-support_show_on_cage = deform_mods.union(other_show_on_cage_mods)
+SUPPORT_SHOW_ON_CAGE = _deform_mods.union(_other_show_on_cage_mods)
 
 # === Support use_apply_on_spline ===
-support_use_apply_on_spline = {
+SUPPORT_USE_APPLY_ON_SPLINE = {
     'ARMATURE',
     'CAST',
     'CURVE',
@@ -81,12 +81,12 @@ support_use_apply_on_spline = {
 }
 
 # === Support apply_as_shape_key ===
-deform_mods = {mod for name, icon, mod in ALL_MODIFIERS[26:42]}
-other_shape_key_mods = {'CLOTH', 'SOFT_BODY', 'MESH_CACHE'}
-support_apply_as_shape_key = deform_mods.union(other_shape_key_mods)
+_deform_mods = {mod for name, icon, mod in ALL_MODIFIERS[26:42]}
+_other_shape_key_mods = {'CLOTH', 'SOFT_BODY', 'MESH_CACHE'}
+SUPPORT_APPLY_AS_SHAPE_KEY = _deform_mods.union(_other_shape_key_mods)
 
 # === Don't support copy ===
-dont_support_copy = {
+DONT_SUPPORT_COPY = {
     'CLOTH',
     'COLLISION',
     'DYNAMIC_PAINT',
@@ -97,7 +97,7 @@ dont_support_copy = {
 }
 
 # === Have the ability to use an object to define the center of the effect ===
-have_gizmo_property = {
+HAVE_GIZMO_PROPERTY = {
     'NORMAL_EDIT': "target",
     'VERTEX_WEIGHT_PROXIMITY': "target",
     'ARRAY': "offset_object",
@@ -111,35 +111,35 @@ have_gizmo_property = {
 }
 
 # === Mesh modifiers by categories ===
-mods = ALL_MODIFIERS
+_mods = ALL_MODIFIERS
 
-modify_end = next(mods.index(mod) + 1 for mod in mods if mod[0] == "Vertex Weight Proximity")
-gen_start = next(mods.index(mod) for mod in mods if mod[0] == "Array")
+_modify_end = next(_mods.index(mod) + 1 for mod in _mods if mod[0] == "Vertex Weight Proximity")
+_gen_start = next(_mods.index(mod) for mod in _mods if mod[0] == "Array")
 
 # In Blender 2.82, the Weld modifier was added but it was incorrectly
 # placed before Wireframe. That's been fixed in 2.83.
 if bpy.app.version[1] == 82:
-    gen_end = next(mods.index(mod) + 1 for mod in mods if mod[0] == "Weld")
+    _gen_end = next(_mods.index(mod) + 1 for mod in _mods if mod[0] == "Weld")
 else:
-    gen_end = next(mods.index(mod) + 1 for mod in mods if mod[0] == "Wireframe")
+    _gen_end = next(_mods.index(mod) + 1 for mod in _mods if mod[0] == "Wireframe")
 
-def_start = next(mods.index(mod) for mod in mods if mod[0] == "Armature")
-def_end = next(mods.index(mod) + 1 for mod in mods if mod[0] == "Wave")
-sim_start = next(mods.index(mod) for mod in mods if mod[0] == "Cloth")
-sim_end = next(mods.index(mod) + 1 for mod in mods if mod[0] == "Soft Body")
+_def_start = next(_mods.index(mod) for mod in _mods if mod[0] == "Armature")
+_def_end = next(_mods.index(mod) + 1 for mod in _mods if mod[0] == "Wave")
+_sim_start = next(_mods.index(mod) for mod in _mods if mod[0] == "Cloth")
+_sim_end = next(_mods.index(mod) + 1 for mod in _mods if mod[0] == "Soft Body")
 
-mesh_modify_names_icons_types = [mod for mod in ALL_MODIFIERS[0:modify_end]]
-mesh_generate_names_icons_types = [mod for mod in ALL_MODIFIERS[gen_start:gen_end]]
-mesh_deform_names_icons_types = [mod for mod in ALL_MODIFIERS[def_start:def_end]]
-mesh_simulate_names_icons_types = [mod for mod in ALL_MODIFIERS[sim_start:sim_end]]
+MESH_MODIFY_NAMES_ICONS_TYPES = [mod for mod in ALL_MODIFIERS[0:_modify_end]]
+MESH_GENERATE_NAMES_ICONS_TYPES = [mod for mod in ALL_MODIFIERS[_gen_start:_gen_end]]
+MESH_DEFORM_NAMES_ICONS_TYPES = [mod for mod in ALL_MODIFIERS[_def_start:_def_end]]
+MESH_SIMULATE_NAMES_ICONS_TYPES = [mod for mod in ALL_MODIFIERS[_sim_start:_sim_end]]
 
 # === Curve, surface and text modifiers by categories ===
-curve_modify_names_icons_types = [
+CURVE_MODIFY_NAMES_ICONS_TYPES = [
     ('Mesh Cache', 'MOD_MESHDEFORM', 'MESH_CACHE'),
     ('Mesh Sequence Cache', 'MOD_MESHDEFORM', 'MESH_SEQUENCE_CACHE')
 ]
 
-curve_generate_names_icons_types = [
+CURVE_GENERATE_NAMES_ICONS_TYPES = [
     ('Array', 'MOD_ARRAY', 'ARRAY'),
     ('Bevel', 'MOD_BEVEL', 'BEVEL'),
     ('Build', 'MOD_BUILD', 'BUILD'),
@@ -154,9 +154,9 @@ curve_generate_names_icons_types = [
 ]
 
 if bpy.app.version[1] >= 82:
-    curve_generate_names_icons_types.append(('Weld', 'AUTOMERGE_OFF', 'WELD'))
+    CURVE_GENERATE_NAMES_ICONS_TYPES.append(('Weld', 'AUTOMERGE_OFF', 'WELD'))
 
-curve_deform_names_icons_types = [
+CURVE_DEFORM_NAMES_ICONS_TYPES = [
     ('Armature', 'MOD_ARMATURE', 'ARMATURE'),
     ('Cast', 'MOD_CAST', 'CAST'),
     ('Curve', 'MOD_CURVE', 'CURVE'),
@@ -170,23 +170,23 @@ curve_deform_names_icons_types = [
     ('Wave', 'MOD_WAVE', 'WAVE')
 ]
 
-curve_simulate_names_icons_types = [
+CURVE_SIMULATE_NAMES_ICONS_TYPES = [
     ('Soft Body', 'MOD_SOFT', 'SOFT_BODY')
 ]
 
-curve_all_names_icons_types = (
-    curve_modify_names_icons_types
-    + curve_generate_names_icons_types
-    + curve_deform_names_icons_types
-    + curve_simulate_names_icons_types
+CURVE_ALL_NAMES_ICONS_TYPES = (
+    CURVE_MODIFY_NAMES_ICONS_TYPES
+    + CURVE_GENERATE_NAMES_ICONS_TYPES
+    + CURVE_DEFORM_NAMES_ICONS_TYPES
+    + CURVE_SIMULATE_NAMES_ICONS_TYPES
 )
 
 # === Lattice modifiers by categories ===
-lattice_modify_names_icons_types = (
+LATTICE_MODIFY_NAMES_ICONS_TYPES = (
     ('Mesh Cache', 'MOD_MESHDEFORM', 'MESH_CACHE'),
 )
 
-lattice_deform_names_icons_types = (
+LATTICE_DEFORM_NAMES_ICONS_TYPES = (
     ('Armature', 'MOD_ARMATURE', 'ARMATURE'),
     ('Cast', 'MOD_CAST', 'CAST'),
     ('Curve', 'MOD_CURVE', 'CURVE'),
@@ -199,12 +199,12 @@ lattice_deform_names_icons_types = (
     ('Wave', 'MOD_WAVE', 'WAVE'),
 )
 
-lattice_simulate_names_icons_types = (
+LATTICE_SIMULATE_NAMES_ICONS_TYPES = (
     ('Soft Body', 'MOD_SOFT', 'SOFT_BODY'),
 )
 
-lattice_all_names_icons_types = (
-    curve_modify_names_icons_types
-    + curve_deform_names_icons_types
-    + curve_simulate_names_icons_types
+LATTICE_ALL_NAMES_ICONS_TYPES = (
+    CURVE_MODIFY_NAMES_ICONS_TYPES
+    + CURVE_DEFORM_NAMES_ICONS_TYPES
+    + CURVE_SIMULATE_NAMES_ICONS_TYPES
 )
