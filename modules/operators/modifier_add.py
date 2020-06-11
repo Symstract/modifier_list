@@ -50,8 +50,7 @@ class OBJECT_OT_ml_modifier_add(Operator):
             ob.data.use_auto_smooth = True
 
         # Set correct active_mod index
-        mods = ob.modifiers
-        mods_len = len(mods) - 1
+        mods_len = len(ob.modifiers) - 1
         ob.ml_modifier_active_index = mods_len
 
         # === Add a gizmo object ===
