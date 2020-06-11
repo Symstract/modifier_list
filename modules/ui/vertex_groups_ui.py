@@ -5,6 +5,7 @@ from bl_ui.properties_data_mesh import (
 
 from ..utils import get_ml_active_object
 
+
 def vertex_groups_ui(context, layout, num_of_rows=5):
     # Copy-paste from Blender
 

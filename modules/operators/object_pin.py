@@ -2,6 +2,7 @@ import bpy
 from bpy.props import *
 from bpy.types import Operator
 
+
 class UI_OT_ml_object_pin(Operator):
     bl_idname = "ui.ml_object_pin"
     bl_label = "Pin Object"

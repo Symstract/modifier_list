@@ -3,7 +3,7 @@ from bpy.props import *
 from bpy.types import Operator
 
 from ..modifier_categories import ALL_MODIFIERS, have_gizmo_property
-from ..utils import get_ml_active_object ,assign_gizmo_object_to_modifier
+from ..utils import get_ml_active_object, assign_gizmo_object_to_modifier
 
 
 class OBJECT_OT_ml_modifier_add(Operator):
@@ -89,7 +89,7 @@ class OBJECT_OT_ml_modifier_add(Operator):
         if move:
             times_to_move = mods_len - 1 - init_active_mod_index
 
-            for _ in range (times_to_move):
+            for _ in range(times_to_move):
                 bpy.ops.object.modifier_move_up(override, modifier=mod.name)
 
             if times_to_move > 0:

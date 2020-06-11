@@ -49,7 +49,7 @@ def BOOLEAN(layout, ob, md):
 
     layout.separator()
 
-    layout.operator("object.ml_select", text="Select").object_name =  md.object.name
+    layout.operator("object.ml_select", text="Select").object_name = md.object.name
 
 
 def LATTICE(layout, ob, md):

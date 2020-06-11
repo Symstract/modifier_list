@@ -2,7 +2,7 @@ import bpy
 from bpy.props import *
 from bpy.types import Operator
 
-from ..utils import get_ml_active_object ,get_gizmo_object
+from ..utils import get_ml_active_object, get_gizmo_object
 
 
 class OBJECT_OT_ml_gizmo_object_parent_set(Operator):

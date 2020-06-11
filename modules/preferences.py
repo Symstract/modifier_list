@@ -226,7 +226,7 @@ class Preferences(AddonPreferences):
 
         # === Import ===
         filepath = os.path.dirname(bpy.utils.resource_path('USER')) + os.path.sep
-        layout.operator("wm.ml_preferences_import", icon='IMPORT').filepath=filepath
+        layout.operator("wm.ml_preferences_import", icon='IMPORT').filepath = filepath
 
         layout.separator()
 

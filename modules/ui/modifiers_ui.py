@@ -37,7 +37,7 @@ from ..utils import (
 
 
 # Utility functions
-#=======================================================================
+# =======================================================================
 
 def is_modifier_disabled(mod):
     """Checks if the name of the modifier should be diplayed with a red
@@ -126,7 +126,7 @@ def is_modifier_disabled(mod):
 
 
 # UI elements
-#=======================================================================
+# =======================================================================
 
 def mod_show_editmode_and_cage(modifier, layout, scale_x=1.0, use_in_list=False):
     """This handles showing, hiding and activating/deactivating
@@ -148,9 +148,9 @@ def mod_show_editmode_and_cage(modifier, layout, scale_x=1.0, use_in_list=False)
     # SHOW_IN_EDITMODE_ON_INACTIVE_BUTTON and
     # SHOW_ON_CAGE_ON_INACTIVE_BUTTON are used here for that reason.
 
-    dont_support_show_in_editmode  = modifier_categories.dont_support_show_in_editmode
+    dont_support_show_in_editmode = modifier_categories.dont_support_show_in_editmode
     support_use_apply_on_spline = modifier_categories.support_use_apply_on_spline
-    support_show_on_cage  = modifier_categories.support_show_on_cage
+    support_show_on_cage = modifier_categories.support_show_on_cage
 
     pcoll = icons.preview_collections["main"]
 
@@ -161,7 +161,7 @@ def mod_show_editmode_and_cage(modifier, layout, scale_x=1.0, use_in_list=False)
     if not use_in_list:
         sub.active = modifier.show_viewport
 
-    if modifier.type not in dont_support_show_in_editmode :
+    if modifier.type not in dont_support_show_in_editmode:
         if not modifier.show_viewport and use_in_list:
             show_in_editmode_on = pcoll['SHOW_IN_EDITMODE_ON_INACTIVE']
             show_in_editmode_off = pcoll['SHOW_IN_EDITMODE_OFF_INACTIVE']
@@ -215,7 +215,7 @@ def mod_show_editmode_and_cage(modifier, layout, scale_x=1.0, use_in_list=False)
         end_index = np.clip(mod_index, 1, 99)
 
         for mod in mods[0:end_index]:
-            if mod.show_in_editmode and mod.type not in support_show_on_cage :
+            if mod.show_in_editmode and mod.type not in support_show_on_cage:
                 is_before_show_in_editmode_on = True
                 break
 
@@ -262,11 +262,11 @@ def mod_show_editmode_and_cage(modifier, layout, scale_x=1.0, use_in_list=False)
             }
             if modifier.type in have_phys_context_button:
                 sub.operator("wm.properties_context_change", icon='PROPERTIES',
-                             emboss=False).context="PHYSICS"
+                             emboss=False).context = "PHYSICS"
                 return
             elif modifier.type == 'PARTICLE_SYSTEM':
                 sub.operator("wm.properties_context_change", icon='PROPERTIES',
-                             emboss=False).context="PARTICLES"
+                             emboss=False).context = "PARTICLES"
                 return
 
     # Make icons align nicely if modifier.type is not in support_show_on_cage
@@ -481,7 +481,7 @@ class ModifierListActions:
 
         if self.action == 'UP':
             if self.shift:
-                for _ in range (active_mod_index):
+                for _ in range(active_mod_index):
                     bpy.ops.object.modifier_move_up(override, modifier=active_mod_name)
                 ml_active_ob.ml_modifier_active_index = 0
             else:
@@ -490,7 +490,7 @@ class ModifierListActions:
 
         elif self.action == 'DOWN':
             if self.shift:
-                for _ in range (mods_len - active_mod_index):
+                for _ in range(mods_len - active_mod_index):
                     bpy.ops.object.modifier_move_down(override, modifier=active_mod_name)
                 ml_active_ob.ml_modifier_active_index = mods_len
             else:
@@ -577,8 +577,8 @@ class OBJECT_PT_ml_gizmo_object_settings(Panel):
         layout.prop(gizmo_ob, "name", text="")
 
         if gizmo_ob.type == 'EMPTY':
-            layout.prop(gizmo_ob ,"empty_display_type", text="")
-            layout.prop(gizmo_ob ,"empty_display_size", text="Display Size")
+            layout.prop(gizmo_ob, "empty_display_type", text="")
+            layout.prop(gizmo_ob, "empty_display_size", text="Display Size")
 
         layout.separator()
 
@@ -624,7 +624,7 @@ class OBJECT_PT_ml_gizmo_object_settings(Panel):
 
 
 # UI
-#=======================================================================
+# =======================================================================
 
 def modifiers_ui(context, layout, num_of_rows=False, use_in_popup=False):
     wm = bpy.context.window_manager
@@ -698,7 +698,6 @@ def modifiers_ui(context, layout, num_of_rows=False, use_in_popup=False):
     elif ob.type == 'LATTICE':
         row.prop_search(wm, "ml_mod_to_add", wm, "ml_lattice_modifiers", text="", icon='MODIFIER')
         row.menu("LATTICE_MT_ml_add_modifier_menu")
-
 
     # === Modifier list ===
     # Get the list index from wm.ml_active_object_modifier_active_index
@@ -799,7 +798,7 @@ def modifiers_ui(context, layout, num_of_rows=False, use_in_popup=False):
         if ps.settings.render_type in {'COLLECTION', 'OBJECT'}:
             sub.operator("object.duplicates_make_real", text="Convert")
         elif ps.settings.render_type == 'PATH':
-            sub.operator("object.modifier_convert", text="Convert").modifier=active_mod.name
+            sub.operator("object.modifier_convert", text="Convert").modifier = active_mod.name
     else:
         sub.scale_x = 5
         icon = pcoll['APPLY_MODIFIER']
@@ -809,7 +808,7 @@ def modifiers_ui(context, layout, num_of_rows=False, use_in_popup=False):
         if active_mod.type in modifier_categories.support_apply_as_shape_key:
             icon = pcoll['APPLY_MODIFIER_AS_SHAPEKEY']
             sub.operator("object.ml_modifier_apply_as_shapekey", text="",
-                        icon_value=icon.icon_id).modifier=active_mod.name
+                        icon_value=icon.icon_id).modifier = active_mod.name
 
         if active_mod.type not in modifier_categories.dont_support_copy:
             sub.operator("object.ml_modifier_copy",
@@ -839,7 +838,6 @@ def modifiers_ui(context, layout, num_of_rows=False, use_in_popup=False):
                                 icon='EMPTY_ARROWS', depress=depress)
                 sub.popover("OBJECT_PT_ml_gizmo_object_settings", text="")
 
-
     # === Modifier specific settings ===
     box = col.box()
     # Disable layout for linked modifiers here manually so in custom
@@ -864,7 +862,7 @@ def modifiers_ui(context, layout, num_of_rows=False, use_in_popup=False):
 
 
 # Registering
-#=======================================================================
+# =======================================================================
 
 def active_object_modifier_active_index_get(self):
     """Function for reading ob.ml_modifier_active_index indirectly

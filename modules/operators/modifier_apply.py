@@ -212,7 +212,7 @@ class ApplyModifier:
         if self.multi_user_data_apply_method == 'NONE' and ml_active_ob.data.users > 1:
             bpy.ops.object.ml_modifier_apply_multi_user_data_dialog('INVOKE_DEFAULT',
                                                                     modifier=self.modifier,
-                                                                    op_name = self.bl_idname)
+                                                                    op_name=self.bl_idname)
             return {'CANCELLED'}
 
         return self.execute(context)
@@ -273,7 +273,7 @@ class OBJECT_OT_ml_modifier_apply(Operator, ApplyModifier):
 class OBJECT_OT_ml_modifier_apply_as_shapekey(Operator, ApplyModifier):
     bl_idname = "object.ml_modifier_apply_as_shapekey"
     bl_label = "Apply Modifier As Shape Key"
-    bl_description =  ("Apply modifier as a shape key and remove from the stack.\n"
+    bl_description = ("Apply modifier as a shape key and remove from the stack.\n"
                       "\n"
                       "Hold shift to also delete its gizmo object (if it has one)")
 

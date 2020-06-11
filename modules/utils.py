@@ -71,7 +71,7 @@ def _position_gizmo_object(gizmo_object, object):
         if sel_verts:
             place_at_verts = True
             sel_verts_coords = [v.co for v in sel_verts]
-            average_vert_co = sum(sel_verts_coords,  Vector()) / len(sel_verts_coords)
+            average_vert_co = sum(sel_verts_coords, Vector()) / len(sel_verts_coords)
             global_average_vert_co = ob_mat @ average_vert_co
         else:
             place_at_verts = False
