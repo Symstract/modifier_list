@@ -2,7 +2,6 @@ import math
 import numpy as np
 
 import bpy
-import addon_utils
 from bpy.app.handlers import persistent
 from bpy.props import *
 from bpy.types import (
@@ -269,7 +268,8 @@ def mod_show_editmode_and_cage(modifier, layout, scale_x=1.0, use_in_list=False)
                              emboss=False).context = "PARTICLES"
                 return
 
-    # Make icons align nicely if modifier.type is not in support_show_on_cage
+    # Make icons align nicely if modifier.type is not in
+    # support_show_on_cage.
     empy_icon = pcoll['EMPTY_SPACE']
     sub.label(text="", translate=False, icon_value=empy_icon.icon_id)
 
@@ -417,8 +417,9 @@ class OBJECT_UL_modifier_list(UIList):
 
                 layout.prop(mod, "name", text="", emboss=False, icon_value=icon)
 
-                # Hide visibility toggles for collision modifier as they are not used
-                # in the regular UI either (apparently can cause problems in some scenes).
+                # Hide visibility toggles for collision modifier as they
+                # are not used in the regular UI either (apparently can
+                # cause problems in some scenes).
                 if mod.type != 'COLLISION':
                     row = layout.row(align=True)
                     row.alignment = 'RIGHT'
@@ -628,7 +629,7 @@ class OBJECT_PT_ml_gizmo_object_settings(Panel):
 
 def modifiers_ui(context, layout, num_of_rows=False, use_in_popup=False):
     wm = bpy.context.window_manager
-    ob = context.object if context.area.type == 'PROPERTIES' else get_ml_active_object()
+    ob = get_ml_active_object()
     active_mod_index = ob.ml_modifier_active_index
     prefs = bpy.context.preferences.addons["modifier_list"].preferences
     pcoll = icons.preview_collections["main"]
@@ -724,8 +725,6 @@ def modifiers_ui(context, layout, num_of_rows=False, use_in_popup=False):
 
     # === Modifier batch operators ===
     sub = row.row(align=True)
-    # Note: In 2.79, this is what scale 2.0 looks like. Here 2.0 causes list ordering
-    # buttons to get tiny. 2.8 Bug?
     sub.scale_x = sub_scale
 
     icon = pcoll['TOGGLE_ALL_MODIFIERS_VISIBILITY']
@@ -739,8 +738,6 @@ def modifiers_ui(context, layout, num_of_rows=False, use_in_popup=False):
 
     # === List manipulation ===
     sub = row.row(align=True)
-    #  Note: In 2.79, this is what scale 2.0 looks like. Here 2.0 causes list ordering
-    # buttons to get tiny. 2.8 Bug?
     sub.scale_x = sub_scale
     if not align_button_groups:
         sub.alignment = 'RIGHT'
@@ -763,7 +760,7 @@ def modifiers_ui(context, layout, num_of_rows=False, use_in_popup=False):
 
     active_mod = ob.modifiers[active_mod_index]
     all_mods = modifier_categories.ALL_MODIFIERS
-    active_mod_icon = [icon for name, icon, mod in all_mods if mod == active_mod.type].pop()
+    active_mod_icon = next(icon for _, icon, mod in all_mods if mod == active_mod.type)
     is_active_mod_local = is_modifier_local(ob, active_mod)
 
     col = layout.column(align=True)
@@ -782,8 +779,9 @@ def modifiers_ui(context, layout, num_of_rows=False, use_in_popup=False):
         sub = row.row(align=True)
         sub_sub = sub.row(align=True)
         sub_sub.scale_x = 1.1
-        # Hide visibility toggles for collision modifier as they are not used
-        # in the regular UI either (apparently can cause problems in some scenes).
+        # Hide visibility toggles for collision modifier as they are not
+        # used in the regular UI either (apparently can cause problems
+        # in some scenes).
         if active_mod.type != 'COLLISION':
             sub_sub.prop(active_mod, "show_render", text="")
             sub_sub.prop(active_mod, "show_viewport", text="")
@@ -848,7 +846,7 @@ def modifiers_ui(context, layout, num_of_rows=False, use_in_popup=False):
     # because in a box separators give an unnecessarily big space.
     col = box.column()
 
-    # Some mofifiers have an improved layout with additional settings.
+    # Some modifiers have an improved layout with additional settings.
     have_custom_layout = (
         'BOOLEAN',
         'LATTICE'
@@ -960,9 +958,6 @@ def on_pinned_object_change(self, context):
 def register():
     # === Properties ===
     bpy.types.Object.ml_modifier_active_index = IntProperty(options={'LIBRARY_EDITABLE'})
-    # Use Window Manager for storing modifier search property
-    # and modifier collection because it can be accessed on
-    # registering and it's not scene specific.
     wm = bpy.types.WindowManager
     # Property to access ob.ml_modifier_active_index through, to avoid
     # the problem of modifier_active_index not being possible to be
