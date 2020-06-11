@@ -142,11 +142,6 @@ def mod_show_editmode_and_cage(modifier, layout, scale_x=1.0, use_in_list=False)
     account but instead shows the button always in those cases. It's
     easier to achieve and hardly makes a difference.
     """
-    # Note: When using custom icons, the icons don't seem to get dimmer
-    # in inactive state, so custom dimmer icons are needed.
-    # SHOW_IN_EDITMODE_ON_INACTIVE_BUTTON and
-    # SHOW_ON_CAGE_ON_INACTIVE_BUTTON are used here for that reason.
-
     dont_support_show_in_editmode = modifier_categories.dont_support_show_in_editmode
     support_use_apply_on_spline = modifier_categories.support_use_apply_on_spline
     support_show_on_cage = modifier_categories.support_show_on_cage
@@ -164,9 +159,6 @@ def mod_show_editmode_and_cage(modifier, layout, scale_x=1.0, use_in_list=False)
         if not modifier.show_viewport and use_in_list:
             show_in_editmode_on = pcoll['SHOW_IN_EDITMODE_ON_INACTIVE']
             show_in_editmode_off = pcoll['SHOW_IN_EDITMODE_OFF_INACTIVE']
-        elif not modifier.show_viewport:
-            show_in_editmode_off = pcoll['SHOW_IN_EDITMODE_OFF']
-            show_in_editmode_on = pcoll['SHOW_IN_EDITMODE_ON_INACTIVE_BUTTON']
         else:
             show_in_editmode_on = pcoll['SHOW_IN_EDITMODE_ON']
             show_in_editmode_off = pcoll['SHOW_IN_EDITMODE_OFF']
@@ -242,7 +234,6 @@ def mod_show_editmode_and_cage(modifier, layout, scale_x=1.0, use_in_list=False)
                     show_on_cage_off = pcoll['SHOW_ON_CAGE_OFF_INACTIVE']
                 else:
                     sub.active = False
-                    show_on_cage_on = pcoll['SHOW_ON_CAGE_ON_INACTIVE_BUTTON']
 
             icon = show_on_cage_on.icon_id if modifier.show_on_cage else show_on_cage_off.icon_id
             sub.prop(modifier, "show_on_cage", text="", icon_value=icon, emboss=not use_in_list)
