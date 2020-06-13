@@ -555,6 +555,16 @@ class OBJECT_OT_ml_modifier_remove(Operator, ModifierListActions):
     action = 'REMOVE'
 
 
+class OBJECT_PT_ml_modifier_extras(Panel):
+    bl_label = "Modifier Extras"
+    bl_space_type = 'VIEW_3D'
+    bl_region_type = 'WINDOW'
+
+    def draw(self, context):
+        layout = self.layout
+        layout.label(text="TODO")
+
+
 class OBJECT_PT_ml_gizmo_object_settings(Panel):
     bl_label = "Gizmo Settings"
     bl_space_type = 'VIEW_3D'
@@ -704,19 +714,17 @@ def modifiers_ui(context, layout, num_of_rows=False, use_in_popup=False):
     # When sub.scale_x is 1.5 and the area/region is narrow, the buttons
     # don't align properly, so some manual work is needed.
     if use_in_popup:
-        align_button_groups = prefs.popup_width <= 278
+        align_button_groups = prefs.popup_width <= 250
     elif context.area.type == 'VIEW_3D':
-        align_button_groups = context.region.width <= 308
+        align_button_groups = context.region.width <= 283
     else:
-        align_button_groups = context.area.width <= 308
-
-    sub_scale = 3 if align_button_groups else 1.5
+        align_button_groups = context.area.width <= 291
 
     row = layout.row(align=align_button_groups)
 
     # === Modifier batch operators ===
     sub = row.row(align=True)
-    sub.scale_x = sub_scale
+    sub.scale_x = 3 if align_button_groups else 1.34
 
     icon = pcoll['TOGGLE_ALL_MODIFIERS_VISIBILITY']
     sub.operator("object.ml_toggle_all_modifiers", icon_value=icon.icon_id, text="")
@@ -727,9 +735,13 @@ def modifiers_ui(context, layout, num_of_rows=False, use_in_popup=False):
     icon = pcoll['DELETE_ALL_MODIFIERS']
     sub.operator("object.ml_remove_all_modifiers", icon_value=icon.icon_id, text="")
 
+    sub_sub = sub.row(align=True)
+    sub_sub.scale_x = 0.65 if align_button_groups else 0.85
+    sub_sub.popover("OBJECT_PT_ml_modifier_extras", icon='DOWNARROW_HLT', text="")
+
     # === List manipulation ===
     sub = row.row(align=True)
-    sub.scale_x = sub_scale
+    sub.scale_x = 3 if align_button_groups else 1.5
     if not align_button_groups:
         sub.alignment = 'RIGHT'
 
