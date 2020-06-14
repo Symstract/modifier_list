@@ -10,6 +10,7 @@ from bpy.types import AddonPreferences
 
 from .icons import load_icons
 from .ui.properties_editor import register_DATA_PT_modifiers
+from .ui.ui_utils import favourite_modifiers_selection_layout
 
 
 def read_prefs(prefs_file):
@@ -258,19 +259,7 @@ class Preferences(AddonPreferences):
         row.prop(self, "favourites_per_row", expand=True)
 
         # === Favourite modifiers selection ===
-        col = layout.column(align=True)
-
-        attr_iter = iter(get_pref_mod_attr_name())
-
-        wm = bpy.context.window_manager
-
-        # Draw 2 or 3 property searches per row
-        for attr in attr_iter:
-            row = col.row(align=True)
-            row.prop_search(self, attr, wm, "ml_mesh_modifiers", text="", icon='MODIFIER')
-            row.prop_search(self, next(attr_iter), wm, "ml_mesh_modifiers", text="", icon='MODIFIER')
-            if self.favourites_per_row == '3':
-                row.prop_search(self, next(attr_iter), wm, "ml_mesh_modifiers", text="", icon='MODIFIER')
+        favourite_modifiers_selection_layout(context, layout)
 
         # =====================================
 
@@ -336,15 +325,6 @@ class Preferences(AddonPreferences):
         layout.prop(self, "parent_new_gizmo_to_object")
         layout.prop(self, "match_gizmo_size_to_object")
         layout.prop(self, "always_delete_gizmo")
-
-
-def get_pref_mod_attr_name():
-    """List of the names of favourite modifier attributes in Preferences
-    class for making drawing favourite modifier selection rows in
-    preferences easy.
-    """
-    attr_name_list = [attr for attr in Preferences.__annotations__ if attr.startswith("modifier_")]
-    return attr_name_list
 
 
 def register():
