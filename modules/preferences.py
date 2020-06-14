@@ -11,6 +11,7 @@ from bpy.types import AddonPreferences
 from .icons import load_icons
 from .ui.properties_editor import register_DATA_PT_modifiers
 from .ui.ui_utils import favourite_modifiers_selection_layout
+from .ui.sidebar import update_sidebar_category
 
 
 def read_prefs(prefs_file):
@@ -62,6 +63,11 @@ def use_properties_editor_callback(self, context):
     write_prefs()
 
 
+def sidebar_category_callback(self, context):
+    update_sidebar_category()
+    write_prefs()
+
+
 def icon_color_callback(self, context):
     load_icons()
     write_prefs()
@@ -91,6 +97,11 @@ class Preferences(AddonPreferences):
         name="Keep Sidebar Tab Visible",
         description="Keep the sidebar tab always visible",
         update=prefs_callback)
+
+    sidebar_category: StringProperty(
+        name="Sidebar Category",
+        default="Modifier List",
+        update=sidebar_category_callback)
 
     favourites_per_row_items = [
         ("2", "2", "", 1),
@@ -247,6 +258,11 @@ class Preferences(AddonPreferences):
         row.prop(self, "use_properties_editor")
 
         layout.prop(self, "keep_sidebar_visible")
+
+        split = layout.split()
+        split.label(text="Sidebar Category")
+        row = split.row()
+        row.prop(self, "sidebar_category", text="")
 
         layout.separator()
 

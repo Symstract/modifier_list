@@ -66,3 +66,19 @@ class VIEW3D_PT_Vertex_groups(Panel, BasePanel):
     def draw(self, context):
         layout = self.layout
         vertex_groups_ui(context, layout)
+
+
+def update_sidebar_category():
+    bpy.utils.unregister_class(VIEW3D_PT_Modifiers)
+    bpy.utils.unregister_class(VIEW3D_PT_Vertex_groups)
+
+    category = bpy.context.preferences.addons["modifier_list"].preferences.sidebar_category
+    VIEW3D_PT_Modifiers.bl_category = category
+    VIEW3D_PT_Vertex_groups.bl_category = category
+
+    bpy.utils.register_class(VIEW3D_PT_Modifiers)
+    bpy.utils.register_class(VIEW3D_PT_Vertex_groups)
+
+
+def register():
+    update_sidebar_category()
