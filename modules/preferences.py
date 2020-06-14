@@ -94,8 +94,8 @@ class Preferences(AddonPreferences):
         update=use_properties_editor_callback)
 
     keep_sidebar_visible: BoolProperty(
-        name="Keep Sidebar Tab Visible",
-        description="Keep the sidebar tab always visible",
+        name="Keep Sidebar Panels Visible",
+        description="Keep the sidebar panels always visible",
         update=prefs_callback)
 
     sidebar_category: StringProperty(
