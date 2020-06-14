@@ -562,7 +562,7 @@ class OBJECT_PT_ml_modifier_extras(Panel):
 
     def draw(self, context):
         layout = self.layout
-        layout.label(text="TODO")
+        layout.operator("wm.ml_favourite_modifiers_selection_popup")
 
 
 class OBJECT_PT_ml_gizmo_object_settings(Panel):
