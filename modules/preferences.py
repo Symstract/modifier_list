@@ -3,8 +3,7 @@ import math
 import os
 
 import bpy
-import addon_utils
-import rna_keymap_ui
+# import rna_keymap_ui
 from bpy.props import *
 from bpy.types import AddonPreferences
 
