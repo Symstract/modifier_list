@@ -231,8 +231,8 @@ class Preferences(AddonPreferences):
         col = layout.column()
         col.label(icon='INFO',
                   text="Preferences are auto saved into your Blender config folder, eg:")
-        col.label(text="      '...\Blender Foundation\Blender\<blender version>"
-                       "\config\modifier_list\preferences.json'")
+        col.label(text="      '...\\Blender Foundation\\Blender\\<blender version>"
+                       "\\config\\modifier_list\\preferences.json'")
 
         layout.separator()
 
