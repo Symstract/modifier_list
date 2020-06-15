@@ -9,7 +9,7 @@ from bpy.types import AddonPreferences
 
 from .icons import load_icons
 from .ui.properties_editor import register_DATA_PT_modifiers
-from .ui.ui_utils import favourite_modifiers_selection_layout
+from .ui.ui_common import favourite_modifiers_selection_layout
 from .ui.sidebar import update_sidebar_category
 
 

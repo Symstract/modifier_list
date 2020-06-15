@@ -1,6 +1,6 @@
 from bpy.types import Operator
 
-from ..ui.ui_utils import favourite_modifiers_selection_layout
+from ..ui.ui_common import favourite_modifiers_selection_layout
 
 
 class WM_OT_ml_favourite_modifiers_selection_popup(Operator):

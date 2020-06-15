@@ -2,7 +2,7 @@ import bpy
 from bpy.types import Panel
 
 from .modifiers_ui import modifiers_ui
-from .ui_utils import pin_object_button
+from .ui_common import pin_object_button
 from .vertex_groups_ui import vertex_groups_ui
 from ..utils import get_ml_active_object
 
