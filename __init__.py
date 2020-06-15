@@ -40,8 +40,8 @@ ignored_classes = (
 )
 
 panel_order = (
-    "VIEW3D_PT_Modifiers",
-    "VIEW3D_PT_Vertex_groups",
+    "VIEW3D_PT_ml_modifiers",
+    "VIEW3D_PT_ml_vertex_groups",
 )
 
 

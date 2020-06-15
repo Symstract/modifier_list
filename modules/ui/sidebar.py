@@ -13,7 +13,7 @@ class BasePanel:
     bl_category = "Modifier List"
 
 
-class VIEW3D_PT_Modifiers(Panel, BasePanel):
+class VIEW3D_PT_ml_modifiers(Panel, BasePanel):
     # A leading space in the label, so there's separation between it
     # and the pin button
     bl_label = " Modifiers"
@@ -43,7 +43,7 @@ class VIEW3D_PT_Modifiers(Panel, BasePanel):
         modifiers_ui(context, layout)
 
 
-class VIEW3D_PT_Vertex_groups(Panel, BasePanel):
+class VIEW3D_PT_ml_vertex_groups(Panel, BasePanel):
     bl_label = "Vertex Groups"
     bl_options = {'DEFAULT_CLOSED'}
 
@@ -69,15 +69,15 @@ class VIEW3D_PT_Vertex_groups(Panel, BasePanel):
 
 
 def update_sidebar_category():
-    bpy.utils.unregister_class(VIEW3D_PT_Modifiers)
-    bpy.utils.unregister_class(VIEW3D_PT_Vertex_groups)
+    bpy.utils.unregister_class(VIEW3D_PT_ml_modifiers)
+    bpy.utils.unregister_class(VIEW3D_PT_ml_vertex_groups)
 
     category = bpy.context.preferences.addons["modifier_list"].preferences.sidebar_category
-    VIEW3D_PT_Modifiers.bl_category = category
-    VIEW3D_PT_Vertex_groups.bl_category = category
+    VIEW3D_PT_ml_modifiers.bl_category = category
+    VIEW3D_PT_ml_vertex_groups.bl_category = category
 
-    bpy.utils.register_class(VIEW3D_PT_Modifiers)
-    bpy.utils.register_class(VIEW3D_PT_Vertex_groups)
+    bpy.utils.register_class(VIEW3D_PT_ml_modifiers)
+    bpy.utils.register_class(VIEW3D_PT_ml_vertex_groups)
 
 
 def register():
