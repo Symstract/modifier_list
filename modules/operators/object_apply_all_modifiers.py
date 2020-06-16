@@ -11,6 +11,12 @@ from bpy.props import *
 from bpy.types import Operator
 
 
+# It doesn't seem possible to access attributes in execute which are
+# defined in invoke when using window_manager.invoke_confirm. So need to
+# store this globally then.
+disallow_applying_hidden_modifiers = False
+
+
 class OBJECT_OT_ml_apply_all_modifiers(Operator):
     bl_idname = "object.ml_apply_all_modifiers"
     bl_label = "Apply All Modifiers"
@@ -58,7 +64,7 @@ class OBJECT_OT_ml_apply_all_modifiers(Operator):
             for mod in mods:
                 obs_have_mods = True
 
-                if prefs.disallow_applying_hidden_modifiers and not mod.show_viewport:
+                if disallow_applying_hidden_modifiers and not mod.show_viewport:
                     continue
 
                 # Only try to apply local modifiers
@@ -107,7 +113,7 @@ class OBJECT_OT_ml_apply_all_modifiers(Operator):
                 skipped_obs_with_non_local_data_message = (" for objects with local data"
                                                            if skipped_obs_with_non_local_data
                                                            else "")
-                if prefs.disallow_applying_hidden_modifiers:
+                if disallow_applying_hidden_modifiers:
                     message = ("Applied all visible local modifiers" if skipped_linked_mods
                                else "Applied all visible modifiers")
                     self.report({'INFO'}, message + skipped_obs_with_non_local_data_message)
@@ -120,6 +126,10 @@ class OBJECT_OT_ml_apply_all_modifiers(Operator):
 
     def invoke(self, context, event):
         prefs = bpy.context.preferences.addons["modifier_list"].preferences
+        global disallow_applying_hidden_modifiers
+        disallow_applying_hidden_modifiers = (
+            not prefs.disallow_applying_hidden_modifiers if event.alt
+            else prefs.disallow_applying_hidden_modifiers)
 
         if prefs.show_confirmation_popups:
             return context.window_manager.invoke_confirm(self, event)

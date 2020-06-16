@@ -141,7 +141,8 @@ class Preferences(AddonPreferences):
 
     disallow_applying_hidden_modifiers: BoolProperty(
         name="Disallow Applying Hidden Modifiers",
-        description="Disallow applying modifier's which are hidden in the viewport",
+        description="Disallow applying modifier's which are hidden in the viewport. \n"
+                    "Hold Alt to override this. (When off, the behaviour is reversed)",
         update=prefs_callback)
 
     icon_color_items = [
