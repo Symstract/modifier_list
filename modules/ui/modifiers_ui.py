@@ -127,13 +127,130 @@ def is_modifier_disabled(mod):
 # UI elements
 # =======================================================================
 
-def mod_show_editmode_and_cage(modifier, layout, scale_x=1.0, use_in_list=False):
-    """This handles showing, hiding and activating/deactivating
-    show_in_editmode and show_on_cage buttons to match the behaviour of
-    the regular UI.
 
-    When called, this adds those buttons, for the specified
-    modifier, in their correct state, to the specified (sub-)layout.
+def show_in_editmode_button(modifier, layout, pcoll, use_in_list):
+    row = layout.row(align=True)
+
+    if modifier.type in modifier_categories.DONT_SUPPORT_SHOW_IN_EDITMODE:
+        empy_icon = pcoll['EMPTY_SPACE']
+        row.label(text="", translate=False, icon_value=empy_icon.icon_id)
+        return
+
+    if not use_in_list:
+        row.active = modifier.show_viewport
+
+    if not modifier.show_viewport and use_in_list:
+        show_in_editmode_on = pcoll['SHOW_IN_EDITMODE_ON_INACTIVE']
+        show_in_editmode_off = pcoll['SHOW_IN_EDITMODE_OFF_INACTIVE']
+    else:
+        show_in_editmode_on = pcoll['SHOW_IN_EDITMODE_ON']
+        show_in_editmode_off = pcoll['SHOW_IN_EDITMODE_OFF']
+
+    show = modifier.show_in_editmode
+    icon = show_in_editmode_on.icon_id if show else show_in_editmode_off.icon_id
+    row.prop(modifier, "show_in_editmode", text="", icon_value=icon, emboss=not use_in_list)
+
+
+def use_apply_on_spline_button(modifier, layout, pcoll, use_in_list):
+    row = layout.row(align=True)
+
+    if modifier.type not in modifier_categories.SUPPORT_USE_APPLY_ON_SPLINE:
+        empy_icon = pcoll['EMPTY_SPACE']
+        row.label(text="", translate=False, icon_value=empy_icon.icon_id)
+        return
+
+    use_apply_on_spline_on = pcoll['USE_APPLY_ON_SPLINE_ON']
+    use_apply_on_spline_off = pcoll['USE_APPLY_ON_SPLINE_OFF']
+    apply_on = modifier.use_apply_on_spline
+    icon = use_apply_on_spline_on.icon_id if apply_on else use_apply_on_spline_off.icon_id
+    row.prop(modifier, "use_apply_on_spline", text="", icon_value=icon, emboss=not use_in_list)
+
+
+def show_on_cage_button(object, modifier, layout, pcoll, use_in_list):
+    support_show_on_cage = modifier_categories.SUPPORT_SHOW_ON_CAGE
+
+    if modifier.type not in support_show_on_cage:
+        return False
+
+    mods = object.modifiers
+    mod_index = mods.find(modifier.name)
+
+    # Check if some modifier before this has show_in_editmode on
+    # and doesn't have show_on_cage setting.
+    is_before_show_in_editmode_on = False
+    end_index = np.clip(mod_index, 1, 99)
+
+    for mod in mods[0:end_index]:
+        if mod.show_in_editmode and mod.type not in support_show_on_cage:
+            is_before_show_in_editmode_on = True
+            break
+
+    if is_before_show_in_editmode_on:
+        return False
+
+    # Check if some modifier after this has show_in_editmode and
+    # show_on_cage both on and also is visible in the viewport.
+    is_after_show_on_cage_on = False
+
+    for mod in mods[(mod_index + 1):(len(mods))]:
+        if (mod.show_viewport and mod.show_in_editmode and mod.show_on_cage):
+            is_after_show_on_cage_on = True
+            break
+
+    # Button
+    row = layout.row(align=True)
+    show_on_cage_on = pcoll['SHOW_ON_CAGE_ON']
+    show_on_cage_off = pcoll['SHOW_ON_CAGE_OFF']
+
+    if (not modifier.show_viewport or not modifier.show_in_editmode
+            or is_after_show_on_cage_on):
+        if use_in_list:
+            show_on_cage_on = pcoll['SHOW_ON_CAGE_ON_INACTIVE']
+            show_on_cage_off = pcoll['SHOW_ON_CAGE_OFF_INACTIVE']
+        else:
+            row.active = False
+
+    icon = show_on_cage_on.icon_id if modifier.show_on_cage else show_on_cage_off.icon_id
+    row.prop(modifier, "show_on_cage", text="", icon_value=icon, emboss=not use_in_list)
+
+    return True
+
+
+def properties_context_change_button(modifier, layout, use_in_list):
+    if bpy.context.area.type != 'PROPERTIES' or use_in_list:
+        return False
+
+    have_phys_context_button = {
+        'CLOTH',
+        'COLLISION',
+        'FLUID_SIMULATION',
+        'DYNAMIC_PAINT',
+        'SMOKE',
+        'SOFT_BODY'
+    }
+
+    if modifier.type in have_phys_context_button:
+        row = layout.row(align=True)
+        row.operator("wm.properties_context_change", icon='PROPERTIES',
+                        emboss=False).context = "PHYSICS"
+        return True
+
+    if modifier.type == 'PARTICLE_SYSTEM':
+        row = layout.row(align=True)
+        row.operator("wm.properties_context_change", icon='PROPERTIES',
+                        emboss=False).context = "PARTICLES"
+        return True
+
+    return False
+
+
+def modifier_visibility_buttons(modifier, layout, use_in_list=False):
+    """This handles the modifier visibility buttons (and also the
+    properties_context_change button) to match the behaviour of the
+    regular UI .
+
+    When called, adds those buttons, for the given modifier, in their
+    correct state, to the specified (sub-)layout.
 
     Note: some modifiers show show_on_cage in the regular UI only if,
     for example, an object to use for deforming is specified. Eg.
@@ -142,127 +259,50 @@ def mod_show_editmode_and_cage(modifier, layout, scale_x=1.0, use_in_list=False)
     account but instead shows the button always in those cases. It's
     easier to achieve and hardly makes a difference.
     """
-    dont_support_show_in_editmode = modifier_categories.DONT_SUPPORT_SHOW_IN_EDITMODE
-    support_use_apply_on_spline = modifier_categories.SUPPORT_USE_APPLY_ON_SPLINE
-    support_show_on_cage = modifier_categories.SUPPORT_SHOW_ON_CAGE
-
     pcoll = icons.preview_collections["main"]
+    empy_icon = pcoll['EMPTY_SPACE']
 
-    # === show_in_editmode ===
-    sub = layout.row(align=True)
-    sub.scale_x = scale_x
+    # Main layout
+    row = layout.row(align=True)
+    row.scale_x = 1.0 if use_in_list else 1.2
 
-    if not use_in_list:
-        sub.active = modifier.show_viewport
+    # show_render and show_viewport
+    sub = row.row(align=True)
 
-    if modifier.type not in dont_support_show_in_editmode:
-        if not modifier.show_viewport and use_in_list:
-            show_in_editmode_on = pcoll['SHOW_IN_EDITMODE_ON_INACTIVE']
-            show_in_editmode_off = pcoll['SHOW_IN_EDITMODE_OFF_INACTIVE']
-        else:
-            show_in_editmode_on = pcoll['SHOW_IN_EDITMODE_ON']
-            show_in_editmode_off = pcoll['SHOW_IN_EDITMODE_OFF']
-
-        show = modifier.show_in_editmode
-        icon = show_in_editmode_on.icon_id if show else show_in_editmode_off.icon_id
-        sub.prop(modifier, "show_in_editmode", text="", icon_value=icon,
-                 emboss=not use_in_list)
-
-    else:
-        # Make icons align nicely
-        empy_icon = pcoll['EMPTY_SPACE']
+    # Hide visibility toggles for collision modifier as they are not
+    # used in the regular UI either (apparently can cause problems
+    # in some scenes).
+    if modifier.type == 'COLLISION':
         sub.label(text="", translate=False, icon_value=empy_icon.icon_id)
+        sub.label(text="", translate=False, icon_value=empy_icon.icon_id)
+    else:
+        sub.prop(modifier, "show_render", text="", emboss=not use_in_list)
+        sub.prop(modifier, "show_viewport", text="", emboss=not use_in_list)
+
+    # show_in_editmode
+    show_in_editmode_button(modifier, row, pcoll, use_in_list)
 
     ob = get_ml_active_object()
 
-    # === No use_apply_on_spline or show_on_cage for lattices ===
+    # No use_apply_on_spline or show_on_cage for lattices
     if ob.type == 'LATTICE':
         return
 
-    # === use_apply_on_spline ===
+    # use_apply_on_spline
     if ob.type != 'MESH':
-        if modifier.type in support_use_apply_on_spline:
-            sub = layout.row(align=True)
-            sub.scale_x = scale_x
-            use_apply_on_spline_on = pcoll['USE_APPLY_ON_SPLINE_ON']
-            use_apply_on_spline_off = pcoll['USE_APPLY_ON_SPLINE_OFF']
-            apply_on = modifier.use_apply_on_spline
-            icon = use_apply_on_spline_on.icon_id if apply_on else use_apply_on_spline_off.icon_id
-            sub.prop(modifier, "use_apply_on_spline", text="", icon_value=icon,
-                     emboss=not use_in_list)
-        else:
-            empy_icon = pcoll['EMPTY_SPACE']
-            sub.label(text="", translate=False, icon_value=empy_icon.icon_id)
+        use_apply_on_spline_button(modifier, row, pcoll, use_in_list)
         return
 
-    # === show_on_cage ===
-    if modifier.type in support_show_on_cage:
-        mods = ob.modifiers
-        mod_index = mods.find(modifier.name)
+    # show_on_cage or properties_context_change
+    show_on_cage_added = show_on_cage_button(ob, modifier, row, pcoll, use_in_list)
+    context_change_added = False
+    if not show_on_cage_added:
+        context_change_added = properties_context_change_button(modifier, row, use_in_list)
 
-        # Check if some modifier before this has show_in_editmode on
-        # and doesn't have show_on_cage setting.
-        is_before_show_in_editmode_on = False
-        end_index = np.clip(mod_index, 1, 99)
-
-        for mod in mods[0:end_index]:
-            if mod.show_in_editmode and mod.type not in support_show_on_cage:
-                is_before_show_in_editmode_on = True
-                break
-
-        # Check if some modifier after this has show_in_editmode and
-        # show_on_cage both on and also is visible in the viewport.
-        is_after_show_on_cage_on = False
-
-        for mod in mods[(mod_index + 1):(len(mods))]:
-            if (mod.show_viewport and mod.show_in_editmode
-                    and mod.show_on_cage):
-                is_after_show_on_cage_on = True
-                break
-
-        # show_on_cage drawing
-        if not is_before_show_in_editmode_on:
-            sub = layout.row(align=True)
-            sub.scale_x = scale_x
-            show_on_cage_on = pcoll['SHOW_ON_CAGE_ON']
-            show_on_cage_off = pcoll['SHOW_ON_CAGE_OFF']
-
-            if (not modifier.show_viewport or not modifier.show_in_editmode
-                    or is_after_show_on_cage_on):
-                if use_in_list:
-                    show_on_cage_on = pcoll['SHOW_ON_CAGE_ON_INACTIVE']
-                    show_on_cage_off = pcoll['SHOW_ON_CAGE_OFF_INACTIVE']
-                else:
-                    sub.active = False
-
-            icon = show_on_cage_on.icon_id if modifier.show_on_cage else show_on_cage_off.icon_id
-            sub.prop(modifier, "show_on_cage", text="", icon_value=icon, emboss=not use_in_list)
-
-            return
-
-    else:
-        if bpy.context.area.type == 'PROPERTIES' and not use_in_list:
-            have_phys_context_button = {
-                'CLOTH',
-                'COLLISION',
-                'FLUID_SIMULATION',
-                'DYNAMIC_PAINT',
-                'SMOKE',
-                'SOFT_BODY'
-            }
-            if modifier.type in have_phys_context_button:
-                sub.operator("wm.properties_context_change", icon='PROPERTIES',
-                             emboss=False).context = "PHYSICS"
-                return
-            elif modifier.type == 'PARTICLE_SYSTEM':
-                sub.operator("wm.properties_context_change", icon='PROPERTIES',
-                             emboss=False).context = "PARTICLES"
-                return
-
-    # Make icons align nicely if modifier.type is not in
-    # support_show_on_cage.
-    empy_icon = pcoll['EMPTY_SPACE']
-    sub.label(text="", translate=False, icon_value=empy_icon.icon_id)
+    # Make icons align nicely if neither show_on_cage nor properties_context_change was added
+    if not show_on_cage_added and not context_change_added:
+        sub = row.row(align=True)
+        sub.label(text="", translate=False, icon_value=empy_icon.icon_id)
 
 
 class MeshModifiersCollection(PropertyGroup):
@@ -408,15 +448,7 @@ class OBJECT_UL_modifier_list(UIList):
 
                 layout.prop(mod, "name", text="", emboss=False, icon_value=icon)
 
-                # Hide visibility toggles for collision modifier as they
-                # are not used in the regular UI either (apparently can
-                # cause problems in some scenes).
-                if mod.type != 'COLLISION':
-                    row = layout.row(align=True)
-                    row.alignment = 'RIGHT'
-                    row.prop(mod, "show_render", text="", emboss=False)
-                    row.prop(mod, "show_viewport", text="", emboss=False)
-                    mod_show_editmode_and_cage(mod, row, use_in_list=True)
+                modifier_visibility_buttons(mod, layout, use_in_list=True)
             else:
                 layout.label(text="", translate=False, icon_value=icon)
 
@@ -779,16 +811,7 @@ def modifiers_ui(context, layout, num_of_rows=False, use_in_popup=False):
         sub.label(text="", icon=active_mod_icon)
         sub.prop(active_mod, "name", text="")
 
-        sub = row.row(align=True)
-        sub_sub = sub.row(align=True)
-        sub_sub.scale_x = 1.1
-        # Hide visibility toggles for collision modifier as they are not
-        # used in the regular UI either (apparently can cause problems
-        # in some scenes).
-        if active_mod.type != 'COLLISION':
-            sub_sub.prop(active_mod, "show_render", text="")
-            sub_sub.prop(active_mod, "show_viewport", text="")
-        mod_show_editmode_and_cage(active_mod, sub, scale_x=1.1)
+        modifier_visibility_buttons(active_mod, row)
 
     row = box.row()
 
