@@ -135,7 +135,7 @@ class Preferences(AddonPreferences):
     insert_modifier_after_active: BoolProperty(
         name="Insert New Modifier After Active",
         description="When adding a new modifier, insert it after the active one. \n"
-                    "Hold control to override this. (When off, the behaviour is reversed). \n"
+                    "Hold Control to override this. (When off, the behaviour is reversed). \n"
                     "NOTE: This is really slow on heavy meshes",
         update=prefs_callback)
 
