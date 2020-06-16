@@ -220,14 +220,23 @@ def properties_context_change_button(modifier, layout, use_in_list):
     if bpy.context.area.type != 'PROPERTIES' or use_in_list:
         return False
 
-    have_phys_context_button = {
-        'CLOTH',
-        'COLLISION',
-        'FLUID_SIMULATION',
-        'DYNAMIC_PAINT',
-        'SMOKE',
-        'SOFT_BODY'
-    }
+    if bpy.app.version[0] == 2 and bpy.app.version[1] < 82:
+        have_phys_context_button = {
+            'CLOTH',
+            'COLLISION',
+            'FLUID_SIMULATION',
+            'DYNAMIC_PAINT',
+            'SMOKE',
+            'SOFT_BODY'
+        }
+    else:
+        have_phys_context_button = {
+            'CLOTH',
+            'COLLISION',
+            'FLUID',
+            'DYNAMIC_PAINT',
+            'SOFT_BODY'
+        }
 
     if modifier.type in have_phys_context_button:
         row = layout.row(align=True)
