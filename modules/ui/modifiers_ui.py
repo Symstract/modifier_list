@@ -435,7 +435,7 @@ class LATTICE_MT_ml_add_modifier_menu(Menu):
             col.operator("object.ml_modifier_add", text=name, icon=icon).modifier_type = mod
 
 
-class OBJECT_UL_modifier_list(UIList):
+class OBJECT_UL_ml_modifier_list(UIList):
 
     def draw_item(self, context, layout, data, item, icon, active_data, active_propname):
         mod = item
@@ -739,7 +739,7 @@ def modifiers_ui(context, layout, num_of_rows=False, use_in_popup=False):
     # prevent editing that value directly.
     # wm.ml_active_object_modifier_active_index has get and set methods
     # for accessing ob.ml_modifier_active_index indirectly.
-    layout.template_list("OBJECT_UL_modifier_list", "", ob, "modifiers",
+    layout.template_list("OBJECT_UL_ml_modifier_list", "", ob, "modifiers",
                          wm, "ml_active_object_modifier_active_index", rows=num_of_rows,
                          sort_reverse=prefs.reverse_list)
 
