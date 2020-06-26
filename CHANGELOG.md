@@ -1,6 +1,15 @@
 # Changelog
 
 
+## 1.5.6 - 26.6.2020
+
+Updates for latest 2.90:
+- Fixed Bevel custom profile, the checkbox changed to an enum
+- Fixed Bevel Width property name for Absolute method 
+
+I'll make some layout changes to Bevel to improve it in the future.
+
+
 ## 1.5.5 - 7.6.2020
 
 - Added support for Blender 2.90 after the new modifier panels
