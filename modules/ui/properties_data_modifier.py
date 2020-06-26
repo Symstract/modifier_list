@@ -122,7 +122,9 @@ class DATA_PT_modifiers:
             layout.prop(md, "width_pct")
         else:
             offset_text = "Width"
-            if offset_type == 'DEPTH':
+            if offset_type == 'ABSOLUTE':
+                offset_text = "Absolute Distance"
+            elif offset_type == 'DEPTH':
                 offset_text = "Depth"
             elif offset_type == 'OFFSET':
                 offset_text = "Offset"
@@ -163,10 +165,12 @@ class DATA_PT_modifiers:
 
         layout.label(text="Intersection Type:")
         layout.row().prop(md, "vmesh_method", expand=True)
-        layout.row().prop(md, "use_custom_profile")
+        
+        layout.label(text="Profile Type:")
+        layout.row().prop(md, "profile_type", expand=True)
         row = layout.row()
-        row.enabled = md.use_custom_profile
-        if md.use_custom_profile:
+        row.enabled = md.profile_type == 'CUSTOM'
+        if md.profile_type == 'CUSTOM':
             layout.template_curveprofile(md, "custom_profile")
 
     def BOOLEAN(self, layout, _ob, md):
