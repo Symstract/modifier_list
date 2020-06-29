@@ -57,12 +57,7 @@ def scene_correct_state_after_undo_ensure(dummy):
                 area.spaces[0].pin_id = None
                 area.spaces[0].use_pin_id = False
 
-            if context.area.type == 'PROPERTIES':
-                context.area.type = 'VIEW_3D'
-                context.view_layer.objects.active = init_act_ob
-                context.area.type = 'PROPERTIES'
-            else:
-                context.view_layer.objects.active = init_act_ob
+            context.view_layer.objects.active = init_act_ob
 
             undo_handlers.remove(scene_correct_state_after_undo_ensure)
 
