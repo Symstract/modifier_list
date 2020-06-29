@@ -97,15 +97,7 @@ class ApplyModifier:
     def execute(self, context):
         prefs = bpy.context.preferences.addons["modifier_list"].preferences
         ml_active_ob = get_ml_active_object()
-
-        # Get the active object in 3d View so Properties Editor's
-        # context pinning won't mess things up.
-        if context.area.type == 'PROPERTIES':
-            context.area.type = 'VIEW_3D'
-            ob = context.object
-            context.area.type = 'PROPERTIES'
-        else:
-            ob = context.object
+        ob = context.active_object
 
         self.mod_type = ml_active_ob.modifiers[self.modifier].type
 
