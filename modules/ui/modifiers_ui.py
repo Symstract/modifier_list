@@ -308,7 +308,8 @@ def modifier_visibility_buttons(modifier, layout, use_in_list=False):
     if not show_on_cage_added:
         context_change_added = properties_context_change_button(modifier, row, use_in_list)
 
-    # Make icons align nicely if neither show_on_cage nor properties_context_change was added
+    # Make icons align nicely if neither show_on_cage nor 
+    # properties_context_change was added.
     if not show_on_cage_added and not context_change_added:
         sub = row.row(align=True)
         sub.label(text="", translate=False, icon_value=empy_icon.icon_id)
