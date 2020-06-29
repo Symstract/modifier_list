@@ -487,28 +487,16 @@ class ModifierListActions:
     def execute(self, context):
         prefs = bpy.context.preferences.addons["modifier_list"].preferences
         ml_active_ob = get_ml_active_object()
+        mods = ml_active_ob.modifiers
 
         # Make using operators possible when an object is pinned
         override = context.copy()
         override['object'] = ml_active_ob
 
-        # Get the active object in 3d View so Properties Editor's
-        # context pinning won't mess things up.
-        if context.area.type == 'PROPERTIES':
-            context.area.type = 'VIEW_3D'
-            ob = context.object
-            context.area.type = 'PROPERTIES'
-        else:
-            ob = context.object
-
-        mods = ml_active_ob.modifiers
         mods_len = len(mods) - 1
         active_mod_index = ml_active_ob.ml_modifier_active_index
         active_mod_index_up = np.clip(active_mod_index - 1, 0, mods_len)
         active_mod_index_down = np.clip(active_mod_index + 1, 0, mods_len)
-
-        if not mods:
-            return {'CANCELLED'}
 
         active_mod = ml_active_ob.modifiers[active_mod_index]
         active_mod_name = active_mod.name
@@ -539,18 +527,14 @@ class ModifierListActions:
                 # utilised here, so we can return into the correct
                 # mode after deleting a lattice in lattice edit
                 # mode.
-                if ob and ob.type == 'LATTICE':
+                switch_into_editmode = False
+                
+                if context.active_object and context.active_object.type == 'LATTICE':
                     if context.area.type == 'PROPERTIES':
                         if lattice_toggle_editmode_prop_editor.init_mode == 'EDIT_MESH':
                             switch_into_editmode = True
-                        else:
-                            switch_into_editmode = False
                     elif lattice_toggle_editmode.init_mode == 'EDIT_MESH':
                         switch_into_editmode = True
-                    else:
-                        switch_into_editmode = False
-                else:
-                    switch_into_editmode = False
 
                 gizmo_ob = get_gizmo_object()
                 delete_gizmo_object(self, gizmo_ob)
