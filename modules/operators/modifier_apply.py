@@ -6,6 +6,7 @@ from bpy.types import Operator
 
 from . import lattice_toggle_editmode, lattice_toggle_editmode_prop_editor
 from ..modifier_categories import CURVE_DEFORM_NAMES_ICONS_TYPES
+from ..multiuser_data_modifier_apply_utils import LinkedObjectDataChanger
 from ..utils import (
     delete_gizmo_object,
     delete_ml_vertex_group,
@@ -116,7 +117,8 @@ class ApplyModifier:
         # Make applying modifiers possible when the object's data is
         # used by other objects too.
         if self.multi_user_data_apply_method != 'NONE':
-            self.assign_new_data_to_active_instance()
+            self.linked_object_data_changer = LinkedObjectDataChanger(ml_active_ob)
+            self.linked_object_data_changer.make_active_instance_data_unique()
 
         success = self.apply_modifier(context, ml_active_ob, is_editmode)
         
@@ -133,7 +135,7 @@ class ApplyModifier:
 
         # Apply the modifier to all instances
         if self.multi_user_data_apply_method == 'APPLY_TO_ALL':
-            self.assign_new_data_to_other_instances()
+            self.linked_object_data_changer.assign_new_data_to_other_instances()
 
         self.ensure_correct_modifier_active_index(ml_active_ob)
 
@@ -179,7 +181,7 @@ class ApplyModifier:
             message = message[:-1]
             self.report(type={'ERROR'}, message=message)
             if self.multi_user_data_apply_method != 'NONE':
-                self.reassign_old_data_to_active_instance()
+                self.linked_object_data_changer.reassign_old_data_to_active_instance()
             if is_init_mode_editmode:
                 bpy.ops.object.editmode_toggle()
             return False
@@ -217,41 +219,6 @@ class ApplyModifier:
         context.view_layer.objects.active = ml_active_object
         if modifier_type == 'LATTICE':
             delete_ml_vertex_group(ml_active_object, vertex_group)
-
-    def get_correct_data_collection(self):
-        ml_active_ob = get_ml_active_object()
-
-        if ml_active_ob.type == 'MESH':
-            return bpy.data.meshes
-        elif ml_active_ob.type in {'CURVE', 'SURFACE', 'FONT'}:
-            return bpy.data.curves
-        elif ml_active_ob.type == 'LATTICE':
-            return bpy.data.lattices
-
-    def assign_new_data_to_active_instance(self):
-        ml_active_ob = get_ml_active_object()
-        old_data = ml_active_ob.data
-        new_data = ml_active_ob.data.copy()
-        self.old_data_name = old_data.name
-        self.new_data_name = new_data.name
-        ml_active_ob.data = new_data
-
-    def assign_new_data_to_other_instances(self):
-        obs = bpy.data.objects
-        obs_with_same_data = [ob for ob in obs if ob.data and ob.data.name == self.old_data_name]
-        data_collection = self.get_correct_data_collection()
-
-        for ob in obs_with_same_data:
-            ob.data = data_collection[self.new_data_name]
-
-        data_collection.remove(data_collection[self.old_data_name])
-
-    def reassign_old_data_to_active_instance(self):
-        ml_active_ob = get_ml_active_object()
-        data_collection = self.get_correct_data_collection()
-        ml_active_ob.data = data_collection[self.old_data_name]
-
-        data_collection.remove(data_collection[self.new_data_name])
 
 
 class OBJECT_OT_ml_modifier_apply(Operator, ApplyModifier):
