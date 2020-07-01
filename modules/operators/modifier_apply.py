@@ -121,7 +121,7 @@ class ApplyModifier:
         success = self.apply_modifier(context, ml_active_ob, is_editmode)
         
         if not success:
-            return {'FINISHED'}
+            return {'CANCELLED'}
 
         if is_editmode:
             # Add an undo step to avoid problems with undo
