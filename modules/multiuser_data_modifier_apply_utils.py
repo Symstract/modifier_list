@@ -1,4 +1,48 @@
 import bpy
+from bpy.props import *
+from bpy.types import Operator
+
+from .utils import get_ml_active_object
+
+
+class OBJECT_OT_ml_modifier_apply_multi_user_data_dialog(Operator):
+    bl_idname = "object.ml_modifier_apply_multi_user_data_dialog"
+    bl_label = "Apply Modifier Dialog"
+    bl_options = {'INTERNAL'}
+
+    modifier: StringProperty(options={'HIDDEN', 'SKIP_SAVE'})
+    op_name: StringProperty(options={'HIDDEN', 'SKIP_SAVE'})
+
+    def execute(self, context):
+        return {'FINISHED'}
+
+    def invoke(self, context, event):
+        return context.window_manager.invoke_popup(self, width=360)
+
+    def draw(self, context):
+        ml_active_ob = get_ml_active_object()
+
+        layout = self.layout
+
+        # Popups can't be closed manually, so just show a label after
+        # the modifier has been applied.
+        try:
+            ml_active_ob.modifiers[self.modifier]
+        except KeyError:
+            layout.label(text="Done")
+            return
+
+        layout.label(text="Object's data is used by multiple objects. What would you like to do?")
+
+        layout.separator()
+
+        op = layout.operator(self.op_name, text="Apply To Active Object Only (Break Link)")
+        op.modifier = self.modifier
+        op.multi_user_data_apply_method = 'APPLY_TO_SINGLE'
+
+        op = layout.operator(self.op_name, text="Apply To All Objects")
+        op.modifier = self.modifier
+        op.multi_user_data_apply_method = 'APPLY_TO_ALL'
 
 
 class LinkedObjectDataChanger:
