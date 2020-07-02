@@ -23,12 +23,16 @@ class OBJECT_OT_ml_apply_all_modifiers(Operator):
     bl_description = "Apply all modifiers of the selected object(s)"
     bl_options = {'REGISTER', 'UNDO'}
 
-    def execute(self, context):
-        prefs = bpy.context.preferences.addons["modifier_list"].preferences
+    def __init__(self):
+        self.objects_have_local_data = False
+        self.objects_have_modifiers = False
+        self.objects_have_local_modifiers = False
+        self.skipped_objects_with_non_local_data = False
+        self.skipped_linked_modifiers = False
+        self.ojects_with_modifiers_failed_to_apply = []
 
-        obs = context.selected_objects
-
-        if not obs:
+    def execute(self, context):        
+        if not context.selected_objects:
             self.report({'INFO'}, "No selection")
             return {'CANCELLED'}
 
@@ -39,88 +43,26 @@ class OBJECT_OT_ml_apply_all_modifiers(Operator):
             bpy.ops.object.editmode_toggle()
             bpy.ops.ed.undo_push(message="Toggle Editmode")
 
-        override = context.copy()
-
-        obs_have_local_data = False
-        obs_have_mods = False
-        obs_have_local_mods = False
-        skipped_obs_with_non_local_data = False
-        skipped_linked_mods = False
-        obs_with_mods_failed_to_apply = []
-
-        for ob in obs:
-            override['object'] = ob
-            data = ob.data
-            mods = ob.modifiers
-
-            # Skip linked objects with no library override and local
-            # data.
-            if ob.library or (ob.override_library and (data.library or data.override_library)):
-                skipped_obs_with_non_local_data = True
-                continue
-
-            obs_have_local_data = True
-
-            for mod in mods:
-                obs_have_mods = True
-
-                if disallow_applying_hidden_modifiers and not mod.show_viewport:
-                    continue
-
-                # Only try to apply local modifiers
-                if not ob.override_library or mod.is_property_overridable_library("name"):
-                    try:
-                        bpy.ops.object.modifier_apply(override, apply_as='DATA', modifier=mod.name)
-                    except:
-                        if ob.name not in obs_with_mods_failed_to_apply:
-                            obs_with_mods_failed_to_apply.append(ob.name)
-                    obs_have_local_mods = True
-                else:
-                    skipped_linked_mods = True
-
-            # Make sure some modifier is always active even if all
-            # modifiers can't be applied
-            mods_len = len(mods) - 1
-            new_index = np.clip(mods_len, 0, 99)
-            ob.ml_modifier_active_index = new_index
+        self.apply_modifiers(context)
 
         if is_edit_mode:
             bpy.ops.ed.undo_push(message="Apply All Modifiers")
             bpy.ops.object.editmode_toggle()
 
         # Cancel if no modifiers were applied
-        if not obs_have_local_data:
-            self.report({'INFO'}, "No objects with local data")
-            return {'CANCELLED'}
-        elif not obs_have_mods:
-            self.report({'INFO'}, "No modifiers to apply")
-            return {'CANCELLED'}
-        elif not obs_have_local_mods:
-            self.report({'INFO'}, "No local modifiers to apply")
+        
+        some_mods_were_applied = self.check_for_applied_modifiers_and_report()
+        
+        if not some_mods_were_applied:
             return {'CANCELLED'}
 
+        prefs = bpy.context.preferences.addons["modifier_list"].preferences
+
         # Info messages for when some modifiers were applied
-        if obs_with_mods_failed_to_apply:
-            failed_obs = ", ".join(obs_with_mods_failed_to_apply)
-            if len(obs_with_mods_failed_to_apply) < 8:
-                self.report({'INFO'}, f"Some modifier(s) couldn't be applied on {failed_obs}")
-            else:
-                self.report({'INFO'}, "Some modifier(s) couldn't be applied. Check the system "
-                                      "console for a list of the objects.")
-                print(f"Some modifier(s) couldn't be applied on {failed_obs}")
-        else:
-            if 'APPLY' in prefs.batch_ops_reports:
-                skipped_obs_with_non_local_data_message = (" for objects with local data"
-                                                           if skipped_obs_with_non_local_data
-                                                           else "")
-                if disallow_applying_hidden_modifiers:
-                    message = ("Applied all visible local modifiers" if skipped_linked_mods
-                               else "Applied all visible modifiers")
-                    self.report({'INFO'}, message + skipped_obs_with_non_local_data_message)
-                else:
-                    message = ("Applied all local modifiers" if skipped_linked_mods
-                               else "Applied all modifiers")
-                    self.report({'INFO'}, message + skipped_obs_with_non_local_data_message)
+        if self.ojects_with_modifiers_failed_to_apply:
+            self.some_modifiers_could_not_be_applied_report()
+        elif 'APPLY' in prefs.batch_ops_reports:
+            self.apply_report()
 
         return {'FINISHED'}
 
@@ -135,3 +77,77 @@ class OBJECT_OT_ml_apply_all_modifiers(Operator):
             return context.window_manager.invoke_confirm(self, event)
         else:
             return self.execute(context)
+
+    def apply_modifiers(self, context):
+        override = context.copy()
+
+        for ob in context.selected_objects:
+            override['object'] = ob
+            data = ob.data
+            mods = ob.modifiers
+
+            # Skip linked objects with no library override and local
+            # data.
+            if ob.library or (ob.override_library and (data.library or data.override_library)):
+                self.skipped_objects_with_non_local_data = True
+                continue
+
+            self.objects_have_local_data = True
+
+            for mod in mods:
+                self.objects_have_modifiers = True
+
+                if disallow_applying_hidden_modifiers and not mod.show_viewport:
+                    continue
+
+                # Only try to apply local modifiers
+                if not ob.override_library or mod.is_property_overridable_library("name"):
+                    try:
+                        bpy.ops.object.modifier_apply(override, apply_as='DATA', modifier=mod.name)
+                    except:
+                        if ob.name not in self.ojects_with_modifiers_failed_to_apply:
+                            self.ojects_with_modifiers_failed_to_apply.append(ob.name)
+                    self.objects_have_local_modifiers = True
+                else:
+                    self.skipped_linked_modifiers = True
+
+            # Make sure some modifier is always active even if all
+            # modifiers can't be applied
+            mods_len = len(mods) - 1
+            new_index = np.clip(mods_len, 0, 99)
+            ob.ml_modifier_active_index = new_index
+
+    def check_for_applied_modifiers_and_report(self):
+        if not self.objects_have_local_data:
+            self.report({'INFO'}, "No objects with local data")
+            return False
+        elif not self.objects_have_modifiers:
+            self.report({'INFO'}, "No modifiers to apply")
+            return False
+        elif not self.objects_have_local_modifiers:
+            self.report({'INFO'}, "No local modifiers to apply")
+            return False
+
+        return True
+
+    def some_modifiers_could_not_be_applied_report(self):
+        failed_obs = ", ".join(self.ojects_with_modifiers_failed_to_apply)
+        if len(self.ojects_with_modifiers_failed_to_apply) < 8:
+            self.report({'INFO'}, f"Some modifier(s) couldn't be applied on {failed_obs}")
+        else:
+            self.report({'INFO'}, "Some modifier(s) couldn't be applied. Check the system "
+                                    "console for a list of the objects.")
+            print(f"Some modifier(s) couldn't be applied on {failed_obs}")
+
+    def apply_report(self):
+        skipped_obs_with_non_local_data_message = (" for objects with local data"
+                                                    if self.skipped_objects_with_non_local_data
+                                                    else "")
+        if disallow_applying_hidden_modifiers:
+            message = ("Applied all visible local modifiers" if self.skipped_linked_modifiers
+                        else "Applied all visible modifiers")
+            self.report({'INFO'}, message + skipped_obs_with_non_local_data_message)
+        else:
+            message = ("Applied all local modifiers" if self.skipped_linked_modifiers
+                        else "Applied all modifiers")
+            self.report({'INFO'}, message + skipped_obs_with_non_local_data_message)
