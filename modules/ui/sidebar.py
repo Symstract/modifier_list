@@ -40,7 +40,15 @@ class VIEW3D_PT_ml_modifiers(Panel, BasePanel):
 
     def draw(self, context):
         layout = self.layout
-        modifiers_ui(context, layout)
+
+        ob = get_ml_active_object()
+
+        if not ob:
+            layout.label(text="No active object")
+        elif ob.type not in {'MESH', 'CURVE', 'SURFACE', 'FONT', 'LATTICE'}:
+            layout.label(text="Wrong object type")
+        else:
+            modifiers_ui(context, layout)
 
 
 class VIEW3D_PT_ml_vertex_groups(Panel, BasePanel):
@@ -53,9 +61,6 @@ class VIEW3D_PT_ml_vertex_groups(Panel, BasePanel):
 
         if not prefs.use_sidebar:
             return False
-
-        if prefs.keep_sidebar_visible:
-            return True
 
         ob = get_ml_active_object()
         if ob is not None:
