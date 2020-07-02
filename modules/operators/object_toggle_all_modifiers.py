@@ -14,21 +14,18 @@ from ..utils import get_ml_active_object
 class OBJECT_OT_ml_toggle_all_modifiers(Operator):
     bl_idname = "object.ml_toggle_all_modifiers"
     bl_label = "Toggle Visibility Of All Modifiers"
-    bl_description = "Toggle the visibility of all modifiers of the selected object(s)"
+    bl_description = ("Toggle the visibility of all modifiers of the selected object(s). " 
+                      "The active object must have modifiers")
     bl_options = {'REGISTER', 'UNDO'}
 
     @classmethod
     def poll(cls, context):
-        return get_ml_active_object() is not None
+        ml_act_ob = get_ml_active_object()
+        return ml_act_ob is not None and bool(ml_act_ob.modifiers)
 
     def execute(self, context):
         ml_act_ob = get_ml_active_object()
         sel_obs = context.selected_objects
-
-        if not ml_act_ob.modifiers:
-            self.report({'INFO'}, "Active object has no modifiers")
-            return {'CANCELLED'}
-
         obs = sel_obs.copy()
 
         if ml_act_ob not in obs:
