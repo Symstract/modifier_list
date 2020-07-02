@@ -31,11 +31,11 @@ class OBJECT_OT_ml_apply_all_modifiers(Operator):
         self.skipped_linked_modifiers = False
         self.ojects_with_modifiers_failed_to_apply = []
 
-    def execute(self, context):        
-        if not context.selected_objects:
-            self.report({'INFO'}, "No selection")
-            return {'CANCELLED'}
+    @classmethod
+    def poll(cls, context):
+        return bool(context.selected_objects)
 
+    def execute(self, context):        
         is_edit_mode = context.mode in {'EDIT_MESH', 'EDIT_CURVE', 'EDIT_SURFACE',
                                         'EDIT_TEXT', 'EDIT_LATTICE'}
 
