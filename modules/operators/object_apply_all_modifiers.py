@@ -10,6 +10,8 @@ import bpy
 from bpy.props import *
 from bpy.types import Operator
 
+from ..utils import get_ml_active_object
+
 
 # It doesn't seem possible to access attributes in execute which are
 # defined in invoke when using window_manager.invoke_confirm. So need to
@@ -33,7 +35,7 @@ class OBJECT_OT_ml_apply_all_modifiers(Operator):
 
     @classmethod
     def poll(cls, context):
-        return bool(context.selected_objects)
+        return get_ml_active_object() is not None or bool(context.selected_objects)
 
     def execute(self, context):        
         is_edit_mode = context.mode in {'EDIT_MESH', 'EDIT_CURVE', 'EDIT_SURFACE',
@@ -79,9 +81,16 @@ class OBJECT_OT_ml_apply_all_modifiers(Operator):
             return self.execute(context)
 
     def apply_modifiers(self, context):
+        ml_act_ob = get_ml_active_object()
+        sel_obs = context.selected_objects
+        obs = sel_obs.copy()
+
+        if ml_act_ob not in obs:
+            obs.append(ml_act_ob)
+
         override = context.copy()
 
-        for ob in context.selected_objects:
+        for ob in obs:
             override['object'] = ob
             data = ob.data
             mods = ob.modifiers
