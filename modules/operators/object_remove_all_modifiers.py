@@ -19,10 +19,15 @@ class OBJECT_OT_ml_remove_all_modifiers(Operator):
 
     @classmethod
     def poll(cls, context):
-        return bool(context.selected_objects)
+        return get_ml_active_object() is not None or bool(context.selected_objects)
 
     def execute(self, context):
-        obs = context.selected_objects
+        ml_act_ob = get_ml_active_object()
+        sel_obs = context.selected_objects
+        obs = sel_obs.copy()
+
+        if ml_act_ob not in obs:
+            obs.append(ml_act_ob)
 
         obs_have_local_mods = False
         skipped_non_local_modifiers = False
