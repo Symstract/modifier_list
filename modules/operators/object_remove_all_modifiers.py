@@ -17,12 +17,12 @@ class OBJECT_OT_ml_remove_all_modifiers(Operator):
     bl_description = "Remove all modifiers from the selected object(s)"
     bl_options = {'REGISTER', 'UNDO'}
 
+    @classmethod
+    def poll(cls, context):
+        return bool(context.selected_objects)
+
     def execute(self, context):
         obs = context.selected_objects
-
-        if not obs:
-            self.report({'INFO'}, "No selection")
-            return {'CANCELLED'}
 
         obs_have_local_mods = False
         skipped_non_local_modifiers = False
