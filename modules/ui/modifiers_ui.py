@@ -503,8 +503,11 @@ class ModifierListActions:
 
         if self.action == 'UP':
             if self.shift:
-                for _ in range(active_mod_index):
-                    bpy.ops.object.modifier_move_up(override, modifier=active_mod_name)
+                if bpy.app.version[1] >= 90:
+                    bpy.ops.object.modifier_move_to_index(modifier=active_mod_name, index=0)
+                else:
+                    for _ in range(active_mod_index):
+                        bpy.ops.object.modifier_move_up(override, modifier=active_mod_name)
                 ml_active_ob.ml_modifier_active_index = 0
             else:
                 bpy.ops.object.modifier_move_up(override, modifier=active_mod_name)
@@ -512,8 +515,11 @@ class ModifierListActions:
 
         elif self.action == 'DOWN':
             if self.shift:
-                for _ in range(mods_len - active_mod_index):
-                    bpy.ops.object.modifier_move_down(override, modifier=active_mod_name)
+                if bpy.app.version[1] >= 90:
+                    bpy.ops.object.modifier_move_to_index(modifier=active_mod_name, index=mods_len)
+                else:
+                    for _ in range(mods_len - active_mod_index):
+                        bpy.ops.object.modifier_move_down(override, modifier=active_mod_name)
                 ml_active_ob.ml_modifier_active_index = mods_len
             else:
                 bpy.ops.object.modifier_move_down(override, modifier=active_mod_name)
