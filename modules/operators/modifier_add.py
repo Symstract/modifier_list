@@ -86,12 +86,14 @@ class OBJECT_OT_ml_modifier_add(Operator):
             move = prefs.insert_modifier_after_active
 
         if move:
-            times_to_move = mods_len - 1 - init_active_mod_index
+            if bpy.app.version[1] >= 90:
+                bpy.ops.object.modifier_move_to_index(modifier=mod.name, 
+                                                      index=init_active_mod_index + 1)
+            else:
+                for _ in range(mods_len - 1 - init_active_mod_index):
+                    bpy.ops.object.modifier_move_up(override, modifier=mod.name)
 
-            for _ in range(times_to_move):
-                bpy.ops.object.modifier_move_up(override, modifier=mod.name)
-
-            if times_to_move > 0:
+            if init_active_mod_index < mods_len - 1:
                 ob.ml_modifier_active_index = init_active_mod_index + 1
 
         return {'FINISHED'}
