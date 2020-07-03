@@ -10,7 +10,53 @@ import bpy
 from bpy.props import *
 from bpy.types import Operator
 
+from ..multiuser_data_modifier_apply_utils import LinkedObjectDataChanger
 from ..utils import get_ml_active_object
+
+
+show_done_label_in_dialog = False
+
+
+class OBJECT_OT_ml_apply_all_modifiers_multi_user_data_dialog(Operator):
+    bl_idname = "object.ml_apply_all_modifiers_multi_user_data_dialog"
+    bl_label = "Apply All Modifiers Dialog"
+    bl_options = {'INTERNAL'}
+
+    op_name: StringProperty(options={'HIDDEN', 'SKIP_SAVE'})
+
+    def execute(self, context):
+        return {'FINISHED'}
+
+    def invoke(self, context, event):
+        return context.window_manager.invoke_popup(self, width=380)
+
+    def draw(self, context):
+        layout = self.layout
+
+        # Popups can't be closed manually, so just show a label after
+        # the modifier has been applied.
+        if show_done_label_in_dialog:
+            layout.label(text="Done")
+            return
+
+        layout.label(text="Active object's data is used by multiple objects. " 
+                          "What would you like to do?")
+
+        layout.separator()
+
+        op = layout.operator(self.op_name, text="Apply To Active Object Only (Break Link)")
+        op.multi_user_data_apply_method = 'APPLY_TO_SINGLE'
+
+        op = layout.operator(self.op_name, text="Apply To All Objects")
+        op.multi_user_data_apply_method = 'APPLY_TO_ALL'
+
+        layout.separator()
+
+        sel_obs = context.selected_objects
+
+        if (len(sel_obs) > 1 or (sel_obs and get_ml_active_object() not in sel_obs)):
+            layout.label(text="In order to apply all modifiers of all objects, first make their "
+                              "data unique.")
 
 
 # It doesn't seem possible to access attributes in execute which are
@@ -24,6 +70,16 @@ class OBJECT_OT_ml_apply_all_modifiers(Operator):
     bl_label = "Apply All Modifiers"
     bl_description = "Apply all modifiers of the selected object(s)"
     bl_options = {'REGISTER', 'UNDO'}
+
+    multi_user_data_apply_method_items = [
+        ('NONE', "None", ""),
+        ("APPLY_TO_SINGLE", "Apply To Single", ""),
+        ("APPLY_TO_ALL", "Apply To All", "")
+    ]
+    multi_user_data_apply_method: EnumProperty(
+        items=multi_user_data_apply_method_items,
+        default='NONE',
+        options={'HIDDEN', 'SKIP_SAVE'})
 
     def __init__(self):
         self.objects_have_local_data = False
@@ -45,18 +101,28 @@ class OBJECT_OT_ml_apply_all_modifiers(Operator):
             bpy.ops.object.editmode_toggle()
             bpy.ops.ed.undo_push(message="Toggle Editmode")
 
-        self.apply_modifiers(context)
+        if self.multi_user_data_apply_method != 'NONE':
+            self.linked_object_data_changer = LinkedObjectDataChanger(get_ml_active_object())
+            self.linked_object_data_changer.make_active_instance_data_unique()
 
-        if is_edit_mode:
-            bpy.ops.ed.undo_push(message="Apply All Modifiers")
-            bpy.ops.object.editmode_toggle()
+        self.apply_modifiers(context)
 
         # Cancel if no modifiers were applied
         
         some_mods_were_applied = self.check_for_applied_modifiers_and_report()
         
         if not some_mods_were_applied:
+            if self.multi_user_data_apply_method != 'NONE':
+                self.linked_object_data_changer.reassign_old_data_to_active_instance()
             return {'CANCELLED'}
+        
+        if is_edit_mode:
+            bpy.ops.ed.undo_push(message="Apply All Modifiers")
+            bpy.ops.object.editmode_toggle()
+
+        # Apply the modifier to all instances
+        if self.multi_user_data_apply_method == 'APPLY_TO_ALL':
+            self.linked_object_data_changer.assign_new_data_to_other_instances()
 
         prefs = bpy.context.preferences.addons["modifier_list"].preferences
 
@@ -65,6 +131,9 @@ class OBJECT_OT_ml_apply_all_modifiers(Operator):
             self.some_modifiers_could_not_be_applied_report()
         elif 'APPLY' in prefs.batch_ops_reports:
             self.apply_report()
+
+        global show_done_label_in_dialog
+        show_done_label_in_dialog = True
 
         return {'FINISHED'}
 
@@ -75,18 +144,28 @@ class OBJECT_OT_ml_apply_all_modifiers(Operator):
             not prefs.disallow_applying_hidden_modifiers if event.alt
             else prefs.disallow_applying_hidden_modifiers)
 
-        if prefs.show_confirmation_popups:
+        if self.multi_user_data_apply_method == 'NONE' and get_ml_active_object().data.users > 1:
+            global show_done_label_in_dialog
+            show_done_label_in_dialog = False
+            bpy.ops.object.ml_apply_all_modifiers_multi_user_data_dialog('INVOKE_DEFAULT',
+                                                                         op_name=self.bl_idname)
+            return {'CANCELLED'}
+        elif prefs.show_confirmation_popups and self.multi_user_data_apply_method == 'NONE':
             return context.window_manager.invoke_confirm(self, event)
-        else:
-            return self.execute(context)
+
+        return self.execute(context)
 
     def apply_modifiers(self, context):
         ml_act_ob = get_ml_active_object()
-        sel_obs = context.selected_objects
-        obs = sel_obs.copy()
-
-        if ml_act_ob not in obs:
-            obs.append(ml_act_ob)
+        
+        # When the active object has multi-user data, only its modifiers
+        # should be applied.
+        if self.multi_user_data_apply_method != 'NONE':
+            obs = [ml_act_ob]
+        else:
+            obs = context.selected_objects.copy()
+            if ml_act_ob not in obs:
+                obs.append(ml_act_ob)
 
         override = context.copy()
 
