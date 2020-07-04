@@ -24,15 +24,7 @@ else:
 
 from . import ml_modifier_layouts
 from .. import icons, modifier_categories
-from ..operators import lattice_toggle_editmode, lattice_toggle_editmode_prop_editor
-from ..utils import (
-    delete_gizmo_object,
-    delete_ml_vertex_group,
-    get_gizmo_object,
-    get_ml_active_object,
-    get_vertex_group,
-    is_modifier_local
-)
+from ..utils import get_gizmo_object, get_ml_active_object, is_modifier_local
 
 
 # Utility functions
@@ -465,127 +457,7 @@ class OBJECT_UL_ml_modifier_list(UIList):
         elif self.layout_type in {'GRID'}:
             layout.alignment = 'CENTER'
             layout.label(text="", icon_value=icon)
-
-
-class ModifierListActions:
-    """Base operator for list actions."""
-
-    bl_options = {'REGISTER', 'INTERNAL', 'UNDO'}
-
-    action = None
-
-    @classmethod
-    def poll(cls, ontext):
-        ob = get_ml_active_object()
-
-        if not ob.modifiers:
-            return False
-
-        mod = ob.modifiers[ob.ml_modifier_active_index]
-        return is_modifier_local(ob, mod)
-
-    def execute(self, context):
-        prefs = bpy.context.preferences.addons["modifier_list"].preferences
-        ml_active_ob = get_ml_active_object()
-        mods = ml_active_ob.modifiers
-
-        # Make using operators possible when an object is pinned
-        override = context.copy()
-        override['object'] = ml_active_ob
-
-        mods_len = len(mods) - 1
-        active_mod_index = ml_active_ob.ml_modifier_active_index
-        active_mod_index_up = np.clip(active_mod_index - 1, 0, mods_len)
-        active_mod_index_down = np.clip(active_mod_index + 1, 0, mods_len)
-
-        active_mod = ml_active_ob.modifiers[active_mod_index]
-        active_mod_name = active_mod.name
-
-        if self.action == 'UP':
-            if self.shift:
-                if bpy.app.version[1] >= 90:
-                    bpy.ops.object.modifier_move_to_index(modifier=active_mod_name, index=0)
-                else:
-                    for _ in range(active_mod_index):
-                        bpy.ops.object.modifier_move_up(override, modifier=active_mod_name)
-                ml_active_ob.ml_modifier_active_index = 0
-            else:
-                bpy.ops.object.modifier_move_up(override, modifier=active_mod_name)
-                ml_active_ob.ml_modifier_active_index = active_mod_index_up
-
-        elif self.action == 'DOWN':
-            if self.shift:
-                if bpy.app.version[1] >= 90:
-                    bpy.ops.object.modifier_move_to_index(modifier=active_mod_name, index=mods_len)
-                else:
-                    for _ in range(mods_len - active_mod_index):
-                        bpy.ops.object.modifier_move_down(override, modifier=active_mod_name)
-                ml_active_ob.ml_modifier_active_index = mods_len
-            else:
-                bpy.ops.object.modifier_move_down(override, modifier=active_mod_name)
-                ml_active_ob.ml_modifier_active_index = active_mod_index_down
-
-        elif self.action == 'REMOVE':
-            if self.shift or prefs.always_delete_gizmo:
-                # When using lattice_toggle_editmode(_prop_editor)
-                # operator, the mode the user was in before that is
-                # stored inside that module. That can also be
-                # utilised here, so we can return into the correct
-                # mode after deleting a lattice in lattice edit
-                # mode.
-                switch_into_editmode = False
                 
-                if context.active_object and context.active_object.type == 'LATTICE':
-                    if context.area.type == 'PROPERTIES':
-                        if lattice_toggle_editmode_prop_editor.init_mode == 'EDIT_MESH':
-                            switch_into_editmode = True
-                    elif lattice_toggle_editmode.init_mode == 'EDIT_MESH':
-                        switch_into_editmode = True
-
-                gizmo_ob = get_gizmo_object()
-                delete_gizmo_object(self, gizmo_ob)
-
-                if active_mod.type == 'LATTICE':
-                    context.view_layer.objects.active = ml_active_ob
-                    vert_group = get_vertex_group()
-                    delete_ml_vertex_group(ml_active_ob, vert_group)
-                    if switch_into_editmode:
-                        bpy.ops.object.editmode_toggle()
-
-            bpy.ops.object.modifier_remove(override, modifier=active_mod_name)
-            ml_active_ob.ml_modifier_active_index = active_mod_index_up
-
-        return {'FINISHED'}
-
-    def invoke(self, context, event):
-        self.shift = event.shift
-
-        return self.execute(context)
-
-
-class OBJECT_OT_ml_modifier_move(Operator, ModifierListActions):
-    bl_idname = "object.ml_modifier_move"
-    bl_label = "Move Modifier"
-    bl_description = ("Move modifier up/down in the stack.\n"
-                      "\n"
-                      "Hold Shift to move it to the top/bottom")
-
-    action_items = [
-        ("UP", "Up", ""),
-        ("DOWN", "Down", "")
-    ]
-    action: EnumProperty(items=action_items, default='UP', options={'HIDDEN', 'SKIP_SAVE'})
-
-
-class OBJECT_OT_ml_modifier_remove(Operator, ModifierListActions):
-    bl_idname = "object.ml_modifier_remove"
-    bl_label = "Remove Modifier"
-    bl_description = ("Remove modifier from the active object.\n"
-                     "\n"
-                     "Hold shift to also delete its gizmo object (if it has one)")
-
-    action = 'REMOVE'
-
 
 class OBJECT_PT_ml_modifier_extras(Panel):
     bl_label = "Modifier Extras"
@@ -781,11 +653,11 @@ def modifiers_ui(context, layout, num_of_rows=False, use_in_popup=False):
     move_down_icon = 'TRIA_UP' if prefs.reverse_list else 'TRIA_DOWN'
 
     if not prefs.reverse_list:
-        sub.operator("object.ml_modifier_move", icon=move_up_icon, text="").action = 'UP'
-        sub.operator("object.ml_modifier_move", icon=move_down_icon, text="").action = 'DOWN'
+        sub.operator("object.ml_modifier_move_up", icon=move_up_icon, text="")
+        sub.operator("object.ml_modifier_move_down", icon=move_down_icon, text="")
     else:
-        sub.operator("object.ml_modifier_move", icon=move_down_icon, text="").action = 'DOWN'
-        sub.operator("object.ml_modifier_move", icon=move_up_icon, text="").action = 'UP'
+        sub.operator("object.ml_modifier_move_down", icon=move_down_icon, text="")
+        sub.operator("object.ml_modifier_move_up", icon=move_up_icon, text="")
 
     sub.operator("object.ml_modifier_remove", icon='REMOVE', text="")
 
