@@ -2,8 +2,6 @@ import bpy
 from bpy.props import *
 from bpy.types import Operator
 
-from ..utils import get_gizmo_object, get_ml_active_object
-
 
 area_index = None
 is_init_ob_pinned = False
