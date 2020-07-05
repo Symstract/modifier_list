@@ -378,16 +378,12 @@ def assign_gizmo_object_to_modifier(self, context, modifier, placement='OBJECT')
 # Other gizmo functions
 # ======================================================================
 
-def get_gizmo_object():
-    ob = get_ml_active_object()
-    active_mod_index = ob.ml_modifier_active_index
-    active_mod = ob.modifiers[active_mod_index]
-
-    if active_mod.type not in HAVE_GIZMO_PROPERTY:
+def get_gizmo_object_from_modifier(modifier):
+    if modifier.type not in HAVE_GIZMO_PROPERTY:
         return None
 
-    gizmo_ob_prop = HAVE_GIZMO_PROPERTY[active_mod.type]
-    gizmo_ob = getattr(active_mod, gizmo_ob_prop)
+    gizmo_ob_prop = HAVE_GIZMO_PROPERTY[modifier.type]
+    gizmo_ob = getattr(modifier, gizmo_ob_prop)
     return gizmo_ob
 
 

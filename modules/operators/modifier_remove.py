@@ -8,7 +8,7 @@ from . import lattice_toggle_editmode, lattice_toggle_editmode_prop_editor
 from ..utils import (
     delete_gizmo_object,
     delete_ml_vertex_group,
-    get_gizmo_object,
+    get_gizmo_object_from_modifier,
     get_ml_active_object,
     get_vertex_group,
     is_modifier_local
@@ -74,7 +74,7 @@ class OBJECT_OT_ml_modifier_remove(Operator):
             elif lattice_toggle_editmode.init_mode == 'EDIT_MESH':
                 switch_into_editmode = True
 
-        gizmo_ob = get_gizmo_object()
+        gizmo_ob = get_gizmo_object_from_modifier(modifier)
         delete_gizmo_object(self, gizmo_ob)
 
         if modifier.type == 'LATTICE':

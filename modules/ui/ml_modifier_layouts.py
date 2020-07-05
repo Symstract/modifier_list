@@ -10,7 +10,7 @@ if hasattr(properties_data_modifier.DATA_PT_modifiers, "ARRAY"):
 else:
     from .properties_data_modifier import DATA_PT_modifiers
 
-from..utils import get_gizmo_object
+from..utils import get_gizmo_object_from_modifier
 
 
 def BOOLEAN(layout, ob, md):
@@ -54,7 +54,7 @@ def BOOLEAN(layout, ob, md):
 
 def LATTICE(layout, ob, md):
     context = bpy.context
-    gizmo_ob = get_gizmo_object()
+    gizmo_ob = get_gizmo_object_from_modifier(md)
 
     if gizmo_ob:
         lat = gizmo_ob.data

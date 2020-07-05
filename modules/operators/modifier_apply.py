@@ -10,7 +10,7 @@ from ..multiuser_data_modifier_apply_utils import LinkedObjectDataChanger
 from ..utils import (
     delete_gizmo_object,
     delete_ml_vertex_group,
-    get_gizmo_object,
+    get_gizmo_object_from_modifier,
     get_ml_active_object,
     get_vertex_group
 )
@@ -99,12 +99,14 @@ class ApplyModifier:
         prefs = bpy.context.preferences.addons["modifier_list"].preferences
         ob = context.active_object
         ml_active_ob = get_ml_active_object()
-        mod_type = ml_active_ob.modifiers[self.modifier].type
+        mod = ml_active_ob.modifiers[self.modifier]
 
         # Get the gizmo object and the vertex group, so they can be
-        # deleted after applying the modifier
-        gizmo_ob = get_gizmo_object()
+        # deleted after applying the modifier. Also get the modifier
+        # type for that.
+        gizmo_ob = get_gizmo_object_from_modifier(mod)
         vert_group = get_vertex_group()
+        mod_type = mod.type
 
         is_editmode = (context.mode in 
                        {'EDIT_MESH', 'EDIT_CURVE', 'EDIT_SURFACE', 'EDIT_TEXT', 'EDIT_LATTICE'})

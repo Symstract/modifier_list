@@ -24,7 +24,7 @@ else:
 
 from . import ml_modifier_layouts
 from .. import icons, modifier_categories
-from ..utils import get_gizmo_object, get_ml_active_object, is_modifier_local
+from ..utils import get_gizmo_object_from_modifier, get_ml_active_object, is_modifier_local
 
 
 # Utility functions
@@ -478,7 +478,9 @@ class OBJECT_PT_ml_gizmo_object_settings(Panel):
         layout = self.layout
 
         ob = get_ml_active_object()
-        gizmo_ob = get_gizmo_object()
+        active_mod_index = ob.ml_modifier_active_index
+        active_mod = ob.modifiers[active_mod_index]
+        gizmo_ob = get_gizmo_object_from_modifier(active_mod)
 
         layout.prop(gizmo_ob, "name", text="")
 
@@ -714,7 +716,7 @@ def modifiers_ui(context, layout, num_of_rows=False, use_in_popup=False):
     if ob.type == 'MESH':
         if (active_mod.type in modifier_categories.HAVE_GIZMO_PROPERTY
                 or active_mod.type == 'UV_PROJECT'):
-            gizmo_ob = get_gizmo_object()
+            gizmo_ob = get_gizmo_object_from_modifier(active_mod)
 
             sub = row.row(align=True)
             sub.alignment = 'RIGHT'

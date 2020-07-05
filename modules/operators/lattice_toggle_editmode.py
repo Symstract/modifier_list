@@ -2,7 +2,7 @@ import bpy
 from bpy.props import *
 from bpy.types import Operator
 
-from ..utils import get_gizmo_object, get_ml_active_object
+from ..utils import get_gizmo_object_from_modifier, get_ml_active_object
 
 
 is_init_ob_pinned = False
@@ -101,8 +101,13 @@ class OBJECT_OT_ml_lattice_toggle_editmode(Operator):
             is_init_ob_pinned = bool(scene.ml_pinned_object)
             init_act_ob_name = ob.name
 
-            scene.ml_pinned_object = get_ml_active_object()
-            gizmo_ob = get_gizmo_object()
+            ml_active_ob = get_ml_active_object()
+            
+            scene.ml_pinned_object = ml_active_ob
+            
+            active_mod_index = ml_active_ob.ml_modifier_active_index
+            active_mod = ml_active_ob.modifiers[active_mod_index]
+            gizmo_ob = get_gizmo_object_from_modifier(active_mod)
 
             bpy.ops.object.mode_set(mode='OBJECT')
 

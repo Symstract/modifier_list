@@ -2,7 +2,7 @@ import bpy
 from bpy.props import *
 from bpy.types import Operator
 
-from ..utils import get_ml_active_object, get_gizmo_object
+from ..utils import get_ml_active_object, get_gizmo_object_from_modifier
 
 
 class OBJECT_OT_ml_gizmo_object_child_set(Operator):
@@ -15,7 +15,10 @@ class OBJECT_OT_ml_gizmo_object_child_set(Operator):
 
     def execute(self, context):
         ob = get_ml_active_object()
-        gizmo_ob = get_gizmo_object()
+        
+        active_mod_index = ob.ml_modifier_active_index
+        active_mod = ob.modifiers[active_mod_index]
+        gizmo_ob = get_gizmo_object_from_modifier(active_mod)
 
         if self.unset:
             parent_inverse = ob.matrix_parent_inverse
