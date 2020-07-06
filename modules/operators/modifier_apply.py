@@ -12,7 +12,6 @@ from ..utils import (
     delete_ml_vertex_group,
     get_gizmo_object_from_modifier,
     get_ml_active_object,
-    get_vertex_group
 )
 
 
@@ -105,7 +104,7 @@ class ApplyModifier:
         # deleted after applying the modifier. Also get the modifier
         # type for that.
         gizmo_ob = get_gizmo_object_from_modifier(mod)
-        vert_group = get_vertex_group()
+        vert_group = mod.vertex_group if hasattr(mod, "vertex_group") else None
         mod_type = mod.type
 
         is_editmode = (context.mode in 

@@ -10,7 +10,6 @@ from ..utils import (
     delete_ml_vertex_group,
     get_gizmo_object_from_modifier,
     get_ml_active_object,
-    get_vertex_group,
     is_modifier_local
 )
 
@@ -79,7 +78,7 @@ class OBJECT_OT_ml_modifier_remove(Operator):
 
         if modifier.type == 'LATTICE':
             context.view_layer.objects.active = object
-            vert_group = get_vertex_group()
-            delete_ml_vertex_group(object, vert_group)
+            if hasattr(modifier, "vertex_group"):       
+                delete_ml_vertex_group(object, modifier.vertex_group)
             if switch_into_editmode:
                 bpy.ops.object.editmode_toggle()

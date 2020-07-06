@@ -387,18 +387,6 @@ def get_gizmo_object_from_modifier(modifier):
     return gizmo_ob
 
 
-def get_vertex_group():
-    ob = get_ml_active_object()
-    active_mod_index = ob.ml_modifier_active_index
-    active_mod = ob.modifiers[active_mod_index]
-
-    if not hasattr(active_mod, "vertex_group"):
-        return None
-
-    vert_group = active_mod.vertex_group
-    return vert_group
-
-
 def _delete_empty_ml_collection():
     cols = bpy.data.collections
     ml_col_name = "ML_Gizmo Objects"
