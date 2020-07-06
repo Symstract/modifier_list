@@ -713,7 +713,7 @@ def modifiers_ui(context, layout, num_of_rows=False, use_in_popup=False):
                         text="", icon='DUPLICATE').modifier = active_mod.name
 
     # === Gizmo object settings ===
-    if ob.type == 'MESH':
+    if ob.type in {'CURVE', 'FONT', 'LATTICE', 'MESH', 'SURFACE'}:
         if (active_mod.type in modifier_categories.HAVE_GIZMO_PROPERTY
                 or active_mod.type == 'UV_PROJECT'):
             gizmo_ob = get_gizmo_object_from_modifier(active_mod)

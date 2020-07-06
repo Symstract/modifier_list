@@ -58,7 +58,7 @@ class OBJECT_OT_ml_modifier_add(Operator):
 
         # Search doesn't call invoke, so check if self.shift exists
         if hasattr(self, "shift"):
-            if self.shift and ob.type == 'MESH':
+            if self.shift and ob.type in {'CURVE', 'FONT', 'LATTICE', 'MESH', 'SURFACE'}:
                 if mod.type in HAVE_GIZMO_PROPERTY or mod.type == 'UV_PROJECT':
                     placement = 'WORLD_ORIGIN' if self.alt else 'OBJECT'
                     assign_gizmo_object_to_modifier(self, context, mod.name, placement=placement)

@@ -58,27 +58,49 @@ def _create_vertex_group_from_vertices(object, vertex_indices, group_name):
     return vert_group
 
 
-def _position_gizmo_object(gizmo_object, object):
+def _get_selected_points_from_curve(curve):
+    sel_points = []
+    
+    for spline in curve.splines:
+        if spline.type == 'BEZIER':
+            for p in spline.bezier_points:
+                if p.select_control_point:
+                    sel_points.append(p)
+        else:
+            for p in spline.points:
+                if p.select:
+                    sel_points.append(p)
+                    print(p.co)
+    
+    return sel_points
+
+
+def _position_gizmo_object_at_object(gizmo_object, object):
     """Position a gizmo (empty) object at the active
     object or at the selected vertices.
     """
     ob = object
     ob_mat = ob.matrix_world
-    mesh = ob.data
+    data = ob.data
 
-    if ob.mode == 'EDIT':
-        sel_verts = [v for v in mesh.vertices if v.select]
-        if sel_verts:
-            place_at_verts = True
-            sel_verts_coords = [v.co for v in sel_verts]
-            average_vert_co = sum(sel_verts_coords, Vector()) / len(sel_verts_coords)
-            global_average_vert_co = ob_mat @ average_vert_co
+    place_at_verts = False
+
+    if ob.type in {'CURVE', 'MESH'} and ob.mode == 'EDIT':
+        if ob.type == 'MESH':
+            sel_points = [v for v in data.vertices if v.select]
         else:
-            place_at_verts = False
-    else:
-        place_at_verts = False
-
+            sel_points = _get_selected_points_from_curve(data)
+        if sel_points:
+            place_at_verts = True
+    
     if place_at_verts:
+        sel_points_coords = [v.co for v in sel_points]
+        if ob.type == 'CURVE':
+            # Make sure all coords are 3D because SplinePoint.co is
+            # 4D, unlike BezierSplinePoint.co which is 3D.
+            sel_points_coords = [co.to_3d() for co in sel_points_coords]
+        average_vert_co = sum(sel_points_coords, Vector()) / len(sel_points_coords)
+        global_average_vert_co = ob_mat @ average_vert_co
         gizmo_object.location = global_average_vert_co
     else:
         gizmo_object.location = ob_mat.to_translation()
@@ -139,7 +161,7 @@ def _create_gizmo_object(self, context, modifier, placement='OBJECT'):
     if placement == 'CURSOR':
         _position_gizmo_object_at_cursor(gizmo_ob)
     elif placement == 'OBJECT':
-        _position_gizmo_object(gizmo_ob, ob)
+        _position_gizmo_object_at_object(gizmo_ob, ob)
 
     if prefs.match_gizmo_size_to_object:
         _match_gizmo_size_to_object(gizmo_ob, ob)
@@ -271,7 +293,9 @@ def _position_lattice_gizmo_object(gizmo_object):
     else:
         vert_group_index = None
 
-    if ob.mode == 'EDIT':
+    if ob.type != 'MESH':
+        place_at_verts = False
+    elif ob.mode == 'EDIT':
         bpy.ops.object.mode_set(mode='OBJECT')
         if not has_already_vert_group:
             sel_verts = [v for v in mesh.vertices if v.select]
