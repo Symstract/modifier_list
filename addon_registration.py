@@ -42,6 +42,7 @@ def _find_modules(root_dir):
 
 first_call = True
 
+
 def _import_modules(modules):
     """Imports or reloads given modules and returns them in a list.
 
@@ -133,58 +134,19 @@ def _sort_classes_topologically(classes):
                 sorted_classes_from_bottom.append(cls)
                 unsorted_classes.remove(cls)
 
-    sorted_classes = list(reversed(sorted_classes_from_bottom))
-    return sorted_classes
+    return list(reversed(sorted_classes_from_bottom))
 
 
 def _sort_panel_classes(classes, panel_order):
-    """Sorts panel classes.
+    """Sorts panel classes and returns a list in which they are at the end.
 
-    Args:
-        classes: an iteratable of classes
-        panel_order: an iteratable of panel class names
-
-    Returns:
-        sorted_classes: a list of sorted classes
-
-    Panel classes in classes (if there are any) are sorted according to
-    panel_order and put at the end of sorted_classes. This is needed
-    because the order of panels in Blender's UI is defined by the order
-    they are registered.
+    classes: an iteratable of classes
+    panel_order: an iteratable of panel class names
     """
-    all_classes = classes[:]
-    panel_classes = []
+    other_classes = [cls for cls in classes if cls.__name__ not in panel_order]
+    panel_classes = [cls for panel in panel_order for cls in classes if cls.__name__ == panel]
 
-    for panel in all_classes:
-        if panel.__name__ in panel_order:
-            panel_classes.append(panel)
-            all_classes.remove(panel)
-
-    for panel in panel_order:
-        for cls in panel_classes:
-            if cls.__name__ == panel:
-                all_classes.append(cls)
-
-    sorted_classes = all_classes
-    return sorted_classes
-
-
-def _filter_ignored_classes(classes, ignored_classes):
-    """Filters out classes that should be ignored.
-
-    Args:
-        classes: an iteratable of classes
-        ignored_classes: an iteratable of the names of the
-            classes that should be ignored
-    """
-
-    classes_to_register = classes[:]
-
-    for cls in classes_to_register:
-        if cls.__name__ in ignored_classes:
-            classes_to_register.remove(cls)
-
-    return classes_to_register
+    return other_classes + panel_classes
 
 
 def _store_classes_globally(modules):
@@ -203,34 +165,18 @@ def _register_classes(classes, addon_name_for_counter=None):
     modules."""
     from bpy.utils import register_class
 
-    class_count = 0
-
     for cls in classes:
         register_class(cls)
-        class_count += 1
 
     if addon_name_for_counter:
-        print(f"{addon_name_for_counter}: Registered {str(class_count)} classes")
-
-
-def _unregister_classes(classes, addon_name_for_counter=None):
-    """Unregister all add-on classes."""
-    from bpy.utils import unregister_class
-
-    class_count = 0
-
-    for cls in classes:
-        unregister_class(cls)
-        class_count += 1
-
-    if addon_name_for_counter:
-        print(f"{addon_name_for_counter}: Unregistered {str(class_count)} classes")
+        print(f"{addon_name_for_counter}: Registered {str(len(classes))} classes")
 
 
 # Public functions
 # ======================================================================
 
-def register_bl_classes(root_dir, ignored_classes=None, panel_order=None, addon_name_for_counter=None):
+def register_bl_classes(root_dir, ignored_classes=None, panel_order=None,
+                        addon_name_for_counter=None):
     """Register all add-on classes that inherit from bpy_struct from all
     modules.
 
@@ -254,10 +200,13 @@ def register_bl_classes(root_dir, ignored_classes=None, panel_order=None, addon_
 
     classes = _find_bl_classes(modules)
     classes = _sort_classes_topologically(classes)
+
     if ignored_classes:
-        classes = _filter_ignored_classes(classes, ignored_classes)
+        classes = [cls for cls in classes if cls.__name__ not in ignored_classes]
+
     if panel_order:
         classes = _sort_panel_classes(classes, panel_order)
+
     _store_classes_globally(classes)
 
     _register_classes(classes, addon_name_for_counter)
@@ -268,9 +217,17 @@ def unregister_bl_classes(addon_name_for_counter=None):
 
     Args:
         addon_name_for_counter: specify this if you want to print out
-        the number of unregistered classes
+            the number of unregistered classes
     """
-    _unregister_classes(reversed(sorted_classes), addon_name_for_counter)
+    from bpy.utils import unregister_class
+
+    classes = list(reversed(sorted_classes))
+
+    for cls in classes:
+        unregister_class(cls)
+
+    if addon_name_for_counter:
+        print(f"{addon_name_for_counter}: Unregistered {str(len(classes))} classes")
 
 
 # Calling (un)register
