@@ -207,7 +207,7 @@ def register_bl_classes(root_dir, modules_to_ignore=None, classes_to_ignore=None
     classes = _sort_classes_topologically(classes)
 
     if classes_to_ignore:
-        classes = [cls for cls in classes if cls.__name__ not in classes_to_ignore]
+        classes = [cls for cls in classes if cls.__name__.split(".")[-1] not in classes_to_ignore]
 
     if panel_order:
         classes = _sort_panel_classes(classes, panel_order)

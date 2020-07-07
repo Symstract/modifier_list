@@ -40,7 +40,7 @@ modules_to_ignore = (
 )
 
 classes_to_ignore = (
-    "DATA_PT_modifiers"
+    "DATA_PT_modifiers",
 )
 
 panel_order = (
