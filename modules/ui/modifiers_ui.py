@@ -307,37 +307,6 @@ def modifier_visibility_buttons(modifier, layout, use_in_list=False):
         sub.label(text="", translate=False, icon_value=empy_icon.icon_id)
 
 
-class MeshModifiersCollection(PropertyGroup):
-    # Collection Property for search
-    value: StringProperty(name="Type")
-
-
-class CurveModifiersCollection(PropertyGroup):
-    # Collection Property for search
-    value: StringProperty(name="Type")
-
-
-class LatticeModifiersCollection(PropertyGroup):
-    # Collection Property for search
-    value: StringProperty(name="Type")
-
-
-def add_modifier(self, context):
-    # Add modifier
-    wm = bpy.context.window_manager
-    mod_name = wm.ml_mod_to_add
-
-    if mod_name == "":
-        return None
-
-    mod_type = wm.ml_mesh_modifiers[mod_name].value
-    bpy.ops.object.ml_modifier_add(modifier_type=mod_type)
-
-    # Executing an operator via a function doesn't create an undo event,
-    # so it needs to be added manually.
-    bpy.ops.ed.undo_push(message="Add Modifier")
-
-
 class MESH_MT_ml_add_modifier_menu(Menu):
     bl_label = "Add Modifier"
     bl_description = "Add a procedural operation/effect to the active object"
@@ -535,7 +504,7 @@ class OBJECT_PT_ml_gizmo_object_settings(Panel):
 # =======================================================================
 
 def modifiers_ui(context, layout, num_of_rows=False, use_in_popup=False):
-    wm = bpy.context.window_manager
+    ml_props = bpy.context.window_manager.modifier_list
     ob = get_ml_active_object()
     active_mod_index = ob.ml_modifier_active_index
     prefs = bpy.context.preferences.addons["modifier_list"].preferences
@@ -598,23 +567,27 @@ def modifiers_ui(context, layout, num_of_rows=False, use_in_popup=False):
     row = col.split(factor=0.59)
     row.enabled = ob.library is None or ob.override_library is not None
     if ob.type == 'MESH':
-        row.prop_search(wm, "ml_mod_to_add", wm, "ml_mesh_modifiers", text="", icon='MODIFIER')
+        row.prop_search(ml_props, "modifier_to_add_from_search", ml_props, "mesh_modifiers", 
+                        text="", icon='MODIFIER')
         row.menu("MESH_MT_ml_add_modifier_menu")
     elif ob.type in {'CURVE', 'SURFACE', 'FONT'}:
-        row.prop_search(wm, "ml_mod_to_add", wm, "ml_curve_modifiers", text="", icon='MODIFIER')
+        row.prop_search(ml_props, "modifier_to_add_from_search", ml_props, "curve_modifiers", 
+                        text="", icon='MODIFIER')
         row.menu("CURVE_MT_ml_add_modifier_menu")
     elif ob.type == 'LATTICE':
-        row.prop_search(wm, "ml_mod_to_add", wm, "ml_lattice_modifiers", text="", icon='MODIFIER')
+        row.prop_search(ml_props, "modifier_to_add_from_search", ml_props, "lattice_modifiers", 
+                        text="", icon='MODIFIER')
         row.menu("LATTICE_MT_ml_add_modifier_menu")
 
     # === Modifier list ===
-    # Get the list index from wm.ml_active_object_modifier_active_index
-    # instead of ob.ml_modifier_active_index because library overrides
-    # prevent editing that value directly.
-    # wm.ml_active_object_modifier_active_index has get and set methods
-    # for accessing ob.ml_modifier_active_index indirectly.
+    # Get the list index from
+    # ml_props.ml_active_object_modifier_active_index instead of
+    # ob.ml_modifier_active_index because library overrides prevent
+    # editing that value directly.
+    # ml_props.ml_active_object_modifier_active_index has get and set
+    # methods for accessing ob.ml_modifier_active_index indirectly.
     layout.template_list("OBJECT_UL_ml_modifier_list", "", ob, "modifiers",
-                         wm, "ml_active_object_modifier_active_index", rows=num_of_rows,
+                         ml_props, "active_object_modifier_active_index", rows=num_of_rows,
                          sort_reverse=prefs.reverse_list)
 
     # When sub.scale_x is 1.5 and the area/region is narrow, the buttons
@@ -757,133 +730,3 @@ def modifiers_ui(context, layout, num_of_rows=False, use_in_popup=False):
     else:
         mp = DATA_PT_modifiers(context)
         getattr(mp, active_mod.type)(col, ob, active_mod)
-
-
-# Registering
-# =======================================================================
-
-def active_object_modifier_active_index_get(self):
-    """Function for reading ob.ml_modifier_active_index indirectly
-    to avoid problems when using library overrides.
-    """
-    ob = get_ml_active_object()
-
-    if not ob:
-        return 0
-
-    return ob.ml_modifier_active_index
-
-
-def active_object_modifier_active_index_set(self, value):
-    """Function for writing ob.ml_modifier_active_index indirectly
-    to avoid problems when using library overrides.
-    """
-    ob = get_ml_active_object()
-
-    if ob:
-        ob.ml_modifier_active_index = value
-
-
-def set_mesh_modifier_collection_items():
-    """This is to be called on loading a new file or reloading addons
-    to make modifiers available in search.
-    """
-    mesh_modifiers = bpy.context.window_manager.ml_mesh_modifiers
-
-    if not mesh_modifiers:
-        for name, _, mod in modifier_categories.ALL_MODIFIERS:
-            item = mesh_modifiers.add()
-            item.name = name
-            item.value = mod
-
-
-def set_curve_modifier_collection_items():
-    """This is to be called on loading a new file or reloading addons
-    to make modifiers available in search.
-    """
-    curve_modifiers = bpy.context.window_manager.ml_curve_modifiers
-
-    if not curve_modifiers:
-        for name, _, mod in modifier_categories.CURVE_ALL_NAMES_ICONS_TYPES:
-            item = curve_modifiers.add()
-            item.name = name
-            item.value = mod
-
-
-def set_lattice_modifier_collection_items():
-    """This is to be called on loading a new file or reloading addons
-    to make modifiers available in search.
-    """
-    lattice_modifiers = bpy.context.window_manager.ml_lattice_modifiers
-
-    if not lattice_modifiers:
-        for name, _, mod in modifier_categories.LATTICE_ALL_NAMES_ICONS_TYPES:
-            item = lattice_modifiers.add()
-            item.name = name
-            item.value = mod
-
-
-@persistent
-def on_file_load(dummy):
-    set_mesh_modifier_collection_items()
-    set_curve_modifier_collection_items()
-    set_lattice_modifier_collection_items()
-
-
-def pinned_object_ensure_users(scene):
-    """Handler for making sure a pinned object which is only used by
-    ml_pinned_object, i.e. an object which was deleted while it was
-    pinned, really gets deleted + the property gets reset.
-    """
-    if scene.ml_pinned_object:
-        if scene.ml_pinned_object.users == 1 and not scene.ml_pinned_object.use_fake_user:
-            bpy.data.objects.remove(scene.ml_pinned_object)
-            scene.ml_pinned_object = None
-
-
-def on_pinned_object_change(self, context):
-    """Callback function for ml_pinned_object"""
-    scene = context.scene
-    depsgraph_handlers = bpy.app.handlers.depsgraph_update_pre
-
-    if scene.ml_pinned_object:
-        depsgraph_handlers.append(pinned_object_ensure_users)
-    else:
-        try:
-            depsgraph_handlers.remove(pinned_object_ensure_users)
-        except ValueError:
-            pass
-
-
-def register():
-    # === Properties ===
-    bpy.types.Object.ml_modifier_active_index = IntProperty(options={'LIBRARY_EDITABLE'})
-    wm = bpy.types.WindowManager
-    # Property to access ob.ml_modifier_active_index through, to avoid
-    # the problem of modifier_active_index not being possible to be
-    # changed directly by the modifier list when using library
-    # overrides.
-    wm.ml_active_object_modifier_active_index = IntProperty(
-        get=active_object_modifier_active_index_get,
-        set=active_object_modifier_active_index_set
-    )
-    wm.ml_mod_to_add = StringProperty(name="Modifier to add", update=add_modifier,
-                                      description="Search for a modifier and add it to the stack")
-    wm.ml_mesh_modifiers = CollectionProperty(type=MeshModifiersCollection)
-    wm.ml_curve_modifiers = CollectionProperty(type=CurveModifiersCollection)
-    wm.ml_lattice_modifiers = CollectionProperty(type=LatticeModifiersCollection)
-
-    scene = bpy.types.Scene
-    scene.ml_pinned_object = PointerProperty(type=bpy.types.Object, update=on_pinned_object_change)
-
-    bpy.app.handlers.load_post.append(on_file_load)
-
-    set_mesh_modifier_collection_items()
-    set_curve_modifier_collection_items()
-    set_lattice_modifier_collection_items()
-
-
-def unregister():
-    bpy.app.handlers.load_post.remove(on_file_load)
-
-    del bpy.types.Object.ml_modifier_active_index

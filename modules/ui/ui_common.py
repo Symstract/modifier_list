@@ -1,5 +1,5 @@
 def favourite_modifiers_selection_layout(context, layout):
-    wm = context.window_manager
+    ml_props = context.window_manager.modifier_list
     prefs = context.preferences.addons["modifier_list"].preferences
     attrs = (attr for attr in dir(prefs) if attr.startswith("modifier_"))
 
@@ -14,14 +14,15 @@ def favourite_modifiers_selection_layout(context, layout):
     # Draw 2 or 3 property searches per row
     for attr in attrs:
         row = col.row(align=True)
-        row.prop_search(prefs, attr, wm, "ml_mesh_modifiers", text="", icon='MODIFIER')
-        row.prop_search(prefs, next(attrs), wm, "ml_mesh_modifiers", text="", icon='MODIFIER')
+        row.prop_search(prefs, attr, ml_props, "mesh_modifiers", text="", icon='MODIFIER')
+        row.prop_search(prefs, next(attrs), ml_props, "mesh_modifiers", text="", icon='MODIFIER')
         if prefs.favourites_per_row == '3':
-            row.prop_search(prefs, next(attrs), wm, "ml_mesh_modifiers", text="", icon='MODIFIER')
+            row.prop_search(prefs, next(attrs), ml_props, "mesh_modifiers", 
+                            text="", icon='MODIFIER')
 
 
 def pin_object_button(context, layout):
-    scene = context.scene
-    unpin = True if scene.ml_pinned_object else False
-    icon = 'PINNED' if scene.ml_pinned_object else 'UNPINNED'
+    ml_pinned_ob = context.scene.modifier_list.pinned_object
+    unpin = True if ml_pinned_ob else False
+    icon = 'PINNED' if ml_pinned_ob else 'UNPINNED'
     layout.operator("ui.ml_object_pin", text="", icon=icon, emboss=False).unpin = unpin

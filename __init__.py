@@ -35,6 +35,10 @@ bl_info = {
 import bpy
 
 
+modules_to_ignore = (
+    "properties",
+)
+
 classes_to_ignore = (
     "DATA_PT_modifiers"
 )
@@ -51,8 +55,9 @@ addon_keymaps = []
 def register():
     from .addon_registration import register_bl_classes, call_register
 
-    register_bl_classes("modules", classes_to_ignore=classes_to_ignore,
-                        panel_order=panel_order, addon_name_for_counter=bl_info["name"])
+    register_bl_classes("modules", modules_to_ignore=modules_to_ignore, 
+                        classes_to_ignore=classes_to_ignore, panel_order=panel_order, 
+                        addon_name_for_counter=bl_info["name"])
 
     call_register("modules")
 

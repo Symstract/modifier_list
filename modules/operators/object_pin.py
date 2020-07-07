@@ -13,8 +13,7 @@ class UI_OT_ml_object_pin(Operator):
 
     def execute(self, context):
         ob = context.object
-        scene = context.scene
-        scene.ml_pinned_object = None if self.unpin else ob
+        context.scene.modifier_list.pinned_object = None if self.unpin else ob
 
         # Update the sidebar if called from the popup
         context.area.tag_redraw()

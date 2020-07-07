@@ -24,7 +24,7 @@ def scene_correct_state_after_editmode_toggle_ensure(scene):
     if ob:
         if ob.mode == 'OBJECT':
             if not is_init_ob_pinned:
-                scene.ml_pinned_object = None
+                scene.modifier_list.pinned_object = None
             bpy.context.view_layer.objects.active = init_act_ob
             depsgraph_handlers.remove(scene_correct_state_after_editmode_toggle_ensure)
 
@@ -48,7 +48,7 @@ def scene_correct_state_after_undo_ensure(scene):
     if ob:
         if ob.mode == 'OBJECT' or (ob.mode == 'EDIT' and ob.type != 'LATTICE'):
             if not is_init_ob_pinned:
-                scene.ml_pinned_object = None
+                scene.modifier_list.pinned_object = None
             bpy.context.view_layer.objects.active = init_act_ob
             undo_handlers.remove(scene_correct_state_after_undo_ensure)
 
@@ -72,7 +72,7 @@ class OBJECT_OT_ml_lattice_toggle_editmode(Operator):
 
     def execute(self, context):
         ob = context.object
-        scene = context.scene
+        ml_props = context.scene.modifier_list
         depsgraph_handlers = bpy.app.handlers.depsgraph_update_post
         undo_handlers = bpy.app.handlers.undo_post
 
@@ -98,12 +98,12 @@ class OBJECT_OT_ml_lattice_toggle_editmode(Operator):
 
         if not is_lattice_edit_mode_on:
             init_mode = context.mode
-            is_init_ob_pinned = bool(scene.ml_pinned_object)
+            is_init_ob_pinned = bool(ml_props.ml_pinned_object)
             init_act_ob_name = ob.name
 
             ml_active_ob = get_ml_active_object()
             
-            scene.ml_pinned_object = ml_active_ob
+            ml_props.ml_pinned_object = ml_active_ob
             
             active_mod_index = ml_active_ob.ml_modifier_active_index
             active_mod = ml_active_ob.modifiers[active_mod_index]
@@ -147,7 +147,7 @@ class OBJECT_OT_ml_lattice_toggle_editmode(Operator):
                     context.view_layer.objects.active = init_act_ob
                     bpy.ops.object.mode_set(mode='EDIT')
 
-                scene.ml_pinned_object = None
+                ml_props.ml_pinned_object = None
 
         return {'FINISHED'}
 

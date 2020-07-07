@@ -43,8 +43,8 @@ class VIEW3D_OT_ml_modifier_popup(Operator):
             layout.label(text="Wrong object type")
             return
         
-        wm = bpy.context.window_manager
-        popup_tab = wm.ml_popup_active_tab
+        ml_props = bpy.context.window_manager.modifier_list
+        popup_tab = ml_props.popup_active_tab
 
         prefs = bpy.context.preferences.addons["modifier_list"].preferences
 
@@ -69,7 +69,7 @@ class VIEW3D_OT_ml_modifier_popup(Operator):
         # === Tabs ===
         col = split.column(align=True)
         col.scale_y = 1.3
-        col.prop_tabs_enum(wm, "ml_popup_active_tab", icon_only=True)
+        col.prop_tabs_enum(ml_props, "popup_active_tab", icon_only=True)
 
         # When using the dialog type popup, the label is automatic
         # and the pin button can't be put next to it. In that case,
@@ -78,17 +78,3 @@ class VIEW3D_OT_ml_modifier_popup(Operator):
             col.separator(factor=3)
 
             pin_object_button(context, col)
-
-
-def register():
-    popup_tabs_items = [
-        ("MODIFIERS", "Modifiers", "Modifiers", 'MODIFIER', 1),
-        ("OBJECT_DATA", "Object Data", "Object Data", 'MESH_DATA', 2),
-    ]
-
-    wm = bpy.types.WindowManager
-    wm.ml_popup_active_tab = EnumProperty(items=popup_tabs_items, name="Popup Tabs",
-                                          default='MODIFIERS')
-
-
-
