@@ -175,13 +175,15 @@ def _register_classes(classes, addon_name_for_counter=None):
 # Public functions
 # ======================================================================
 
-def register_bl_classes(root_dir, classes_to_ignore=None, panel_order=None,
+def register_bl_classes(root_dir, modules_to_ignore=None, classes_to_ignore=None, panel_order=None,
                         addon_name_for_counter=None):
     """Register all add-on classes that inherit from bpy_struct from all
     modules.
 
     Args:
         root_dir: root directory to search in
+        modules_to_ignore: an iteratable of the names of the
+            moduless that should be ignored
         classes_to_ignore: an iteratable of the names of the
             classes that should be ignored
         panel_order: an iteratable of panel class names
@@ -197,6 +199,9 @@ def register_bl_classes(root_dir, classes_to_ignore=None, panel_order=None,
     modules = _find_modules(root_dir)
     modules = _import_modules(modules)
     _store_modules_globally(modules)
+
+    if modules_to_ignore:
+        modules = [m for m in modules if m.__name__.split(".")[-1] not in modules_to_ignore]
 
     classes = _find_bl_classes(modules)
     classes = _sort_classes_topologically(classes)
