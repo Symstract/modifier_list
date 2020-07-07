@@ -51,7 +51,7 @@ class OBJECT_OT_ml_modifier_move_down(Operator):
 
         if self.shift:
             if bpy.app.version[1] >= 90:
-                bpy.ops.object.modifier_move_to_index(modifier=active_mod_name, 
+                bpy.ops.object.modifier_move_to_index(modifier=active_mod_name,
                                                       index=mods_max_index)
             else:
                 for _ in range(mods_max_index - active_mod_index):

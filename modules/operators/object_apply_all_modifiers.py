@@ -39,7 +39,7 @@ class OBJECT_OT_ml_apply_all_modifiers_multi_user_data_dialog(Operator):
             layout.label(text="Done")
             return
 
-        layout.label(text="Active object's data is used by multiple objects. " 
+        layout.label(text="Active object's data is used by multiple objects. "
                           "What would you like to do?")
 
         layout.separator()
@@ -93,7 +93,7 @@ class OBJECT_OT_ml_apply_all_modifiers(Operator):
     def poll(cls, context):
         return get_ml_active_object() is not None or bool(context.selected_objects)
 
-    def execute(self, context):        
+    def execute(self, context):
         is_edit_mode = context.mode in {'EDIT_MESH', 'EDIT_CURVE', 'EDIT_SURFACE',
                                         'EDIT_TEXT', 'EDIT_LATTICE'}
 

@@ -78,7 +78,7 @@ class OBJECT_OT_ml_modifier_remove(Operator):
 
         if modifier.type == 'LATTICE':
             context.view_layer.objects.active = object
-            if hasattr(modifier, "vertex_group"):       
+            if hasattr(modifier, "vertex_group"):
                 delete_ml_vertex_group(object, modifier.vertex_group)
             if switch_into_editmode:
                 bpy.ops.object.editmode_toggle()

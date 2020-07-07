@@ -107,7 +107,7 @@ class ApplyModifier:
         vert_group = mod.vertex_group if hasattr(mod, "vertex_group") else None
         mod_type = mod.type
 
-        is_editmode = (context.mode in 
+        is_editmode = (context.mode in
                        {'EDIT_MESH', 'EDIT_CURVE', 'EDIT_SURFACE', 'EDIT_TEXT', 'EDIT_LATTICE'})
 
         if is_editmode:
@@ -142,7 +142,7 @@ class ApplyModifier:
 
         # Delete the gizmo object and the vertex group
         if self.shift or prefs.always_delete_gizmo:
-            self.delete_gizmo_and_vertex_group(context, ml_active_ob, mod_type, gizmo_ob, 
+            self.delete_gizmo_and_vertex_group(context, ml_active_ob, mod_type, gizmo_ob,
                                                vert_group)
 
         return {'FINISHED'}
@@ -214,7 +214,7 @@ class ApplyModifier:
         if current_active_mod_index != 0:
             self.report({'INFO'}, "Applied modifier was not first, result may not be as expected")
 
-    def delete_gizmo_and_vertex_group(self, context, ml_active_object, modifier_type, gizmo_object, 
+    def delete_gizmo_and_vertex_group(self, context, ml_active_object, modifier_type, gizmo_object,
                                       vertex_group):
         delete_gizmo_object(self, gizmo_object)
         context.view_layer.objects.active = ml_active_object

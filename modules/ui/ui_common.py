@@ -17,7 +17,7 @@ def favourite_modifiers_selection_layout(context, layout):
         row.prop_search(prefs, attr, ml_props, "mesh_modifiers", text="", icon='MODIFIER')
         row.prop_search(prefs, next(attrs), ml_props, "mesh_modifiers", text="", icon='MODIFIER')
         if prefs.favourites_per_row == '3':
-            row.prop_search(prefs, next(attrs), ml_props, "mesh_modifiers", 
+            row.prop_search(prefs, next(attrs), ml_props, "mesh_modifiers",
                             text="", icon='MODIFIER')
 
 

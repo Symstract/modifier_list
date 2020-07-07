@@ -142,7 +142,7 @@ class LatticeModifiersCollection(PropertyGroup):
 
 class ML_SceneProperties(PropertyGroup):
     pinned_object: PointerProperty(
-        type=bpy.types.Object, 
+        type=bpy.types.Object,
         update=on_pinned_object_change)
 
 
@@ -156,7 +156,7 @@ class ML_WindowManagerProperties(PropertyGroup):
         set=active_object_modifier_active_index_set
     )
     modifier_to_add_from_search: StringProperty(
-        name="Modifier to add", 
+        name="Modifier to add",
         update=add_modifier,
         description="Search for a modifier and add it to the stack")
     mesh_modifiers: CollectionProperty(type=MeshModifiersCollection)
@@ -167,8 +167,8 @@ class ML_WindowManagerProperties(PropertyGroup):
         ("OBJECT_DATA", "Object Data", "Object Data", 'MESH_DATA', 2),
     ]
     popup_active_tab: EnumProperty(
-        items=popup_tabs_items, 
-        name="Popup Tabs", 
+        items=popup_tabs_items,
+        name="Popup Tabs",
         default='MODIFIERS')
 
 

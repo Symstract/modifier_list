@@ -87,7 +87,7 @@ class OBJECT_OT_ml_modifier_add(Operator):
 
         if move:
             if bpy.app.version[1] >= 90:
-                bpy.ops.object.modifier_move_to_index(modifier=mod.name, 
+                bpy.ops.object.modifier_move_to_index(modifier=mod.name,
                                                       index=init_active_mod_index + 1)
             else:
                 for _ in range(mods_len - 1 - init_active_mod_index):

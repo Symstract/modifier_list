@@ -215,7 +215,7 @@ def modifier_visibility_buttons(modifier, layout, use_in_list=False):
     if not show_on_cage_added:
         context_change_added = properties_context_change_button(modifier, row, use_in_list)
 
-    # Make icons align nicely if neither show_on_cage nor 
+    # Make icons align nicely if neither show_on_cage nor
     # properties_context_change was added.
     if not show_on_cage_added and not context_change_added:
         sub = row.row(align=True)
@@ -482,15 +482,15 @@ def modifiers_ui(context, layout, num_of_rows=False, use_in_popup=False):
     row = col.split(factor=0.59)
     row.enabled = ob.library is None or ob.override_library is not None
     if ob.type == 'MESH':
-        row.prop_search(ml_props, "modifier_to_add_from_search", ml_props, "mesh_modifiers", 
+        row.prop_search(ml_props, "modifier_to_add_from_search", ml_props, "mesh_modifiers",
                         text="", icon='MODIFIER')
         row.menu("MESH_MT_ml_add_modifier_menu")
     elif ob.type in {'CURVE', 'SURFACE', 'FONT'}:
-        row.prop_search(ml_props, "modifier_to_add_from_search", ml_props, "curve_modifiers", 
+        row.prop_search(ml_props, "modifier_to_add_from_search", ml_props, "curve_modifiers",
                         text="", icon='MODIFIER')
         row.menu("CURVE_MT_ml_add_modifier_menu")
     elif ob.type == 'LATTICE':
-        row.prop_search(ml_props, "modifier_to_add_from_search", ml_props, "lattice_modifiers", 
+        row.prop_search(ml_props, "modifier_to_add_from_search", ml_props, "lattice_modifiers",
                         text="", icon='MODIFIER')
         row.menu("LATTICE_MT_ml_add_modifier_menu")
 

@@ -42,6 +42,3 @@ def vertex_groups_ui(context, layout, num_of_rows=5):
         sub.operator("object.vertex_group_deselect", text="Deselect")
 
         layout.prop(context.tool_settings, "vertex_group_weight", text="Weight")
-
-
-

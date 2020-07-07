@@ -518,4 +518,3 @@ def delete_ml_vertex_group(object, vertex_group_name):
             if vertex_group_name in vert_groups:
                 vert_group = vert_groups[vertex_group_name]
                 vert_groups.remove(vert_group)
-
