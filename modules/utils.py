@@ -12,16 +12,11 @@ def get_ml_active_object():
     ml_pinned_ob = context.scene.modifier_list.pinned_object
     area = context.area
 
-    if area.type == 'PROPERTIES':
-        return ob
-    else:
-        if ml_pinned_ob:
-            if ml_pinned_ob.users == 1 and not ml_pinned_ob.use_fake_user:
-                return ob
-            else:
-                return ml_pinned_ob
-        else:
-            return ob
+    if ml_pinned_ob and area.type != 'PROPERTIES':
+        if not (ml_pinned_ob.users == 1 and ml_pinned_ob.use_fake_user):
+            return ml_pinned_ob
+
+    return ob
 
 
 def is_modifier_local(object, modifier):
