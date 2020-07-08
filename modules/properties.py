@@ -147,10 +147,10 @@ class ML_SceneProperties(PropertyGroup):
 
 
 class ML_PreferencesUIProperties(PropertyGroup):
-    favourite_modifiers_expand: BoolProperty(default=True)
-    general_expand: BoolProperty()
-    popup_expand: BoolProperty()
-    gizmo_expand: BoolProperty()
+    favourite_modifiers_expand: BoolProperty(name="", default=True)
+    general_expand: BoolProperty(name="")
+    popup_expand: BoolProperty(name="")
+    gizmo_expand: BoolProperty(name="")
 
 
 class ML_WindowManagerProperties(PropertyGroup):
