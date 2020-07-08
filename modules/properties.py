@@ -146,6 +146,13 @@ class ML_SceneProperties(PropertyGroup):
         update=on_pinned_object_change)
 
 
+class ML_PreferencesUIProperties(PropertyGroup):
+    favourite_modifiers_expand: BoolProperty(default=True)
+    general_expand: BoolProperty()
+    popup_expand: BoolProperty()
+    gizmo_expand: BoolProperty()
+
+
 class ML_WindowManagerProperties(PropertyGroup):
     # Property to access ob.ml_modifier_active_index through, to avoid
     # the problem of modifier_active_index not being possible to be
@@ -170,6 +177,7 @@ class ML_WindowManagerProperties(PropertyGroup):
         items=popup_tabs_items,
         name="Popup Tabs",
         default='MODIFIERS')
+    preferences_ui_props: PointerProperty(type=ML_PreferencesUIProperties)
 
 
 # Registering
@@ -180,6 +188,7 @@ classes = (
     CurveModifiersCollection,
     LatticeModifiersCollection,
     ML_SceneProperties,
+    ML_PreferencesUIProperties,
     ML_WindowManagerProperties
 )
 

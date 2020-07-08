@@ -9,7 +9,7 @@ from bpy.types import AddonPreferences
 
 from .icons import load_icons
 from .ui.properties_editor import register_DATA_PT_modifiers
-from .ui.ui_common import favourite_modifiers_selection_layout
+from .ui.ui_common import box_with_header, favourite_modifiers_selection_layout
 from .ui.sidebar import update_sidebar_category
 
 
@@ -227,6 +227,8 @@ class Preferences(AddonPreferences):
     def draw(self, context):
         layout = self.layout
 
+        prefs_ui_props = context.window_manager.modifier_list.preferences_ui_props
+
         # === Info ===
         col = layout.column()
         col.label(icon='INFO',
@@ -257,6 +259,8 @@ class Preferences(AddonPreferences):
         row.prop(self, "use_sidebar")
         row.prop(self, "use_properties_editor")
 
+        layout.separator()
+
         layout.prop(self, "keep_sidebar_visible")
 
         split = layout.split()
@@ -267,60 +271,55 @@ class Preferences(AddonPreferences):
         layout.separator()
 
         # === Favourite modifiers ===
-        layout.label(text="Favourite Modifiers:")
+        box = box_with_header(layout, "Favourite Modifiers", prefs_ui_props,
+                              "favourite_modifiers_expand")
 
-        split = layout.split()
-        split.label(text="Favourites Per Row")
-        row = split.row()
-        row.prop(self, "favourites_per_row", expand=True)
+        if prefs_ui_props.favourite_modifiers_expand:
+            split = box.split()
+            split.label(text="Favourites Per Row")
+            row = split.row()
+            row.prop(self, "favourites_per_row", expand=True)
 
-        # === Favourite modifiers selection ===
-        favourite_modifiers_selection_layout(context, layout)
+            favourite_modifiers_selection_layout(context, box)
 
-        # =====================================
+            box.separator()
 
-        layout.separator()
-
-        layout.prop(self, "use_icons_in_favourites")
-
-        layout.separator()
+            box.prop(self, "use_icons_in_favourites")
 
         # === General settings ===
-        layout.label(text="General:")
+        box = box_with_header(layout, "General", prefs_ui_props, "general_expand")
 
-        layout.prop(self, "insert_modifier_after_active")
-        layout.prop(self, "disallow_applying_hidden_modifiers")
+        if prefs_ui_props.general_expand:
+            box.prop(self, "insert_modifier_after_active")
+            box.prop(self, "disallow_applying_hidden_modifiers")
 
-        split = layout.split()
-        split.label(text="Icon Color")
-        row = split.row()
-        row.prop(self, "icon_color", expand=True)
+            split = box.split()
+            split.label(text="Icon Color")
+            row = split.row()
+            row.prop(self, "icon_color", expand=True)
 
-        layout.prop(self, "reverse_list")
-        layout.prop(self, "hide_general_settings_region")
-        layout.prop(self, "show_confirmation_popups")
+            box.prop(self, "reverse_list")
+            box.prop(self, "hide_general_settings_region")
+            box.prop(self, "show_confirmation_popups")
 
-        split = layout.split()
-        split.label(text="Show Info Messages For")
-        row = split.row()
-        row.prop(self, "batch_ops_reports", expand=True)
-
-        layout.separator()
+            split = box.split()
+            split.label(text="Show Info Messages For")
+            row = split.row()
+            row.prop(self, "batch_ops_reports", expand=True)
 
         # === Popup settings ===
-        layout.label(text="Popup:")
+        box = box_with_header(layout, "Popup", prefs_ui_props, "popup_expand")
 
-        row = layout.row()
-        row.label(text="Popup Width")
-        row.prop(self, "popup_width", text="")
+        if prefs_ui_props.popup_expand:
+            row = box.row()
+            row.label(text="Popup Width")
+            row.prop(self, "popup_width", text="")
 
-        row = layout.row()
-        row.label(text="Modifier List Default/Min Height in Popup")
-        row.prop(self, "mod_list_def_len")
+            row = box.row()
+            row.label(text="Modifier List Default/Min Height in Popup")
+            row.prop(self, "mod_list_def_len")
 
-        layout.prop(self, "use_props_dialog")
-
-        layout.separator()
+            box.prop(self, "use_props_dialog")
 
         # Disabled for now because of a bug in 2.8.
         # # === Hotkey ===
@@ -336,11 +335,12 @@ class Preferences(AddonPreferences):
         # layout.separator()
 
         # === Gizmo object settings ===
-        layout.label(text="Gizmo:")
+        box = box_with_header(layout, "Gizmo", prefs_ui_props, "gizmo_expand")
 
-        layout.prop(self, "parent_new_gizmo_to_object")
-        layout.prop(self, "match_gizmo_size_to_object")
-        layout.prop(self, "always_delete_gizmo")
+        if prefs_ui_props.gizmo_expand:
+            box.prop(self, "parent_new_gizmo_to_object")
+            box.prop(self, "match_gizmo_size_to_object")
+            box.prop(self, "always_delete_gizmo")
 
 
 def register():
