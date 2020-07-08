@@ -280,6 +280,8 @@ class Preferences(AddonPreferences):
             row = split.row()
             row.prop(self, "favourites_per_row", expand=True)
 
+            box.separator()
+
             favourite_modifiers_selection_layout(context, box)
 
             box.separator()

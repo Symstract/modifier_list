@@ -22,10 +22,8 @@ def favourite_modifiers_selection_layout(context, layout):
     attrs = (attr for attr in dir(prefs) if attr.startswith("modifier_"))
 
     row = layout.row()
-    row.alignment = 'RIGHT'
-    row.operator("wm.ml_sort_favourite_modifiers", icon="SORTALPHA", text="")
-
-    # layout.separator()
+    row.alignment = 'LEFT'
+    row.operator("wm.ml_sort_favourite_modifiers", icon="SORTALPHA", text="Sort")
 
     col = layout.column(align=True)
 

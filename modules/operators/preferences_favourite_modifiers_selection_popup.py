@@ -19,4 +19,9 @@ class WM_OT_ml_favourite_modifiers_selection_popup(Operator):
 
     def draw(self, context):
         layout = self.layout
+
+        layout.separator()
+
         favourite_modifiers_selection_layout(context, layout)
+
+        layout.separator()
