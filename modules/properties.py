@@ -178,6 +178,7 @@ class ML_WindowManagerProperties(PropertyGroup):
         name="Popup Tabs",
         default='MODIFIERS')
     preferences_ui_props: PointerProperty(type=ML_PreferencesUIProperties)
+    active_favourite_modifier_slot_index: IntProperty()
 
 
 # Registering
