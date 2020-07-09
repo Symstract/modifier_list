@@ -23,10 +23,6 @@ def favourite_modifiers_selection_layout(context, layout):
     attrs = [attr for attr in dir(prefs) if attr.startswith("modifier_")]
 
     row = layout.row()
-    row.alignment = 'LEFT'
-    row.operator("wm.ml_sort_favourite_modifiers", icon="SORTALPHA", text="Sort")
-
-    row = layout.row()
 
     col = row.column(align=True)
 
@@ -43,8 +39,13 @@ def favourite_modifiers_selection_layout(context, layout):
         sub_row.prop_search(prefs, attr, ml_props, "mesh_modifiers", text="", icon='MODIFIER')
 
     sub = row.column(align=True)
+
     sub.operator("ui.ml_active_favourite_modifier_move_up", icon='TRIA_UP', text="")
     sub.operator("ui.ml_active_favourite_modifier_move_down", icon='TRIA_DOWN', text="")
+
+    sub.separator(factor=3)
+
+    sub.operator("wm.ml_sort_favourite_modifiers", icon="SORTALPHA", text="")
 
 
 def pin_object_button(context, layout):
