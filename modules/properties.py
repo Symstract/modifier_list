@@ -148,6 +148,7 @@ class ML_SceneProperties(PropertyGroup):
 
 class ML_PreferencesUIProperties(PropertyGroup):
     favourite_modifiers_expand: BoolProperty(name="", default=True)
+    favourite_modifiers_menu_expand: BoolProperty(name="", default=True)
     general_expand: BoolProperty(name="")
     popup_expand: BoolProperty(name="")
     gizmo_expand: BoolProperty(name="")
@@ -179,6 +180,11 @@ class ML_WindowManagerProperties(PropertyGroup):
         default='MODIFIERS')
     preferences_ui_props: PointerProperty(type=ML_PreferencesUIProperties)
     active_favourite_modifier_slot_index: IntProperty()
+    auto_sort_favourites_when_choosing_from_menu: BoolProperty(
+        name="Auto Sort Favourites When Choosing From Menu",
+        description="Automatically sort favourite modifiers when choosing from the menu. "
+                    "Also removes empty slots between favourites"
+    )
 
 
 # Registering

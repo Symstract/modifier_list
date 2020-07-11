@@ -12,7 +12,7 @@ class WM_OT_ml_favourite_modifiers_selection_popup(Operator):
         return {'FINISHED'}
 
     def invoke(self, context, event):
-        return context.window_manager.invoke_props_dialog(self, width=500)
+        return context.window_manager.invoke_props_dialog(self, width=650)
 
     def check(self, context):
         return True
