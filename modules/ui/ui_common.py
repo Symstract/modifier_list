@@ -24,7 +24,7 @@ def favourite_modifiers_selection_layout(context, layout):
     ml_props = context.window_manager.modifier_list
 
     # === Modifier menu ===
-    
+
     box = box_with_header(layout, "Menu", ml_props.preferences_ui_props,
                           "favourite_modifiers_menu_expand")
 
@@ -68,6 +68,8 @@ def favourite_modifiers_selection_layout(context, layout):
                         depress=name in mods).modifier = name
         
         layout.separator()
+
+    # === Favourite slots ===
 
     row = layout.row()
 
