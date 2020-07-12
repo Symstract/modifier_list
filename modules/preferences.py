@@ -9,7 +9,7 @@ from bpy.types import AddonPreferences
 
 from .icons import load_icons
 from .ui.properties_editor import register_DATA_PT_modifiers
-from .ui.ui_common import box_with_header, favourite_modifiers_selection_layout
+from .ui.ui_common import box_with_header, favourite_modifiers_configuration_layout
 from .ui.sidebar import update_sidebar_category
 
 
@@ -282,7 +282,7 @@ class Preferences(AddonPreferences):
 
             box.separator()
 
-            favourite_modifiers_selection_layout(context, box)
+            favourite_modifiers_configuration_layout(context, box)
 
             box.separator()
 

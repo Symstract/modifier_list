@@ -351,7 +351,7 @@ class OBJECT_PT_ml_modifier_extras(Panel):
 
     def draw(self, context):
         layout = self.layout
-        layout.operator("wm.ml_favourite_modifiers_selection_popup")
+        layout.operator("wm.ml_favourite_modifiers_configuration_popup")
 
 
 class OBJECT_PT_ml_gizmo_object_settings(Panel):

@@ -1,11 +1,11 @@
 from bpy.types import Operator
 
-from ..ui.ui_common import favourite_modifiers_selection_layout
+from ..ui.ui_common import favourite_modifiers_configuration_layout
 
 
-class WM_OT_ml_favourite_modifiers_selection_popup(Operator):
-    bl_idname = "wm.ml_favourite_modifiers_selection_popup"
-    bl_label = "Select Favourite Modifiers"
+class WM_OT_ml_favourite_modifiers_configuration_popup(Operator):
+    bl_idname = "wm.ml_favourite_modifiers_configuration_popup"
+    bl_label = "Configure Favourite Modifiers"
     bl_options = {'INTERNAL'}
 
     def execute(self, context):
@@ -22,6 +22,6 @@ class WM_OT_ml_favourite_modifiers_selection_popup(Operator):
 
         layout.separator()
 
-        favourite_modifiers_selection_layout(context, layout)
+        favourite_modifiers_configuration_layout(context, layout)
 
         layout.separator()

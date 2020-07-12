@@ -20,7 +20,7 @@ def box_with_header(layout, text, expand_data, expand_prop):
     return box
 
 
-def favourite_modifiers_selection_layout(context, layout):
+def favourite_modifiers_configuration_layout(context, layout):
     prefs = context.preferences.addons["modifier_list"].preferences
     ml_props = context.window_manager.modifier_list
     favourites_dict = get_favourite_modifiers()
