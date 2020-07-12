@@ -87,7 +87,7 @@ def favourite_modifiers_selection_layout(context, layout):
         sub_row = split.row(align=True)
         icon = 'LAYER_ACTIVE' if i == active_slot_index else 'LAYER_USED'
         sub_row.operator("ui.ml_active_favourite_modifier_slot_set", icon=icon, text="",
-                         emboss=False).index = i
+                         depress=i == active_slot_index).index = i
         sub_row.prop_search(prefs, attr, ml_props, "mesh_modifiers", text="", icon='MODIFIER')
 
     sub = row.column(align=True)
