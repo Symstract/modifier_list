@@ -67,9 +67,10 @@ DONT_SUPPORT_COPY = {
     'CLOTH',
     'COLLISION',
     'DYNAMIC_PAINT',
-    'FLUID_SIMULATION',
+    'FLUID',  # From 2.82 onwards
+    'FLUID_SIMULATION',  # Before 2.82
     'PARTICLE_SYSTEM',
-    'SMOKE',
+    'SMOKE',  # Before 2.82
     'SOFT_BODY'
 }
 
