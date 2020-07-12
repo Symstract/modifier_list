@@ -3,6 +3,9 @@ from bpy.props import *
 from bpy.types import Operator
 
 
+from ..utils import get_favourite_modifiers
+
+
 class UI_OT_ml_favourite_modifier_toggle(Operator):
     bl_idname = "ui.ml_favourite_modifier_toggle"
     bl_label = "Toggle Favourite Modifier"
@@ -12,12 +15,13 @@ class UI_OT_ml_favourite_modifier_toggle(Operator):
     modifier: StringProperty()
 
     def execute(self, context):
+        prefs = context.preferences.addons["modifier_list"].preferences
         ml_props = context.window_manager.modifier_list
         active_index = ml_props.active_favourite_modifier_slot_index
 
-        prefs = context.preferences.addons["modifier_list"].preferences
-        fav_mod_attr_names = [("modifier_" + str(i).zfill(2)) for i in range(1, 13)]
-        mods = [getattr(prefs, attr) for attr in fav_mod_attr_names]
+        favourites_dict = get_favourite_modifiers()
+        fav_mod_attr_names = list(favourites_dict.keys())
+        mods = list(favourites_dict.values())
 
         # Remove favourite
         if self.modifier in mods:
@@ -43,10 +47,9 @@ class UI_OT_ml_favourite_modifier_toggle(Operator):
 
         # Sort favourites
         if ml_props.auto_sort_favourites_when_choosing_from_menu:
-            favourite_slot_count = len(mods)
             mods = list(filter(None, mods))
             mods.sort()
-            mods.extend(["" for _ in range(favourite_slot_count - len(mods))])
+            mods.extend(["" for _ in range(len(favourites_dict) - len(mods))])
             if self.modifier in mods:
                 ml_props.active_favourite_modifier_slot_index = mods.index(self.modifier)
         

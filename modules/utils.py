@@ -5,6 +5,12 @@ from mathutils.geometry import distance_point_to_plane
 from .modifier_categories import HAVE_GIZMO_PROPERTY
 
 
+def get_favourite_modifiers():
+    prefs = bpy.context.preferences.addons["modifier_list"].preferences
+    return {attr: getattr(prefs, attr) for attr in prefs.__annotations__
+            if attr.startswith("modifier_")}
+
+
 def get_ml_active_object():
     """Get the active object or if some object is pinned, get that"""
     context = bpy.context

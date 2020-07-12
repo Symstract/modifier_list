@@ -3,6 +3,9 @@ from bpy.props import *
 from bpy.types import Operator
 
 
+from ..utils import get_favourite_modifiers
+
+
 class FavouriteModifierMoveBase:
     def execute(self, context):
         ml_props = context.window_manager.modifier_list
@@ -10,11 +13,12 @@ class FavouriteModifierMoveBase:
         new_index = active_index - 1 if self.direction == 'UP' else active_index + 1
 
         prefs = context.preferences.addons["modifier_list"].preferences
-        fav_mod_attr_names = [("modifier_" + str(i).zfill(2)) for i in range(1, 13)]
-        mods = [getattr(prefs, attr) for attr in fav_mod_attr_names]
-        mods.insert(new_index, mods.pop(active_index))
+        favourites_dict = get_favourite_modifiers()
+        fav_mod_attr_names = list(favourites_dict.keys())
+        fav_mods = list(favourites_dict.values())
+        fav_mods.insert(new_index, fav_mods.pop(active_index))
 
-        for i, mod in enumerate(mods):
+        for i, mod in enumerate(fav_mods):
             setattr(prefs, fav_mod_attr_names[i], mod)
 
         ml_props.active_favourite_modifier_slot_index = new_index
@@ -46,7 +50,5 @@ class UI_OT_ml_active_favourite_modifier_move_down(Operator, FavouriteModifierMo
 
     @ classmethod
     def poll(cls, context):
-        prefs = context.preferences.addons["modifier_list"].preferences
-        attrs = [attr for attr in dir(prefs) if attr.startswith("modifier_")]
         ml_props = context.window_manager.modifier_list
-        return ml_props.active_favourite_modifier_slot_index < len(attrs) - 1
+        return ml_props.active_favourite_modifier_slot_index < len(get_favourite_modifiers()) - 1

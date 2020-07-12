@@ -1,4 +1,5 @@
 from .. import modifier_categories
+from ..utils import get_favourite_modifiers
 
 
 def box_with_header(layout, text, expand_data, expand_prop):
@@ -22,6 +23,9 @@ def box_with_header(layout, text, expand_data, expand_prop):
 def favourite_modifiers_selection_layout(context, layout):
     prefs = context.preferences.addons["modifier_list"].preferences
     ml_props = context.window_manager.modifier_list
+    favourites_dict = get_favourite_modifiers()
+    favourite_mod_attr_names = favourites_dict.keys()
+    favourite_mods = set(favourites_dict.values())
 
     # === Modifier menu ===
 
@@ -36,36 +40,33 @@ def favourite_modifiers_selection_layout(context, layout):
         row = box.row()
         row.alignment = 'LEFT'
 
-        fav_mod_attr_names = [("modifier_" + str(i).zfill(2)) for i in range(1, 13)]
-        mods = [getattr(prefs, attr) for attr in fav_mod_attr_names]
-
         col = row.column(align=True)
         col.label(text="Modify")
         col.separator(factor=0.3)
         for name, icon, _ in modifier_categories.MESH_MODIFY_NAMES_ICONS_TYPES:
             col.operator("ui.ml_favourite_modifier_toggle", text=name, icon=icon,
-                        depress=name in mods).modifier = name
+                         depress=name in favourite_mods).modifier = name
 
         col = row.column(align=True)
         col.label(text="Generate")
         col.separator(factor=0.3)
         for name, icon, _ in modifier_categories.MESH_GENERATE_NAMES_ICONS_TYPES:
             col.operator("ui.ml_favourite_modifier_toggle", text=name, icon=icon,
-                        depress=name in mods).modifier = name
+                         depress=name in favourite_mods).modifier = name
 
         col = row.column(align=True)
         col.label(text="Deform")
         col.separator(factor=0.3)
         for name, icon, _ in modifier_categories.MESH_DEFORM_NAMES_ICONS_TYPES:
             col.operator("ui.ml_favourite_modifier_toggle", text=name, icon=icon,
-                        depress=name in mods).modifier = name
+                         depress=name in favourite_mods).modifier = name
 
         col = row.column(align=True)
         col.label(text="Simulate")
         col.separator(factor=0.3)
         for name, icon, _ in modifier_categories.MESH_SIMULATE_NAMES_ICONS_TYPES:
             col.operator("ui.ml_favourite_modifier_toggle", text=name, icon=icon,
-                        depress=name in mods).modifier = name
+                         depress=name in favourite_mods).modifier = name
         
         layout.separator()
 
@@ -76,10 +77,9 @@ def favourite_modifiers_selection_layout(context, layout):
     col = row.column(align=True)
 
     active_slot_index = ml_props.active_favourite_modifier_slot_index
-    attrs = [attr for attr in dir(prefs) if attr.startswith("modifier_")]
 
     # Draw 2 or 3 property searches per row
-    for i, attr in enumerate(attrs):
+    for i, attr in enumerate(favourite_mod_attr_names):
         if (i == 0 or (prefs.favourites_per_row == '2' and i % 2 == 0)
                 or (prefs.favourites_per_row == '3' and i % 3 == 0)):
             split = col.split(align=True)
