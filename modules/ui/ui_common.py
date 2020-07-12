@@ -92,10 +92,14 @@ def favourite_modifiers_selection_layout(context, layout):
 
     sub = row.column(align=True)
 
+    sub.operator("ui.ml_active_favourite_modifier_remove", icon='REMOVE', text="")
+
+    sub.separator()
+
     sub.operator("ui.ml_active_favourite_modifier_move_up", icon='TRIA_UP', text="")
     sub.operator("ui.ml_active_favourite_modifier_move_down", icon='TRIA_DOWN', text="")
 
-    sub.separator(factor=3)
+    sub.separator(factor=2)
 
     sub.operator("wm.ml_sort_favourite_modifiers", icon="SORTALPHA", text="")
 
