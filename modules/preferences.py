@@ -113,6 +113,11 @@ class Preferences(AddonPreferences):
         default="2",
         update=prefs_callback)
 
+    auto_sort_favourites_when_choosing_from_menu: BoolProperty(
+        name="Auto Sort Favourites When Choosing From Menu",
+        description="Automatically sort favourite modifiers when choosing from the menu. "
+                    "Also removes empty slots between favourites")
+
     modifier_01: StringProperty(description="Add a favourite modifier", update=prefs_callback)
     modifier_02: StringProperty(description="Add a favourite modifier", update=prefs_callback)
     modifier_03: StringProperty(description="Add a favourite modifier", update=prefs_callback)

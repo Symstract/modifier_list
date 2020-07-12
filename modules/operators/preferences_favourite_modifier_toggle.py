@@ -46,7 +46,7 @@ class UI_OT_ml_favourite_modifier_toggle(Operator):
                     ml_props.active_favourite_modifier_slot_index = active_index + 1
 
         # Sort favourites
-        if ml_props.auto_sort_favourites_when_choosing_from_menu:
+        if prefs.auto_sort_favourites_when_choosing_from_menu:
             mods = list(filter(None, mods))
             mods.sort()
             mods.extend(["" for _ in range(len(favourites_dict) - len(mods))])

@@ -33,7 +33,7 @@ def favourite_modifiers_configuration_layout(context, layout):
                           "favourite_modifiers_menu_expand")
 
     if ml_props.preferences_ui_props.favourite_modifiers_menu_expand:
-        box.prop(ml_props, "auto_sort_favourites_when_choosing_from_menu")
+        box.prop(prefs, "auto_sort_favourites_when_choosing_from_menu")
 
         box.separator()
 
