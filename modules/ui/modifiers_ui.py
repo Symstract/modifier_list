@@ -124,7 +124,18 @@ def show_on_cage_button(object, modifier, layout, pcoll, use_in_list):
     return True
 
 
-def properties_context_change_button(modifier, layout, use_in_list):
+def curve_properties_context_change_button(layout, pcoll, use_in_list):
+    sub = layout.row(align=True)
+    empy_icon = pcoll['EMPTY_SPACE']
+    
+    if use_in_list:
+        sub.label(text="", translate=False, icon_value=empy_icon.icon_id)
+    else:
+        sub.operator("wm.properties_context_change", icon='PROPERTIES',
+                     emboss=False).context = "PHYSICS"
+
+
+def mesh_properties_context_change_button(modifier, layout, use_in_list):
     if bpy.context.area.type != 'PROPERTIES' or use_in_list:
         return False
 
@@ -205,16 +216,19 @@ def modifier_visibility_buttons(modifier, layout, use_in_list=False):
     if ob.type == 'LATTICE':
         return
 
-    # use_apply_on_spline
+    # use_apply_on_spline or properties_context_change
     if ob.type != 'MESH':
-        use_apply_on_spline_button(modifier, row, pcoll, use_in_list)
+        if modifier.type == 'SOFT_BODY':
+            curve_properties_context_change_button(row, pcoll, use_in_list)
+        else:
+            use_apply_on_spline_button(modifier, row, pcoll, use_in_list)
         return
 
     # show_on_cage or properties_context_change
     show_on_cage_added = show_on_cage_button(ob, modifier, row, pcoll, use_in_list)
     context_change_added = False
     if not show_on_cage_added:
-        context_change_added = properties_context_change_button(modifier, row, use_in_list)
+        context_change_added = mesh_properties_context_change_button(modifier, row, use_in_list)
 
     # Make icons align nicely if neither show_on_cage nor
     # properties_context_change was added.
