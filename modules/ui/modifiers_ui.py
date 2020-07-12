@@ -25,6 +25,7 @@ else:
 from . import ml_modifier_layouts
 from .. import icons, modifier_categories
 from ..utils import (
+    favourite_modifiers_names_icons_types,
     get_gizmo_object_from_modifier,
     get_ml_active_object,
     is_modifier_disabled,
@@ -444,7 +445,7 @@ def modifiers_ui(context, layout, num_of_rows=False, use_in_popup=False):
     # Check if an item or the next item in
     # favourite_modifiers_names_icons_types has a value and add rows
     # and buttons accordingly (2 or 3 buttons per row).
-    fav_names_icons_types_iter = modifier_categories.favourite_modifiers_names_icons_types()
+    fav_names_icons_types_iter = favourite_modifiers_names_icons_types()
 
     place_three_per_row = prefs.favourites_per_row == '3'
 

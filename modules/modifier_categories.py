@@ -7,27 +7,6 @@ _mods_enum = bpy.types.Modifier.bl_rna.properties['type'].enum_items
 ALL_MODIFIERS = [(mod.name, mod.icon, mod.identifier) for mod in _mods_enum
                  if mod.name != "Surface"]
 
-
-def get_favourite_modifiers_names():
-    """List of the names of the favourite modifiers"""
-    prefs = bpy.context.preferences.addons["modifier_list"].preferences
-    # get correct class attributes and then their values
-    attr_list = [attr for attr in dir(prefs) if attr.startswith("modifier_")]
-    return [getattr(prefs, attr) for attr in attr_list]
-
-
-def favourite_modifiers_names_icons_types():
-    """Iterator of tuples of the names, icons and types of the favourite
-    modifiers.
-    """
-    mods_enum = bpy.types.Modifier.bl_rna.properties['type'].enum_items
-    all_mod_names = [modifier.name for modifier in mods_enum]
-    all_mods_dict = dict(zip(all_mod_names, ALL_MODIFIERS))
-    fav_mods_list = [all_mods_dict[mod] if mod in all_mods_dict else (None, None, None)
-                     for mod in get_favourite_modifiers_names()]
-    return iter(fav_mods_list)
-
-
 # === Don't support show_in_editmode ===
 DONT_SUPPORT_SHOW_IN_EDITMODE = {
     'MESH_SEQUENCE_CACHE',

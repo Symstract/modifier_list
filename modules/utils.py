@@ -2,13 +2,22 @@ import bpy
 from mathutils import Matrix, Vector
 from mathutils.geometry import distance_point_to_plane
 
-from .modifier_categories import HAVE_GIZMO_PROPERTY
+from .modifier_categories import ALL_MODIFIERS, HAVE_GIZMO_PROPERTY
 
 
 def get_favourite_modifiers():
     prefs = bpy.context.preferences.addons["modifier_list"].preferences
     return {attr: getattr(prefs, attr) for attr in prefs.__annotations__
             if attr.startswith("modifier_")}
+
+
+def favourite_modifiers_names_icons_types():
+    """Iterator of tuples of the names, icons and types of the favourite
+    modifiers.
+    """
+    all_mods_dict = {mod[0]: mod for mod in ALL_MODIFIERS}
+    favorite_mods = get_favourite_modifiers().values()
+    return (all_mods_dict[mod] if mod else (None, None, None) for mod in favorite_mods)
 
 
 def get_ml_active_object():
