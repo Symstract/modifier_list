@@ -89,12 +89,8 @@ HAVE_GIZMO_PROPERTY = {
     'WAVE': "start_position_object"
 }
 
-# === Mesh modifiers by categories ===
-
-# Filter out Simulation modifier as it's only for point clouds.
-MESH_ALL_NAMES_ICONS_TYPES = [mod for mod in ALL_MODIFIERS if mod[0] != "Simulation"]
-
-_mods = MESH_ALL_NAMES_ICONS_TYPES
+# === All modifier by categories ===
+_mods = ALL_MODIFIERS
 
 _modify_end = next(_mods.index(mod) + 1 for mod in _mods if mod[0] == "Vertex Weight Proximity")
 _gen_start = next(_mods.index(mod) for mod in _mods if mod[0] == "Array")
@@ -109,12 +105,32 @@ else:
 _def_start = next(_mods.index(mod) for mod in _mods if mod[0] == "Armature")
 _def_end = next(_mods.index(mod) + 1 for mod in _mods if mod[0] == "Wave")
 _sim_start = next(_mods.index(mod) for mod in _mods if mod[0] == "Cloth")
-_sim_end = next(_mods.index(mod) + 1 for mod in _mods if mod[0] == "Soft Body")
 
-MESH_MODIFY_NAMES_ICONS_TYPES = [mod for mod in _mods[0:_modify_end]]
-MESH_GENERATE_NAMES_ICONS_TYPES = [mod for mod in _mods[_gen_start:_gen_end]]
-MESH_DEFORM_NAMES_ICONS_TYPES = [mod for mod in _mods[_def_start:_def_end]]
-MESH_SIMULATE_NAMES_ICONS_TYPES = [mod for mod in _mods[_sim_start:_sim_end]]
+# Currently (13.7.2020) in Blender 2.90 the new Simulation modifier is
+# not in the correct place, it's after Soft Body.
+if bpy.app.version[1] < 90:
+    _sim_end = next(_mods.index(mod) + 1 for mod in _mods if mod[0] == "Soft Body")
+else:
+    _sim_end = next(_mods.index(mod) + 1 for mod in _mods if mod[0] == "Simulation")
+
+ALL_MODIFY_NAMES_ICONS_TYPES = [mod for mod in _mods[0:_modify_end]]
+ALL_GENERATE_NAMES_ICONS_TYPES = [mod for mod in _mods[_gen_start:_gen_end]]
+ALL_DEFORM_NAMES_ICONS_TYPES = [mod for mod in _mods[_def_start:_def_end]]
+ALL_SIMULATE_NAMES_ICONS_TYPES = [mod for mod in _mods[_sim_start:_sim_end]]
+
+# === Mesh modifiers by categories ===
+MESH_MODIFY_NAMES_ICONS_TYPES = ALL_MODIFY_NAMES_ICONS_TYPES
+MESH_GENERATE_NAMES_ICONS_TYPES = ALL_GENERATE_NAMES_ICONS_TYPES
+MESH_DEFORM_NAMES_ICONS_TYPES = ALL_DEFORM_NAMES_ICONS_TYPES
+MESH_SIMULATE_NAMES_ICONS_TYPES = [mod for mod in ALL_SIMULATE_NAMES_ICONS_TYPES
+                                   if mod[0] != "Simulation"]
+
+MESH_ALL_NAMES_ICONS_TYPES = (
+    MESH_MODIFY_NAMES_ICONS_TYPES
+    + MESH_GENERATE_NAMES_ICONS_TYPES
+    + MESH_DEFORM_NAMES_ICONS_TYPES
+    + MESH_SIMULATE_NAMES_ICONS_TYPES
+)
 
 # === Curve, surface and text modifiers by categories ===
 CURVE_MODIFY_NAMES_ICONS_TYPES = [

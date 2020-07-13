@@ -43,28 +43,28 @@ def favourite_modifiers_configuration_layout(context, layout):
         col = row.column(align=True)
         col.label(text="Modify")
         col.separator(factor=0.3)
-        for name, icon, _ in modifier_categories.MESH_MODIFY_NAMES_ICONS_TYPES:
+        for name, icon, _ in modifier_categories.ALL_MODIFY_NAMES_ICONS_TYPES:
             col.operator("ui.ml_favourite_modifier_toggle", text=name, icon=icon,
                          depress=name in favourite_mods).modifier = name
 
         col = row.column(align=True)
         col.label(text="Generate")
         col.separator(factor=0.3)
-        for name, icon, _ in modifier_categories.MESH_GENERATE_NAMES_ICONS_TYPES:
+        for name, icon, _ in modifier_categories.ALL_GENERATE_NAMES_ICONS_TYPES:
             col.operator("ui.ml_favourite_modifier_toggle", text=name, icon=icon,
                          depress=name in favourite_mods).modifier = name
 
         col = row.column(align=True)
         col.label(text="Deform")
         col.separator(factor=0.3)
-        for name, icon, _ in modifier_categories.MESH_DEFORM_NAMES_ICONS_TYPES:
+        for name, icon, _ in modifier_categories.ALL_DEFORM_NAMES_ICONS_TYPES:
             col.operator("ui.ml_favourite_modifier_toggle", text=name, icon=icon,
                          depress=name in favourite_mods).modifier = name
 
         col = row.column(align=True)
         col.label(text="Simulate")
         col.separator(factor=0.3)
-        for name, icon, _ in modifier_categories.MESH_SIMULATE_NAMES_ICONS_TYPES:
+        for name, icon, _ in modifier_categories.ALL_SIMULATE_NAMES_ICONS_TYPES:
             col.operator("ui.ml_favourite_modifier_toggle", text=name, icon=icon,
                          depress=name in favourite_mods).modifier = name
         
@@ -88,7 +88,7 @@ def favourite_modifiers_configuration_layout(context, layout):
         icon = 'LAYER_ACTIVE' if i == active_slot_index else 'LAYER_USED'
         sub_row.operator("ui.ml_active_favourite_modifier_slot_set", icon=icon, text="",
                          depress=i == active_slot_index).index = i
-        sub_row.prop_search(prefs, attr, ml_props, "mesh_modifiers", text="", icon='MODIFIER')
+        sub_row.prop_search(prefs, attr, ml_props, "all_modifiers", text="", icon='MODIFIER')
 
     sub = row.column(align=True)
 
