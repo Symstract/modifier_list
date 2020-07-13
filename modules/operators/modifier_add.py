@@ -2,7 +2,7 @@ import bpy
 from bpy.props import *
 from bpy.types import Operator
 
-from ..modifier_categories import ALL_MODIFIERS, HAVE_GIZMO_PROPERTY
+from ..modifier_categories import ALL_MODIFIERS_NAMES_ICONS_TYPES, HAVE_GIZMO_PROPERTY
 from ..utils import get_ml_active_object, assign_gizmo_object_to_modifier
 
 
@@ -38,7 +38,7 @@ class OBJECT_OT_ml_modifier_add(Operator):
         try:
             bpy.ops.object.modifier_add(override, type=self.modifier_type)
         except TypeError:
-            for mod in ALL_MODIFIERS:
+            for mod in ALL_MODIFIERS_NAMES_ICONS_TYPES:
                 if mod[2] == self.modifier_type:
                     modifier_name = mod[0]
                     break

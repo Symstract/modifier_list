@@ -4,8 +4,8 @@ import bpy
 _mods_enum = bpy.types.Modifier.bl_rna.properties['type'].enum_items
 # There's' a modifier called "Surface" which needs to be filtered out
 # because it's not meant to be seen by users.
-ALL_MODIFIERS = [(mod.name, mod.icon, mod.identifier) for mod in _mods_enum
-                 if mod.name != "Surface"]
+ALL_MODIFIERS_NAMES_ICONS_TYPES = [(mod.name, mod.icon, mod.identifier) for mod in _mods_enum
+                                   if mod.name != "Surface"]
 
 # === Don't support show_in_editmode ===
 DONT_SUPPORT_SHOW_IN_EDITMODE = {
@@ -26,7 +26,7 @@ DONT_SUPPORT_SHOW_IN_EDITMODE = {
 }
 
 # === Support show_on_cage ===
-_deform_mods = {mod for _, _, mod in ALL_MODIFIERS[25:41]}
+_deform_mods = {mod for _, _, mod in ALL_MODIFIERS_NAMES_ICONS_TYPES[25:41]}
 _other_show_on_cage_mods = {
     'DATA_TRANSFER',
     'NORMAL_EDIT',
@@ -59,7 +59,7 @@ SUPPORT_USE_APPLY_ON_SPLINE = {
 }
 
 # === Support apply_as_shape_key ===
-_deform_mods = {mod for name, icon, mod in ALL_MODIFIERS[26:42]}
+_deform_mods = {mod for name, icon, mod in ALL_MODIFIERS_NAMES_ICONS_TYPES[26:42]}
 _other_shape_key_mods = {'CLOTH', 'SOFT_BODY', 'MESH_CACHE'}
 SUPPORT_APPLY_AS_SHAPE_KEY = _deform_mods.union(_other_shape_key_mods)
 
@@ -90,7 +90,7 @@ HAVE_GIZMO_PROPERTY = {
 }
 
 # === All modifier by categories ===
-_mods = ALL_MODIFIERS
+_mods = ALL_MODIFIERS_NAMES_ICONS_TYPES
 
 _modify_end = next(_mods.index(mod) + 1 for mod in _mods if mod[0] == "Vertex Weight Proximity")
 _gen_start = next(_mods.index(mod) for mod in _mods if mod[0] == "Array")

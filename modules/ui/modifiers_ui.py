@@ -611,7 +611,7 @@ def modifiers_ui(context, layout, num_of_rows=False, use_in_popup=False):
         return
 
     active_mod = ob.modifiers[active_mod_index]
-    all_mods = modifier_categories.ALL_MODIFIERS
+    all_mods = modifier_categories.ALL_MODIFIERS_NAMES_ICONS_TYPES
     active_mod_icon = next(icon for _, icon, mod in all_mods if mod == active_mod.type)
     is_active_mod_local = is_modifier_local(ob, active_mod)
 

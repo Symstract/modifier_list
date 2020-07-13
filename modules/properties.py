@@ -64,7 +64,7 @@ def set_all_modifier_collection_items():
     all_modifiers = bpy.context.window_manager.modifier_list.all_modifiers
 
     if not all_modifiers:
-        for name, _, mod in modifier_categories.ALL_MODIFIERS:
+        for name, _, mod in modifier_categories.ALL_MODIFIERS_NAMES_ICONS_TYPES:
             item = all_modifiers.add()
             item.name = name
             item.value = mod
