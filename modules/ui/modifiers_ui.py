@@ -336,6 +336,35 @@ class LATTICE_MT_ml_add_modifier_menu(Menu):
             col.operator("object.ml_modifier_add", text=name, icon=icon).modifier_type = mod
 
 
+class POINTCLOUD_MT_ml_add_modifier_menu(Menu):
+    bl_label = "Add Modifier"
+    bl_description = "Add a procedural operation/effect to the active object"
+
+    def draw(self, context):
+        layout = self.layout
+
+        row = layout.row()
+        row.alignment = 'LEFT'
+
+        col = row.column()
+        col.label(text="Modify")
+        col.separator(factor=0.3)
+        for name, icon, mod in modifier_categories.POINTCLOUD_MODIFY_NAMES_ICONS_TYPES:
+            col.operator("object.ml_modifier_add", text=name, icon=icon).modifier_type = mod
+
+        col = row.column()
+        col.label(text="Deform")
+        col.separator(factor=0.3)
+        for name, icon, mod in modifier_categories.POINTCLOUD_DEFORM_NAMES_ICONS_TYPES:
+            col.operator("object.ml_modifier_add", text=name, icon=icon).modifier_type = mod
+
+        col = row.column()
+        col.label(text="Simulate")
+        col.separator(factor=0.3)
+        for name, icon, mod in modifier_categories.POINTCLOUD_SIMULATE_NAMES_ICONS_TYPES:
+            col.operator("object.ml_modifier_add", text=name, icon=icon).modifier_type = mod
+
+
 class OBJECT_UL_ml_modifier_list(UIList):
 
     def draw_item(self, context, layout, data, item, icon, active_data, active_propname):
@@ -508,6 +537,10 @@ def modifiers_ui(context, layout, num_of_rows=False, use_in_popup=False):
         row.prop_search(ml_props, "modifier_to_add_from_search", ml_props, "lattice_modifiers",
                         text="", icon='MODIFIER')
         row.menu("LATTICE_MT_ml_add_modifier_menu")
+    elif ob.type == 'POINTCLOUD':
+        row.prop_search(ml_props, "modifier_to_add_from_search", ml_props, "pointcloud_modifiers",
+                        text="", icon='MODIFIER')
+        row.menu("POINTCLOUD_MT_ml_add_modifier_menu")
 
     # === Modifier list ===
     # Get the list index from

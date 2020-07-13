@@ -57,6 +57,19 @@ def on_pinned_object_change(self, context):
             pass
 
 
+def set_all_modifier_collection_items():
+    """This is to be called on loading a new file or reloading addons
+    to make modifiers available in search.
+    """
+    all_modifiers = bpy.context.window_manager.modifier_list.all_modifiers
+
+    if not all_modifiers:
+        for name, _, mod in modifier_categories.ALL_MODIFIERS:
+            item = all_modifiers.add()
+            item.name = name
+            item.value = mod
+
+
 def set_mesh_modifier_collection_items():
     """This is to be called on loading a new file or reloading addons
     to make modifiers available in search.
@@ -64,7 +77,7 @@ def set_mesh_modifier_collection_items():
     mesh_modifiers = bpy.context.window_manager.modifier_list.mesh_modifiers
 
     if not mesh_modifiers:
-        for name, _, mod in modifier_categories.ALL_MODIFIERS:
+        for name, _, mod in modifier_categories.MESH_ALL_NAMES_ICONS_TYPES:
             item = mesh_modifiers.add()
             item.name = name
             item.value = mod
@@ -96,11 +109,26 @@ def set_lattice_modifier_collection_items():
             item.value = mod
 
 
+def set_pointcloud_modifier_collection_items():
+    """This is to be called on loading a new file or reloading addons
+    to make modifiers available in search.
+    """
+    pointcloud_modifiers = bpy.context.window_manager.modifier_list.pointcloud_modifiers
+
+    if not pointcloud_modifiers:
+        for name, _, mod in modifier_categories.POINTCLOUD_ALL_NAMES_ICONS_TYPES:
+            item = pointcloud_modifiers.add()
+            item.name = name
+            item.value = mod
+
+
 @persistent
 def on_file_load(dummy):
+    set_all_modifier_collection_items()
     set_mesh_modifier_collection_items()
     set_curve_modifier_collection_items()
     set_lattice_modifier_collection_items()
+    set_pointcloud_modifier_collection_items()
 
 
 def add_modifier(self, context):
@@ -111,7 +139,7 @@ def add_modifier(self, context):
     if mod_name == "":
         return None
 
-    mod_type = ml_props.mesh_modifiers[mod_name].value
+    mod_type = ml_props.all_modifiers[mod_name].value
     bpy.ops.object.ml_modifier_add(modifier_type=mod_type)
 
     # Executing an operator via a function doesn't create an undo event,
@@ -121,6 +149,11 @@ def add_modifier(self, context):
 
 # Modifier collections
 # ======================================================================
+
+class AllModifiersCollection(PropertyGroup):
+    # Collection Property for search
+    value: StringProperty(name="Type")
+
 
 class MeshModifiersCollection(PropertyGroup):
     # Collection Property for search
@@ -133,6 +166,11 @@ class CurveModifiersCollection(PropertyGroup):
 
 
 class LatticeModifiersCollection(PropertyGroup):
+    # Collection Property for search
+    value: StringProperty(name="Type")
+
+
+class PointcloudModifiersCollection(PropertyGroup):
     # Collection Property for search
     value: StringProperty(name="Type")
 
@@ -167,9 +205,11 @@ class ML_WindowManagerProperties(PropertyGroup):
         name="Modifier to add",
         update=add_modifier,
         description="Search for a modifier and add it to the stack")
+    all_modifiers: CollectionProperty(type=AllModifiersCollection)
     mesh_modifiers: CollectionProperty(type=MeshModifiersCollection)
     curve_modifiers: CollectionProperty(type=CurveModifiersCollection)
     lattice_modifiers: CollectionProperty(type=LatticeModifiersCollection)
+    pointcloud_modifiers: CollectionProperty(type=PointcloudModifiersCollection)
     popup_tabs_items = [
         ("MODIFIERS", "Modifiers", "Modifiers", 'MODIFIER', 1),
         ("OBJECT_DATA", "Object Data", "Object Data", 'MESH_DATA', 2),
@@ -186,9 +226,11 @@ class ML_WindowManagerProperties(PropertyGroup):
 # ======================================================================
 
 classes = (
+    AllModifiersCollection,
     MeshModifiersCollection,
     CurveModifiersCollection,
     LatticeModifiersCollection,
+    PointcloudModifiersCollection,
     ML_SceneProperties,
     ML_PreferencesUIProperties,
     ML_WindowManagerProperties
@@ -209,9 +251,11 @@ def register():
     
     bpy.app.handlers.load_post.append(on_file_load)
 
+    set_all_modifier_collection_items()
     set_mesh_modifier_collection_items()
     set_curve_modifier_collection_items()
     set_lattice_modifier_collection_items()
+    set_pointcloud_modifier_collection_items()
 
 
 def unregister():

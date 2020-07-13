@@ -39,7 +39,7 @@ class VIEW3D_OT_ml_modifier_popup(Operator):
         if not ob:
             layout.label(text="No active object")
             return
-        elif ob.type not in {'MESH', 'CURVE', 'SURFACE', 'FONT', 'LATTICE'}:
+        elif ob.type not in {'MESH', 'CURVE', 'SURFACE', 'FONT', 'LATTICE', 'POINTCLOUD'}:
             layout.label(text="Wrong object type")
             return
         

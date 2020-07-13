@@ -20,6 +20,7 @@ DONT_SUPPORT_SHOW_IN_EDITMODE = {
     'EXPLODE',
     'FLUID_SIMULATION',
     'PARTICLE_SYSTEM',
+    'SIMULATION',
     'SMOKE',
     'SOFT_BODY'
 }
@@ -89,7 +90,11 @@ HAVE_GIZMO_PROPERTY = {
 }
 
 # === Mesh modifiers by categories ===
-_mods = ALL_MODIFIERS
+
+# Filter out Simulation modifier as it's only for point clouds.
+MESH_ALL_NAMES_ICONS_TYPES = [mod for mod in ALL_MODIFIERS if mod[0] != "Simulation"]
+
+_mods = MESH_ALL_NAMES_ICONS_TYPES
 
 _modify_end = next(_mods.index(mod) + 1 for mod in _mods if mod[0] == "Vertex Weight Proximity")
 _gen_start = next(_mods.index(mod) for mod in _mods if mod[0] == "Array")
@@ -106,10 +111,10 @@ _def_end = next(_mods.index(mod) + 1 for mod in _mods if mod[0] == "Wave")
 _sim_start = next(_mods.index(mod) for mod in _mods if mod[0] == "Cloth")
 _sim_end = next(_mods.index(mod) + 1 for mod in _mods if mod[0] == "Soft Body")
 
-MESH_MODIFY_NAMES_ICONS_TYPES = [mod for mod in ALL_MODIFIERS[0:_modify_end]]
-MESH_GENERATE_NAMES_ICONS_TYPES = [mod for mod in ALL_MODIFIERS[_gen_start:_gen_end]]
-MESH_DEFORM_NAMES_ICONS_TYPES = [mod for mod in ALL_MODIFIERS[_def_start:_def_end]]
-MESH_SIMULATE_NAMES_ICONS_TYPES = [mod for mod in ALL_MODIFIERS[_sim_start:_sim_end]]
+MESH_MODIFY_NAMES_ICONS_TYPES = [mod for mod in _mods[0:_modify_end]]
+MESH_GENERATE_NAMES_ICONS_TYPES = [mod for mod in _mods[_gen_start:_gen_end]]
+MESH_DEFORM_NAMES_ICONS_TYPES = [mod for mod in _mods[_def_start:_def_end]]
+MESH_SIMULATE_NAMES_ICONS_TYPES = [mod for mod in _mods[_sim_start:_sim_end]]
 
 # === Curve, surface and text modifiers by categories ===
 CURVE_MODIFY_NAMES_ICONS_TYPES = [
@@ -185,4 +190,18 @@ LATTICE_ALL_NAMES_ICONS_TYPES = (
     LATTICE_MODIFY_NAMES_ICONS_TYPES
     + LATTICE_DEFORM_NAMES_ICONS_TYPES
     + LATTICE_SIMULATE_NAMES_ICONS_TYPES
+)
+
+# === Point Cloud modifier by categories ===
+POINTCLOUD_MODIFY_NAMES_ICONS_TYPES = LATTICE_MODIFY_NAMES_ICONS_TYPES
+POINTCLOUD_DEFORM_NAMES_ICONS_TYPES = LATTICE_DEFORM_NAMES_ICONS_TYPES
+POINTCLOUD_SIMULATE_NAMES_ICONS_TYPES = (
+    ('Simulation', 'PHYSICS', 'SIMULATION'),
+    ('Soft Body', 'MOD_SOFT', 'SOFT_BODY')
+)
+
+POINTCLOUD_ALL_NAMES_ICONS_TYPES = (
+    POINTCLOUD_MODIFY_NAMES_ICONS_TYPES
+    + POINTCLOUD_DEFORM_NAMES_ICONS_TYPES
+    + POINTCLOUD_SIMULATE_NAMES_ICONS_TYPES
 )

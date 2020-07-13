@@ -17,7 +17,7 @@ class DATA_PT_modifiers(Panel):
     def poll(cls, context):
         ob = get_ml_active_object()
         if ob is not None:
-            return ob.type in {'MESH', 'CURVE', 'SURFACE', 'FONT', 'LATTICE'}
+            return ob.type in {'MESH', 'CURVE', 'SURFACE', 'FONT', 'LATTICE', 'POINTCLOUD'}
         return False
 
     def draw(self, context):

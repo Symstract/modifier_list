@@ -30,7 +30,7 @@ class VIEW3D_PT_ml_modifiers(Panel, BasePanel):
 
         ob = get_ml_active_object()
         if ob is not None:
-            return ob.type in {'MESH', 'CURVE', 'SURFACE', 'FONT', 'LATTICE'}
+            return ob.type in {'MESH', 'CURVE', 'SURFACE', 'FONT', 'LATTICE', 'POINTCLOUD'}
 
         return False
 
@@ -45,7 +45,7 @@ class VIEW3D_PT_ml_modifiers(Panel, BasePanel):
 
         if not ob:
             layout.label(text="No active object")
-        elif ob.type not in {'MESH', 'CURVE', 'SURFACE', 'FONT', 'LATTICE'}:
+        elif ob.type not in {'MESH', 'CURVE', 'SURFACE', 'FONT', 'LATTICE', 'POINTCLOUD'}:
             layout.label(text="Wrong object type")
         else:
             modifiers_ui(context, layout)
