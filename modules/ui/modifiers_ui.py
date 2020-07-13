@@ -160,13 +160,13 @@ def mesh_properties_context_change_button(modifier, layout, use_in_list):
     if modifier.type in have_phys_context_button:
         row = layout.row(align=True)
         row.operator("wm.properties_context_change", icon='PROPERTIES',
-                        emboss=False).context = "PHYSICS"
+                     emboss=False).context = "PHYSICS"
         return True
 
     if modifier.type == 'PARTICLE_SYSTEM':
         row = layout.row(align=True)
         row.operator("wm.properties_context_change", icon='PROPERTIES',
-                        emboss=False).context = "PARTICLES"
+                     emboss=False).context = "PARTICLES"
         return True
 
     return False
