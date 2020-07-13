@@ -1,3 +1,5 @@
+import bpy
+
 from .. import modifier_categories
 from ..utils import get_favourite_modifiers
 
@@ -62,7 +64,8 @@ def favourite_modifiers_configuration_layout(context, layout):
                          depress=name in favourite_mods).modifier = name
 
         col = row.column(align=True)
-        col.label(text="Simulate")
+        label = "Simulate" if bpy.app.version[1] < 90 else "Physics"
+        col.label(text=label)
         col.separator(factor=0.3)
         for name, icon, _ in modifier_categories.ALL_SIMULATE_NAMES_ICONS_TYPES:
             col.operator("ui.ml_favourite_modifier_toggle", text=name, icon=icon,
