@@ -33,7 +33,7 @@ from ..utils import (
 )
 
 
-BLENDER_VERSION_MINOR = bpy.app.version[1]
+BLENDER_VERSION_MAJOR_POINT_MINOR = float(bpy.app.version_string[0:4])
 
 
 # UI elements
@@ -269,7 +269,7 @@ class MESH_MT_ml_add_modifier_menu(Menu):
             col.operator("object.ml_modifier_add", text=name, icon=icon).modifier_type = mod
 
         col = row.column()
-        label = "Simulate" if BLENDER_VERSION_MINOR < 90 else "Physics"
+        label = "Simulate" if BLENDER_VERSION_MAJOR_POINT_MINOR < 2.90 else "Physics"
         col.label(text=label)
         col.separator(factor=0.3)
         for name, icon, mod in modifier_categories.MESH_SIMULATE_NAMES_ICONS_TYPES:
@@ -305,7 +305,7 @@ class CURVE_MT_ml_add_modifier_menu(Menu):
             col.operator("object.ml_modifier_add", text=name, icon=icon).modifier_type = mod
 
         col = row.column()
-        label = "Simulate" if BLENDER_VERSION_MINOR < 90 else "Physics"
+        label = "Simulate" if BLENDER_VERSION_MAJOR_POINT_MINOR < 2.90 else "Physics"
         col.label(text=label)
         col.separator(factor=0.3)
         for name, icon, mod in modifier_categories.CURVE_SIMULATE_NAMES_ICONS_TYPES:
@@ -335,7 +335,7 @@ class LATTICE_MT_ml_add_modifier_menu(Menu):
             col.operator("object.ml_modifier_add", text=name, icon=icon).modifier_type = mod
 
         col = row.column()
-        label = "Simulate" if BLENDER_VERSION_MINOR < 90 else "Physics"
+        label = "Simulate" if BLENDER_VERSION_MAJOR_POINT_MINOR < 2.90 else "Physics"
         col.label(text=label)
         col.separator(factor=0.3)
         for name, icon, mod in modifier_categories.LATTICE_SIMULATE_NAMES_ICONS_TYPES:
@@ -365,7 +365,7 @@ class POINTCLOUD_MT_ml_add_modifier_menu(Menu):
             col.operator("object.ml_modifier_add", text=name, icon=icon).modifier_type = mod
 
         col = row.column()
-        label = "Simulate" if BLENDER_VERSION_MINOR < 90 else "Physics"
+        label = "Simulate" if BLENDER_VERSION_MAJOR_POINT_MINOR < 2.90 else "Physics"
         col.label(text=label)
         col.separator(factor=0.3)
         for name, icon, mod in modifier_categories.POINTCLOUD_SIMULATE_NAMES_ICONS_TYPES:
