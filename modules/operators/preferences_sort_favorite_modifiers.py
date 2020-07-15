@@ -6,7 +6,7 @@ from ..utils import get_favourite_modifiers
 class WM_OT_ml_sort_favourite_modifiers(Operator):
     bl_idname = "wm.ml_sort_favourite_modifiers"
     bl_label = "Sort Favourite Modifiers"
-    bl_description = "Sort the favourite modifiers. Also removes empty slots between favourites_dict"
+    bl_description = "Sort the favourite modifiers. Also removes empty slots between favourites"
     bl_options = {'INTERNAL'}
 
     def execute(self, context):
