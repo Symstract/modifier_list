@@ -793,6 +793,20 @@ class DATA_PT_modifiers:
         col.label(text="Foam Data Layer Name:")
         col.prop(md, "foam_layer_name", text="")
 
+        split = layout.split()
+        split.active = md.use_foam
+
+        col = split.column()
+        col.prop(md, "use_spray", text="Generate Spray")
+        sub = col.row()
+        sub.active = md.use_spray
+        sub.prop(md, "invert_spray", text="Invert Spray")
+
+        col = split.column()
+        col.active = md.use_spray
+        col.label(text="Spray Data Layer Name:")
+        col.prop(md, "spray_layer_name", text="")
+
         layout.separator()
 
         if md.is_cached:
