@@ -77,6 +77,7 @@ class ApplyModifier:
         options={'HIDDEN', 'SKIP_SAVE'})
 
     apply_as: None
+    keep_modifier_when_applying_as_shapekey = False
 
     @classmethod
     def poll(cls, context):
@@ -142,8 +143,9 @@ class ApplyModifier:
 
         # Delete the gizmo object and the vertex group
         if self.shift or prefs.always_delete_gizmo:
-            self.delete_gizmo_and_vertex_group(context, ml_active_ob, mod_type, gizmo_ob,
-                                               vert_group)
+            if not self.keep_modifier_when_applying_as_shapekey:
+                self.delete_gizmo_and_vertex_group(context, ml_active_ob, mod_type, gizmo_ob,
+                                                   vert_group)
 
         return {'FINISHED'}
 
@@ -159,9 +161,10 @@ class ApplyModifier:
                 return {'CANCELLED'}
 
         if self.multi_user_data_apply_method == 'NONE' and ml_active_ob.data.users > 1:
-            bpy.ops.object.ml_modifier_apply_multi_user_data_dialog('INVOKE_DEFAULT',
-                                                                    modifier=self.modifier,
-                                                                    op_name=self.bl_idname)
+            if not self.keep_modifier_when_applying_as_shapekey:
+                bpy.ops.object.ml_modifier_apply_multi_user_data_dialog('INVOKE_DEFAULT',
+                                                                        modifier=self.modifier,
+                                                                        op_name=self.bl_idname)
             return {'CANCELLED'}
 
         return self.execute(context)
@@ -173,18 +176,34 @@ class ApplyModifier:
         mod_type = ml_active_object.modifiers[self.modifier].type
 
         try:
-            bpy.ops.object.modifier_apply(override, apply_as=self.apply_as, modifier=self.modifier)
+            # Applying a modifier as a shape key is done with a separate operator since 2.90
+            if float(bpy.app.version_string[0:4]) < 2.90:
+                bpy.ops.object.modifier_apply(override, apply_as=self.apply_as,
+                                              modifier=self.modifier)
+            else:
+                if self.apply_as == 'DATA':
+                    bpy.ops.object.modifier_apply(override, modifier=self.modifier)
+                elif self.apply_as == 'SHAPE':
+                        bpy.ops.object.modifier_apply_as_shapekey(
+                            override, modifier=self.modifier,
+                            keep_modifier=self.keep_modifier_when_applying_as_shapekey)
+            
             if ml_active_object.type in {'CURVE', 'SURFACE'}:
                 self.curve_modifier_apply_report(mod_type)
+            
             return True
+        
         except RuntimeError as rte:
             message = str(rte).replace("Error: ", "")
             message = message[:-1]
             self.report(type={'ERROR'}, message=message)
+            
             if self.multi_user_data_apply_method != 'NONE':
                 self.linked_object_data_changer.reassign_old_data_to_active_instance()
+            
             if is_init_mode_editmode:
                 bpy.ops.object.editmode_toggle()
+            
             return False
 
     def curve_modifier_apply_report(self, modifier_type):
@@ -240,3 +259,12 @@ class OBJECT_OT_ml_modifier_apply_as_shapekey(Operator, ApplyModifier):
                       "Hold shift to also delete its gizmo object (if it has one)")
 
     apply_as = 'SHAPE'
+
+
+class OBJECT_OT_ml_modifier_save_as_shapekey(Operator, ApplyModifier):
+    bl_idname = "object.ml_modifier_save_as_shapekey"
+    bl_label = "Save Modifier As Shape Key"
+    bl_description = "Apply modifier as a new shape key and keep it in the stack"
+
+    apply_as = 'SHAPE'
+    keep_modifier_when_applying_as_shapekey = True
