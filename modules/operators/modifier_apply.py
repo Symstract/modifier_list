@@ -160,11 +160,15 @@ class ApplyModifier:
                 self.report({'INFO'}, "Modifier is hidden in viewport, skipped apply")
                 return {'CANCELLED'}
 
+        # Applying as a shape key for multi-user data is possible since
+        # Blender 2.90.
+        if float(bpy.app.version_string[0:4]) >= 2.90 and self.apply_as == 'SHAPE':
+            return self.execute(context)
+        
         if self.multi_user_data_apply_method == 'NONE' and ml_active_ob.data.users > 1:
-            if not self.keep_modifier_when_applying_as_shapekey:
-                bpy.ops.object.ml_modifier_apply_multi_user_data_dialog('INVOKE_DEFAULT',
-                                                                        modifier=self.modifier,
-                                                                        op_name=self.bl_idname)
+            bpy.ops.object.ml_modifier_apply_multi_user_data_dialog('INVOKE_DEFAULT',
+                                                                    modifier=self.modifier,
+                                                                    op_name=self.bl_idname)
             return {'CANCELLED'}
 
         return self.execute(context)
