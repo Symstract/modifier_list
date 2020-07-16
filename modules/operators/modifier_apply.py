@@ -176,7 +176,8 @@ class ApplyModifier:
         mod_type = ml_active_object.modifiers[self.modifier].type
 
         try:
-            # Applying a modifier as a shape key is done with a separate operator since 2.90
+            # Applying a modifier as a shape key is done with a separate
+            # operator since 2.90.
             if float(bpy.app.version_string[0:4]) < 2.90:
                 bpy.ops.object.modifier_apply(override, apply_as=self.apply_as,
                                               modifier=self.modifier)
