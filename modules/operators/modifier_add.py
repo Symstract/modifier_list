@@ -50,8 +50,8 @@ class OBJECT_OT_ml_modifier_add(Operator):
             ob.data.use_auto_smooth = True
 
         # Set correct active_mod index
-        mods_len = len(ob.modifiers) - 1
-        ob.ml_modifier_active_index = mods_len
+        max_active_mod_index = len(ob.modifiers) - 1
+        ob.ml_modifier_active_index = max_active_mod_index
 
         # === Add a gizmo object ===
         mod = ob.modifiers[-1]
@@ -87,14 +87,14 @@ class OBJECT_OT_ml_modifier_add(Operator):
 
         if move:
             if float(bpy.app.version_string[0:4]) >= 2.90:
-                if init_active_mod_index != mods_len:
+                if init_active_mod_index != max_active_mod_index:
                     bpy.ops.object.modifier_move_to_index(modifier=mod.name,
                                                           index=init_active_mod_index + 1)
             else:
-                for _ in range(mods_len - 1 - init_active_mod_index):
+                for _ in range(max_active_mod_index - 1 - init_active_mod_index):
                     bpy.ops.object.modifier_move_up(override, modifier=mod.name)
 
-            if init_active_mod_index < mods_len - 1:
+            if init_active_mod_index < max_active_mod_index - 1:
                 ob.ml_modifier_active_index = init_active_mod_index + 1
 
         return {'FINISHED'}
