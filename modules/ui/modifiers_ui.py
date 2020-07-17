@@ -401,6 +401,12 @@ class OBJECT_PT_ml_modifier_extras(Panel):
 
     def draw(self, context):
         layout = self.layout
+        layout.ui_units_x = 12
+        
+        layout.operator("object.ml_sync_all_modifiers_between_instances")
+
+        layout.separator()
+
         layout.operator("wm.ml_favourite_modifiers_configuration_popup")
 
 

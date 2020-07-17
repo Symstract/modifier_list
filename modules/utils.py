@@ -5,6 +5,23 @@ from mathutils.geometry import distance_point_to_plane
 from .modifier_categories import ALL_MODIFIERS_NAMES_ICONS_TYPES, HAVE_GIZMO_PROPERTY
 
 
+# Generic utils
+# ======================================================================
+
+def get_editable_bpy_object_props(bpy_object, props_to_ignore={}):
+    props = [getattr(bpy_object, p.identifier) for p in bpy_object.bl_rna.properties
+             if not p.is_readonly and p.identifier not in props_to_ignore]
+    return [p[:] if type(p).__name__ == "bpy_prop_array" else p for p in props]
+
+
+def sync_bpy_object_props(source, destiny):
+    for p in source.bl_rna.properties:
+        if not p.is_readonly:
+            setattr(destiny, p.identifier, getattr(source, p.identifier))
+
+
+# ======================================================================
+
 def get_favourite_modifiers():
     prefs = bpy.context.preferences.addons["modifier_list"].preferences
     return {attr: getattr(prefs, attr) for attr in prefs.__annotations__
