@@ -7,8 +7,7 @@ from ..utils import get_editable_bpy_object_props, get_ml_active_object, sync_bp
 class OBJECT_OT_ml_sync_all_modifiers_between_instances(Operator):
     bl_idname = "object.ml_sync_all_modifiers_between_instances"
     bl_label = "Synchronize All Modifiers Between Instances"
-    bl_description = ("Synchronize all modifiers between instances "
-                      "based on the active object")
+    bl_description = "Synchronize all modifiers between instances based on the active object"
     bl_options = {'INTERNAL'}
 
     @classmethod
