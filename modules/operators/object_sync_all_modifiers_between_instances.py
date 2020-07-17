@@ -53,7 +53,8 @@ class OBJECT_OT_ml_sync_all_modifiers_between_instances(Operator):
                 needed_syncing = True
 
         if not needed_syncing:
-            self.report({'INFO'}, "Already in sync")
+            self.report({'INFO'}, "Modifiers already in sync")
             return {'CANCELLED'}
 
+        self.report({'INFO'}, "Synchronized modifiers")
         return {'FINISHED'}
