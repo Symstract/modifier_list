@@ -401,9 +401,11 @@ class OBJECT_PT_ml_modifier_extras(Panel):
 
     def draw(self, context):
         layout = self.layout
-        layout.ui_units_x = 12
+        layout.ui_units_x = 11
         
-        layout.operator("object.ml_sync_all_modifiers_between_instances")
+        layout.label(text="Syncronize Modifiers Between Instances:")
+        layout.operator("object.ml_sync_active_modifier_between_instances", text="Active Only")
+        layout.operator("object.ml_sync_all_modifiers_between_instances", text="All")
 
         layout.separator()
 
