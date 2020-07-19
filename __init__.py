@@ -26,7 +26,7 @@ bl_info = {
     "location": "Properties Editor & View3D > Sidebar & View3D > Alt + Spacebar",
     "description": "Alternative UI layout for modifiers with handy features "
                    "+ a Sidebar tab and a popup.",
-    "warning": "Development version",
+    "warning": "",
     "wiki_url": "https://github.com/Symstract/modifier_list",
     "category": "3D View"
 }
@@ -55,8 +55,8 @@ addon_keymaps = []
 def register():
     from .addon_registration import register_bl_classes, call_register
 
-    register_bl_classes("modules", modules_to_ignore=modules_to_ignore, 
-                        classes_to_ignore=classes_to_ignore, panel_order=panel_order, 
+    register_bl_classes("modules", modules_to_ignore=modules_to_ignore,
+                        classes_to_ignore=classes_to_ignore, panel_order=panel_order,
                         addon_name_for_counter=bl_info["name"])
 
     call_register("modules")
@@ -81,5 +81,3 @@ def unregister():
     call_unregister("modules")
 
     unregister_bl_classes(addon_name_for_counter=bl_info["name"])
-
-
