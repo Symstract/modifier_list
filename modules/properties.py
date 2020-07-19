@@ -34,21 +34,22 @@ def active_object_modifier_active_index_set(self, value):
 
 def pinned_object_ensure_users(scene):
     """Handler for making sure a pinned object which is only used by
-    ml_pinned_object, i.e. an object which was deleted while it was
+    pinned_object, i.e. an object which was deleted while it was
     pinned, really gets deleted + the property gets reset.
     """
-    if scene.ml_pinned_object:
-        if scene.ml_pinned_object.users == 1 and not scene.ml_pinned_object.use_fake_user:
-            bpy.data.objects.remove(scene.ml_pinned_object)
-            scene.ml_pinned_object = None
+    ml_props = scene.modifier_list
+    
+    if ml_props.pinned_object:
+        if ml_props.pinned_object.users == 1 and not ml_props.pinned_object.use_fake_user:
+            bpy.data.objects.remove(ml_props.pinned_object)
+            ml_props.pinned_object = None
 
 
 def on_pinned_object_change(self, context):
-    """Callback function for ml_pinned_object"""
-    scene = context.scene
+    """Callback function for pinned_object"""
     depsgraph_handlers = bpy.app.handlers.depsgraph_update_pre
 
-    if scene.ml_pinned_object:
+    if context.scene.modifier_list.pinned_object:
         depsgraph_handlers.append(pinned_object_ensure_users)
     else:
         try:
