@@ -421,6 +421,13 @@ class OBJECT_PT_ml_gizmo_object_settings(Panel):
         layout = self.layout
 
         ob = get_ml_active_object()
+
+        # Avoid an error when a lattice gizmo is seleted when using the
+        # popup because in that case the popover doesn't get closed when
+        # running an operator.
+        if not ob.modifiers:
+            return
+
         active_mod_index = ob.ml_modifier_active_index
         active_mod = ob.modifiers[active_mod_index]
         gizmo_ob = get_gizmo_object_from_modifier(active_mod)
