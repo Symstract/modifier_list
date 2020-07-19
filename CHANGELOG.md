@@ -1,7 +1,7 @@
 # Changelog
 
 
-## 1.6 - Unreleased
+## 1.6 - 20.7.2020
 
 ### New Features and changes
 
