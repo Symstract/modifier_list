@@ -1,6 +1,60 @@
 # Changelog
 
 
+## 1.6 - Unreleased
+
+### New Features and changes
+
+- **There's a new Modifier Extras popover** next to the batch operators. It currently contains only three operators. More on them below.
+
+- **Managing favourite modifiers has been greatly improved.** They can now be
+    - reordered manually
+    - sorted alphabetically
+    - selected from an enum menu which shows all modifiers (so you have a good overview which ones you have in already favourites and which one you don't)  and has a setting to sort them automatically when you add or remove one
+    - configured from a popup which can be accessed from the new Modifier Extras menu, so you don't need to open the preferences anymore for that.
+
+- **There's two new operators for synchronizing one or all modifiers on instances** in the new Modifier Extras menu. (Note: custom bevel profiles don't get synchronized currently.)
+
+- **Apply All Modifiers operator works now with instances** as well, based on the active object. It shows a popup like the Apply Modifier operator does.
+
+- **Apply All Modifiers and Remove All Modifiers operators now operate on the active object too**, not only on the selected objects. Previously it was annoying that if the active object was not selected, the operators wouldn't work for it.
+
+- **Gizmo object can now be added for curves (also for selected points), fonts, lattices and surfaces** as well, not just for meshes
+
+- **You can now apply all but the hidden modifiers** if you hold Shift when using the Apply All Modifiers operator. The behaviour is reversed when the Disallow Applying Hidden Modifiers setting is on.
+
+- **Sidebar panels' category can now be customized** in the preferences
+
+- **Moving a modifier up and down now uses two different operators**, previously it was done by a same operator. So if you had added shortcuts, they need to be re-added.
+
+- **Some UI polishing has been done**, mainly greying out buttons when they can't be used and adding "sub-panels" for preferences
+
+#### For Blender 2.90 only
+
+- **Bevel modifier layout has been improved.** The setting are now ordered based on which of them are used the most and which of them fit together.
+
+- **Point Clouds are now supported** (experimental feature)
+
+- **Added support for the new Save As Shape Key operator**
+
+- **Ocean modifier layout has been updated to include the new spray map settings**
+
+- **Simulate category has been renamed to Physics**
+
+- **Inserting a modifier after the active one might be faster now.** Probably no noticable difference in most cases in practice though.
+
+### Fixes
+
+- Fixed applying modifiers broken in Blender 2.90
+- Fixed error when the Keep Sidebar Visible setting was on and there was no active object
+- Fixed error when deleting a gizmo using the popup
+- Fixed error in the console when selecting a lattice gizmo using the popup
+- Fixed curve modifiers shown in lattice modifier search
+- Fixed the properties context change button missing for Fluid modifier in Blender 2.82 and later
+- Fixed Copy button showing for Fluid modifier in Blender 2.82 and later
+- Fixed the properties context change button missing for Soft Body modifier for other than meshes 
+
+
 ## 1.5.6 - 26.6.2020
 
 Updates for latest 2.90:
