@@ -98,12 +98,12 @@ class OBJECT_OT_ml_lattice_toggle_editmode(Operator):
 
         if not is_lattice_edit_mode_on:
             init_mode = context.mode
-            is_init_ob_pinned = bool(ml_props.ml_pinned_object)
+            is_init_ob_pinned = bool(ml_props.pinned_object)
             init_act_ob_name = ob.name
 
             ml_active_ob = get_ml_active_object()
             
-            ml_props.ml_pinned_object = ml_active_ob
+            ml_props.pinned_object = ml_active_ob
             
             active_mod_index = ml_active_ob.ml_modifier_active_index
             active_mod = ml_active_ob.modifiers[active_mod_index]
@@ -147,7 +147,7 @@ class OBJECT_OT_ml_lattice_toggle_editmode(Operator):
                     context.view_layer.objects.active = init_act_ob
                     bpy.ops.object.mode_set(mode='EDIT')
 
-                ml_props.ml_pinned_object = None
+                ml_props.pinned_object = None
 
         return {'FINISHED'}
 
