@@ -250,7 +250,7 @@ class Preferences(AddonPreferences):
         layout.separator()
 
         # === Enable/disable popup and sidebar
-        row = layout.row()
+        # row = layout.row()
 
         # Disabled for now because of a bug in 2.8.
         # https://developer.blender.org/T60766
@@ -261,17 +261,16 @@ class Preferences(AddonPreferences):
         # kmi = km.keymap_items["view3d.modifier_popup"]
         # kmi.active = self.use_popup
 
-        row.prop(self, "use_sidebar")
-        row.prop(self, "use_properties_editor")
-
-        layout.separator()
-
-        layout.prop(self, "keep_sidebar_visible")
-
-        split = layout.split()
-        split.label(text="Sidebar Category")
-        row = split.row()
-        row.prop(self, "sidebar_category", text="")
+        layout.prop(self, "use_properties_editor")
+        layout.prop(self, "use_sidebar")
+        
+        if self.use_sidebar:
+            layout.separator()
+            
+            layout.prop(self, "keep_sidebar_visible")
+            split = layout.split()
+            split.label(text="Sidebar Category")
+            split.row().prop(self, "sidebar_category", text="")
 
         layout.separator()
 
