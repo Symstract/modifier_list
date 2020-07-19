@@ -425,6 +425,13 @@ class OBJECT_PT_ml_gizmo_object_settings(Panel):
         active_mod = ob.modifiers[active_mod_index]
         gizmo_ob = get_gizmo_object_from_modifier(active_mod)
 
+        # Avoid an error when the gizmo is deleted when using the popup
+        # because in that case the popover doesn't get closed when
+        # running an operator.
+        if not gizmo_ob:
+            layout.label(text="Deleted gizmo")
+            return
+
         layout.prop(gizmo_ob, "name", text="")
 
         if gizmo_ob.type == 'EMPTY':
