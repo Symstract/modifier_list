@@ -151,10 +151,13 @@ class ApplyModifier:
 
     def invoke(self, context, event):
         self.shift = event.shift
-        prefs = bpy.context.preferences.addons["modifier_list"].preferences
         ml_active_ob = get_ml_active_object()
+        prefs = bpy.context.preferences.addons["modifier_list"].preferences
+        disallow_applying_hidden_modifiers = (
+            not prefs.disallow_applying_hidden_modifiers if event.alt
+            else prefs.disallow_applying_hidden_modifiers)
 
-        if prefs.disallow_applying_hidden_modifiers:
+        if disallow_applying_hidden_modifiers:
             mod = ml_active_ob.modifiers[self.modifier]
             if not mod.show_viewport:
                 self.report({'INFO'}, "Modifier is hidden in viewport, skipped apply")
