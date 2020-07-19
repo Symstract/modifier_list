@@ -270,7 +270,7 @@ class Preferences(AddonPreferences):
             layout.prop(self, "keep_sidebar_visible")
             split = layout.split()
             split.label(text="Sidebar Category")
-            split.row().prop(self, "sidebar_category", text="")
+            split.prop(self, "sidebar_category", text="")
 
         layout.separator()
 
@@ -281,8 +281,7 @@ class Preferences(AddonPreferences):
         if prefs_ui_props.favourite_modifiers_expand:
             split = box.split()
             split.label(text="Favourites Per Row")
-            row = split.row()
-            row.prop(self, "favourites_per_row", expand=True)
+            split.row().prop(self, "favourites_per_row", expand=True)
 
             box.separator()
 
@@ -301,8 +300,7 @@ class Preferences(AddonPreferences):
 
             split = box.split()
             split.label(text="Icon Color")
-            row = split.row()
-            row.prop(self, "icon_color", expand=True)
+            split.row().prop(self, "icon_color", expand=True)
 
             box.prop(self, "reverse_list")
             box.prop(self, "hide_general_settings_region")
@@ -310,8 +308,7 @@ class Preferences(AddonPreferences):
 
             split = box.split()
             split.label(text="Show Info Messages For")
-            row = split.row()
-            row.prop(self, "batch_ops_reports", expand=True)
+            split.row().prop(self, "batch_ops_reports", expand=True)
 
         # === Popup settings ===
         box = box_with_header(layout, "Popup", prefs_ui_props, "popup_expand")
