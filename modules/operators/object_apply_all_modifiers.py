@@ -191,7 +191,7 @@ class OBJECT_OT_ml_apply_all_modifiers(Operator):
                 # Only try to apply local modifiers
                 if not ob.override_library or mod.is_property_overridable_library("name"):
                     try:
-                        bpy.ops.object.modifier_apply(override, apply_as='DATA', modifier=mod.name)
+                        bpy.ops.object.modifier_apply(override, modifier=mod.name)
                     except:
                         if ob.name not in self.ojects_with_modifiers_failed_to_apply:
                             self.ojects_with_modifiers_failed_to_apply.append(ob.name)
