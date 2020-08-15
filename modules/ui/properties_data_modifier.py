@@ -707,9 +707,10 @@ class DATA_PT_modifiers:
         col.prop(md, "uv_smooth", text="")
         col.prop(md, "show_only_control_edges")
 
-        row = col.row()
-        row.enabled = not have_displacement
-        row.prop(md, "use_creases")
+        sub = col.column()
+        sub.enabled = not have_displacement
+        sub.prop(md, "use_creases")
+        sub.prop(md, "use_custom_normals")
 
         layout.separator()
 
@@ -1160,6 +1161,7 @@ class DATA_PT_modifiers:
 
         col.prop(md, "show_only_control_edges")
         col.prop(md, "use_creases")
+        col.prop(md, "use_custom_normals")
 
         if show_adaptive_options and ob.cycles.use_adaptive_subdivision:
             col = layout.column(align=True)
