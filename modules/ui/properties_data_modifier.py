@@ -31,6 +31,9 @@ import bpy
 from bpy.app.translations import pgettext_iface as iface_
 
 
+BLENDER_VERSION_MAJOR_POINT_MINOR = float(bpy.app.version_string[0:4])
+
+
 class DATA_PT_modifiers:
 
     def __init__(self, context):
@@ -747,6 +750,9 @@ class DATA_PT_modifiers:
         col.prop(md, "random_seed")
 
         col = split.column()
+        # 2.91 ADDITION
+        if BLENDER_VERSION_MAJOR_POINT_MINOR >= 2.91:
+            col.prop(md, "viewport_resolution")
         col.prop(md, "resolution")
         col.prop(md, "size")
         col.prop(md, "spatial_size")
