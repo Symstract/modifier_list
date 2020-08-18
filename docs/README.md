@@ -16,6 +16,8 @@
 
 ![](popup.png)
 
+#### *Warning: Since Blender 2.90, every time a modifier gets a new feature I need to manually update the layout and I may not always do that immediately. So there may be a delay.*
+
 ## Features
 
 - **Modifier list**
