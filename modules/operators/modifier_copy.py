@@ -16,6 +16,10 @@ class OBJECT_OT_ml_modifier_copy(Operator):
     @classmethod
     def poll(cls, ontext):
         ob = get_ml_active_object()
+
+        if float(bpy.app.version_string[0:4]) >= 2.90 and ob.override_library:
+            return True
+
         mod = ob.modifiers[ob.ml_modifier_active_index]
         return is_modifier_local(ob, mod)
 
