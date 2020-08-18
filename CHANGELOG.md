@@ -1,6 +1,30 @@
 # Changelog
 
 
+## 1.6.1 - 18.8.2020
+
+Updates for Blender 2.9x.
+
+### 2.90:
+
+Modifiers: option to preserve custom normals for subsurf & multires
+https://developer.blender.org/rB5c28955d3a018adf9986cc601837cde9fc011496
+
+LibOverride and modifiers: Add copying of linked modifiers
+https://developer.blender.org/rBcfbea0e
+
+### 2.91:
+
+Ocean Modifier: Add viewport resolution
+https://developer.blender.org/rBa44299c
+
+Cycles: add support for rendering deformation motion blur from Alembic caches.
+https://developer.blender.org/rBSb5dcf746369e51c08285292cd78f621999dd09e9
+
+Multires: Base Mesh Sculpting
+https://developer.blender.org/rB976f0113e008b4ff2d96760b0e83d5466dda8c54
+
+
 ## 1.6 - 20.7.2020
 
 ### New Features and changes
