@@ -693,6 +693,12 @@ class DATA_PT_modifiers:
         row = col.row()
         row.enabled = not have_displacement
         row.prop(md, "quality")
+        
+        # 2.91 ADDITION
+        if BLENDER_VERSION_MAJOR_POINT_MINOR >= 2.91:
+            row = col.row()
+            row.enabled = ob.mode == 'SCULPT'
+            row.prop(md, "use_sculpt_base_mesh")
 
         col = split.column()
 
