@@ -1669,7 +1669,10 @@ class DATA_PT_modifiers:
 
     def WELD(self, layout, ob, md):
         layout.prop(md, "merge_threshold", text="Distance")
-        layout.prop(md, "max_interactions")
+
+        if BLENDER_VERSION_MAJOR_POINT_MINOR < 2.91:
+            layout.prop(md, "max_interactions")
+            
         row = layout.row(align=True)
         row.prop_search(md, "vertex_group", ob, "vertex_groups")
         row.prop(md, "invert_vertex_group", text="", icon='ARROW_LEFTRIGHT')
