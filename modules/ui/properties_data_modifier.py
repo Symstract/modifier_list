@@ -180,7 +180,7 @@ class DATA_PT_modifiers:
         if md.profile_type == 'CUSTOM':
             layout.template_curveprofile(md, "custom_profile")
 
-    def BOOLEAN(self, layout, _ob, md):
+    def _boolean_2_90(self, layout, _ob, md):
         split = layout.split()
 
         col = split.column()
@@ -195,6 +195,47 @@ class DATA_PT_modifiers:
 
         if bpy.app.debug:
             layout.prop(md, "debug_options")
+
+    def _boolean_2_91(self, layout, _ob, md):
+        row = layout.row()
+        row.label(text="Operation:")
+        row.prop(md, "operation", expand=True)
+
+        split = layout.split()
+
+        col = split.column()
+        col.label(text="Operand Type:")
+        col.prop(md, "operand_type", text="")
+
+        col = split.column()
+        if md.operand_type == 'OBJECT':
+            col.label(text="Object:")
+            col.prop(md, "object", text="")
+        elif md.operand_type == 'COLLECTION':
+            col.label(text="Collection:")
+            col.prop(md, "collection", text="")
+
+        layout.separator()
+
+        row = layout.row()
+        row.label(text="Solver:")
+        row.prop(md, "solver", expand=True)
+
+        layout.separator()
+
+        if md.solver == 'FAST':
+            layout.prop(md, "double_threshold")
+        elif md.solver == 'EXACT':
+            layout.prop(md, "use_self")
+
+        if bpy.app.debug:
+            layout.prop(md, "debug_options")
+
+    def BOOLEAN(self, layout, _ob, md):
+        if BLENDER_VERSION_MAJOR_POINT_MINOR < 2.91:
+            self._boolean_2_90(layout, _ob, md)
+        else:
+            self._boolean_2_91(layout, _ob, md)
 
     def BUILD(self, layout, _ob, md):
         split = layout.split()

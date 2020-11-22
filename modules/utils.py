@@ -68,8 +68,10 @@ def is_modifier_disabled(mod):
     if mod.type == 'ARMATURE' and not mod.object:
         return True
 
-    elif mod.type == 'BOOLEAN' and not mod.object:
-        return True
+    elif mod.type == 'BOOLEAN':
+        if ((mod.operand_type == 'OBJECT' and not mod.object)
+                or (mod.operand_type == 'COLLECTION' and not mod.collection)):
+            return True
 
     elif mod.type == 'CAST':
         if not any((mod.use_x, mod.use_y, mod.use_z)) or mod.factor == 0:
