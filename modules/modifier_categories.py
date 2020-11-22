@@ -20,7 +20,6 @@ DONT_SUPPORT_SHOW_IN_EDITMODE = {
     'EXPLODE',
     'FLUID_SIMULATION',
     'PARTICLE_SYSTEM',
-    'SIMULATION',
     'SMOKE',
     'SOFT_BODY'
 }
@@ -106,12 +105,7 @@ _def_start = next(_mods.index(mod) for mod in _mods if mod[0] == "Armature")
 _def_end = next(_mods.index(mod) + 1 for mod in _mods if mod[0] == "Wave")
 _sim_start = next(_mods.index(mod) for mod in _mods if mod[0] == "Cloth")
 
-# Currently (13.7.2020) in Blender 2.90 the new Simulation modifier is
-# not in the correct place, it's after Soft Body.
-if bpy.app.version[1] < 90:
-    _sim_end = next(_mods.index(mod) + 1 for mod in _mods if mod[0] == "Soft Body")
-else:
-    _sim_end = next(_mods.index(mod) + 1 for mod in _mods if mod[0] == "Simulation")
+_sim_end = next(_mods.index(mod) + 1 for mod in _mods if mod[0] == "Soft Body")
 
 ALL_MODIFY_NAMES_ICONS_TYPES = [mod for mod in _mods[0:_modify_end]]
 ALL_GENERATE_NAMES_ICONS_TYPES = [mod for mod in _mods[_gen_start:_gen_end]]
@@ -122,8 +116,7 @@ ALL_SIMULATE_NAMES_ICONS_TYPES = [mod for mod in _mods[_sim_start:_sim_end]]
 MESH_MODIFY_NAMES_ICONS_TYPES = ALL_MODIFY_NAMES_ICONS_TYPES
 MESH_GENERATE_NAMES_ICONS_TYPES = ALL_GENERATE_NAMES_ICONS_TYPES
 MESH_DEFORM_NAMES_ICONS_TYPES = ALL_DEFORM_NAMES_ICONS_TYPES
-MESH_SIMULATE_NAMES_ICONS_TYPES = [mod for mod in ALL_SIMULATE_NAMES_ICONS_TYPES
-                                   if mod[0] != "Simulation"]
+MESH_SIMULATE_NAMES_ICONS_TYPES = ALL_SIMULATE_NAMES_ICONS_TYPES
 
 MESH_ALL_NAMES_ICONS_TYPES = (
     MESH_MODIFY_NAMES_ICONS_TYPES
@@ -212,8 +205,7 @@ LATTICE_ALL_NAMES_ICONS_TYPES = (
 POINTCLOUD_MODIFY_NAMES_ICONS_TYPES = LATTICE_MODIFY_NAMES_ICONS_TYPES
 POINTCLOUD_DEFORM_NAMES_ICONS_TYPES = LATTICE_DEFORM_NAMES_ICONS_TYPES
 POINTCLOUD_SIMULATE_NAMES_ICONS_TYPES = (
-    ('Simulation', 'PHYSICS', 'SIMULATION'),
-    ('Soft Body', 'MOD_SOFT', 'SOFT_BODY')
+    ('Soft Body', 'MOD_SOFT', 'SOFT_BODY'),
 )
 
 POINTCLOUD_ALL_NAMES_ICONS_TYPES = (
