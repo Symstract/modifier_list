@@ -1862,7 +1862,3 @@ class DATA_PT_modifiers:
         row.prop(md, "invert_vertex_group", text="", icon='ARROW_LEFTRIGHT')
         col.prop(md, "thresh", text="Threshold")
         col.prop(md, "face_influence")
-
-    def SIMULATION(self, layout, ob, md):
-        layout.prop(md, "simulation")
-        layout.prop(md, "data_path")
