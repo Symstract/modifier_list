@@ -125,6 +125,9 @@ def is_modifier_disabled(mod):
     elif mod.type == 'MESH_SEQUENCE_CACHE' and (not mod.cache_file or not mod.object_path):
         return True
 
+    elif mod.type == 'MESH_TO_VOLUME' and not mod.object:
+        return True
+
     elif mod.type == 'NORMAL_EDIT' and (mod.mode == 'DIRECTIONAL' and not mod.target):
         return True
 
