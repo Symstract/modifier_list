@@ -1904,3 +1904,24 @@ class DATA_PT_modifiers:
         row.prop(md, "invert_vertex_group", text="", icon='ARROW_LEFTRIGHT')
         col.prop(md, "thresh", text="Threshold")
         col.prop(md, "face_influence")
+
+    def MESH_TO_VOLUME(self, layout, ob, md):
+        layout.prop(md, "object")
+        layout.prop(md, "density")
+        layout.prop(md, "use_fill_volume")
+        layout.prop(md, "exterior_band_width")
+            
+        row = layout.row()
+        row.active = not md.use_fill_volume
+        row.prop(md, "interior_band_width")
+
+        layout.separator()
+
+        row = layout.row()
+        row.label(text="Resolution Mode:")
+        row.prop(md, "resolution_mode", text="")
+
+        if md.resolution_mode == 'VOXEL_AMOUNT':
+            layout.prop(md, "voxel_amount")
+        elif md.resolution_mode == 'VOXEL_SIZE':
+            layout.prop(md, "voxel_size")
