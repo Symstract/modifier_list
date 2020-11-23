@@ -5,6 +5,9 @@ from mathutils.geometry import distance_point_to_plane
 from .modifier_categories import ALL_MODIFIERS_NAMES_ICONS_TYPES, HAVE_GIZMO_PROPERTY
 
 
+BLENDER_VERSION_MAJOR_POINT_MINOR = float(bpy.app.version_string[0:4])
+
+
 # Generic utils
 # ======================================================================
 
@@ -69,9 +72,13 @@ def is_modifier_disabled(mod):
         return True
 
     elif mod.type == 'BOOLEAN':
-        if ((mod.operand_type == 'OBJECT' and not mod.object)
-                or (mod.operand_type == 'COLLECTION' and not mod.collection)):
-            return True
+        if BLENDER_VERSION_MAJOR_POINT_MINOR < 2.91:
+            if not mod.object:
+                return True
+        else:
+            if ((mod.operand_type == 'OBJECT' and not mod.object)
+                    or (mod.operand_type == 'COLLECTION' and not mod.collection)):
+                return True
 
     elif mod.type == 'CAST':
         if not any((mod.use_x, mod.use_y, mod.use_z)) or mod.factor == 0:
