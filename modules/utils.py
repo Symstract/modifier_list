@@ -26,7 +26,12 @@ def sync_bpy_object_props(source, destiny):
 # ======================================================================
 
 def object_type_has_modifiers(object):
-    return object.type in {'MESH', 'CURVE', 'SURFACE', 'FONT', 'LATTICE', 'POINTCLOUD'}
+    have_modifiers = {'MESH', 'CURVE', 'SURFACE', 'FONT', 'LATTICE', 'POINTCLOUD'}
+
+    if BLENDER_VERSION_MAJOR_POINT_MINOR >= 2.91:
+        have_modifiers.add("VOLUME")
+
+    return object.type in have_modifiers
 
 
 def get_favourite_modifiers():
