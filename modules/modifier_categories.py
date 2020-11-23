@@ -7,86 +7,6 @@ _mods_enum = bpy.types.Modifier.bl_rna.properties['type'].enum_items
 ALL_MODIFIERS_NAMES_ICONS_TYPES = [(mod.name, mod.icon, mod.identifier) for mod in _mods_enum
                                    if mod.name != "Surface"]
 
-# === Don't support show_in_editmode ===
-DONT_SUPPORT_SHOW_IN_EDITMODE = {
-    'MESH_SEQUENCE_CACHE',
-    'BOOLEAN',
-    'BUILD',
-    'DECIMATE',
-    'MULTIRES',
-    'CLOTH',
-    'COLLISION',
-    'DYNAMIC_PAINT',
-    'EXPLODE',
-    'FLUID_SIMULATION',
-    'PARTICLE_SYSTEM',
-    'SMOKE',
-    'SOFT_BODY'
-}
-
-# === Support show_on_cage ===
-_deform_mods = {mod for _, _, mod in ALL_MODIFIERS_NAMES_ICONS_TYPES[25:41]}
-_other_show_on_cage_mods = {
-    'DATA_TRANSFER',
-    'NORMAL_EDIT',
-    'WEIGHTED_NORMAL',
-    'UV_PROJECT',
-    'VERTEX_WEIGHT_EDIT',
-    'VERTEX_WEIGHT_MIX',
-    'VERTEX_WEIGHT_PROXIMITY',
-    'ARRAY',
-    'EDGE_SPLIT',
-    'MASK',
-    'MIRROR',
-    'SOLIDIFY',
-    'SUBSURF',
-    'TRIANGULATE'
-}
-SUPPORT_SHOW_ON_CAGE = _deform_mods.union(_other_show_on_cage_mods)
-
-# === Support use_apply_on_spline ===
-SUPPORT_USE_APPLY_ON_SPLINE = {
-    'ARMATURE',
-    'CAST',
-    'CURVE',
-    'LATTICE',
-    'SHRINKWRAP',
-    'SIMPLE_DEFORM',
-    'SMOOTH',
-    'WARP',
-    'WAVE',
-}
-
-# === Support apply_as_shape_key ===
-_deform_mods = {mod for name, icon, mod in ALL_MODIFIERS_NAMES_ICONS_TYPES[26:42]}
-_other_shape_key_mods = {'CLOTH', 'SOFT_BODY', 'MESH_CACHE'}
-SUPPORT_APPLY_AS_SHAPE_KEY = _deform_mods.union(_other_shape_key_mods)
-
-# === Don't support copy ===
-DONT_SUPPORT_COPY = {
-    'CLOTH',
-    'COLLISION',
-    'DYNAMIC_PAINT',
-    'FLUID',  # From 2.82 onwards
-    'FLUID_SIMULATION',  # Before 2.82
-    'PARTICLE_SYSTEM',
-    'SMOKE',  # Before 2.82
-    'SOFT_BODY'
-}
-
-# === Have the ability to use an object to define the center of the effect ===
-HAVE_GIZMO_PROPERTY = {
-    'NORMAL_EDIT': "target",
-    'VERTEX_WEIGHT_PROXIMITY': "target",
-    'ARRAY': "offset_object",
-    'MIRROR': "mirror_object",
-    'SCREW': "object",
-    'CAST': "object",
-    'HOOK': "object",
-    'LATTICE': "object",
-    'SIMPLE_DEFORM': "origin",
-    'WAVE': "start_position_object"
-}
 
 # === All modifier by categories ===
 _mods = ALL_MODIFIERS_NAMES_ICONS_TYPES
@@ -213,3 +133,85 @@ POINTCLOUD_ALL_NAMES_ICONS_TYPES = (
     + POINTCLOUD_DEFORM_NAMES_ICONS_TYPES
     + POINTCLOUD_SIMULATE_NAMES_ICONS_TYPES
 )
+
+
+# === Don't support show_in_editmode ===
+DONT_SUPPORT_SHOW_IN_EDITMODE = {
+    'MESH_SEQUENCE_CACHE',
+    'BOOLEAN',
+    'BUILD',
+    'DECIMATE',
+    'MULTIRES',
+    'CLOTH',
+    'COLLISION',
+    'DYNAMIC_PAINT',
+    'EXPLODE',
+    'FLUID_SIMULATION',
+    'PARTICLE_SYSTEM',
+    'SMOKE',
+    'SOFT_BODY'
+}
+
+# === Support show_on_cage ===
+_deform_mods = {mod for _, _, mod in ALL_DEFORM_NAMES_ICONS_TYPES}
+_other_show_on_cage_mods = {
+    'DATA_TRANSFER',
+    'NORMAL_EDIT',
+    'WEIGHTED_NORMAL',
+    'UV_PROJECT',
+    'VERTEX_WEIGHT_EDIT',
+    'VERTEX_WEIGHT_MIX',
+    'VERTEX_WEIGHT_PROXIMITY',
+    'ARRAY',
+    'EDGE_SPLIT',
+    'MASK',
+    'MIRROR',
+    'SOLIDIFY',
+    'SUBSURF',
+    'TRIANGULATE'
+}
+SUPPORT_SHOW_ON_CAGE = _deform_mods.union(_other_show_on_cage_mods)
+
+# === Support use_apply_on_spline ===
+SUPPORT_USE_APPLY_ON_SPLINE = {
+    'ARMATURE',
+    'CAST',
+    'CURVE',
+    'LATTICE',
+    'SHRINKWRAP',
+    'SIMPLE_DEFORM',
+    'SMOOTH',
+    'WARP',
+    'WAVE',
+}
+
+# === Support apply_as_shape_key ===
+_deform_mods = {mod for name, icon, mod in ALL_DEFORM_NAMES_ICONS_TYPES}
+_other_shape_key_mods = {'CLOTH', 'SOFT_BODY', 'MESH_CACHE'}
+SUPPORT_APPLY_AS_SHAPE_KEY = _deform_mods.union(_other_shape_key_mods)
+
+# === Don't support copy ===
+DONT_SUPPORT_COPY = {
+    'CLOTH',
+    'COLLISION',
+    'DYNAMIC_PAINT',
+    'FLUID',  # From 2.82 onwards
+    'FLUID_SIMULATION',  # Before 2.82
+    'PARTICLE_SYSTEM',
+    'SMOKE',  # Before 2.82
+    'SOFT_BODY'
+}
+
+# === Have the ability to use an object to define the center of the effect ===
+HAVE_GIZMO_PROPERTY = {
+    'NORMAL_EDIT': "target",
+    'VERTEX_WEIGHT_PROXIMITY': "target",
+    'ARRAY': "offset_object",
+    'MIRROR': "mirror_object",
+    'SCREW': "object",
+    'CAST': "object",
+    'HOOK': "object",
+    'LATTICE': "object",
+    'SIMPLE_DEFORM': "origin",
+    'WAVE': "start_position_object"
+}
