@@ -1907,6 +1907,9 @@ class DATA_PT_modifiers:
 
     def MESH_TO_VOLUME(self, layout, ob, md):
         layout.prop(md, "object")
+
+        layout.separator()
+
         layout.prop(md, "density")
         layout.prop(md, "use_fill_volume")
         layout.prop(md, "exterior_band_width")
