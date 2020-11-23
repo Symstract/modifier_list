@@ -5,7 +5,7 @@ from bpy.types import Operator
 from .modifiers_ui import modifiers_ui
 from .ui_common import pin_object_button
 from .vertex_groups_ui import vertex_groups_ui
-from ..utils import get_ml_active_object
+from ..utils import get_ml_active_object, object_type_has_modifiers
 
 
 class VIEW3D_OT_ml_modifier_popup(Operator):
@@ -39,7 +39,7 @@ class VIEW3D_OT_ml_modifier_popup(Operator):
         if not ob:
             layout.label(text="No active object")
             return
-        elif ob.type not in {'MESH', 'CURVE', 'SURFACE', 'FONT', 'LATTICE', 'POINTCLOUD'}:
+        elif not object_type_has_modifiers(ob):
             layout.label(text="Wrong object type")
             return
         

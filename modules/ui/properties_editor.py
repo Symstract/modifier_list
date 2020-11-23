@@ -3,7 +3,7 @@ from bpy.types import Panel
 from bl_ui.properties_data_modifier import DATA_PT_modifiers as original_DATA_PT_modifiers
 
 from .modifiers_ui import modifiers_ui
-from ..utils import get_ml_active_object
+from ..utils import get_ml_active_object, object_type_has_modifiers
 
 
 class DATA_PT_modifiers(Panel):
@@ -17,7 +17,7 @@ class DATA_PT_modifiers(Panel):
     def poll(cls, context):
         ob = get_ml_active_object()
         if ob is not None:
-            return ob.type in {'MESH', 'CURVE', 'SURFACE', 'FONT', 'LATTICE', 'POINTCLOUD'}
+            return object_type_has_modifiers(ob)
         return False
 
     def draw(self, context):

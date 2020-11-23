@@ -4,7 +4,7 @@ from bpy.types import Panel
 from .modifiers_ui import modifiers_ui
 from .ui_common import pin_object_button
 from .vertex_groups_ui import vertex_groups_ui
-from ..utils import get_ml_active_object
+from ..utils import get_ml_active_object, object_type_has_modifiers
 
 
 class BasePanel:
@@ -30,7 +30,7 @@ class VIEW3D_PT_ml_modifiers(Panel, BasePanel):
 
         ob = get_ml_active_object()
         if ob is not None:
-            return ob.type in {'MESH', 'CURVE', 'SURFACE', 'FONT', 'LATTICE', 'POINTCLOUD'}
+            return object_type_has_modifiers(ob)
 
         return False
 
@@ -45,7 +45,7 @@ class VIEW3D_PT_ml_modifiers(Panel, BasePanel):
 
         if not ob:
             layout.label(text="No active object")
-        elif ob.type not in {'MESH', 'CURVE', 'SURFACE', 'FONT', 'LATTICE', 'POINTCLOUD'}:
+        elif not object_type_has_modifiers(ob):
             layout.label(text="Wrong object type")
         else:
             modifiers_ui(context, layout)
