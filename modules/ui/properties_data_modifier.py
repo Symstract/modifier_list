@@ -197,9 +197,7 @@ class DATA_PT_modifiers:
             layout.prop(md, "debug_options")
 
     def _boolean_2_91(self, layout, _ob, md):
-        row = layout.row()
-        row.label(text="Operation:")
-        row.prop(md, "operation", expand=True)
+        layout.row().prop(md, "operation", expand=True)
 
         split = layout.split()
 
