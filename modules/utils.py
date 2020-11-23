@@ -165,6 +165,9 @@ def is_modifier_disabled(mod):
     elif mod.type == 'VERTEX_WEIGHT_PROXIMITY' and (not mod.vertex_group or not mod.target):
         return True
 
+    elif mod.type == 'VOLUME_DISPLACE' and not mod.texture:
+        return True
+
     return False
 
 

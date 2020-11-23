@@ -1925,3 +1925,25 @@ class DATA_PT_modifiers:
             layout.prop(md, "voxel_amount")
         elif md.resolution_mode == 'VOXEL_SIZE':
             layout.prop(md, "voxel_size")
+
+    def VOLUME_DISPLACE(self, layout, ob, md):
+        layout.label(text="Texture:")
+        layout.template_ID(md, "texture", new="texture.new")
+
+        layout.separator()
+
+        row = layout.row()
+        row.label(text="Texture mapping:")
+        row.prop(md, "texture_map_mode", text="")
+
+        if md.texture_map_mode == 'OBJECT':
+            row = layout.row()
+            row.label(text="Object:")
+            row.prop(md, "texture_map_object", text="")
+
+        layout.separator()
+
+        layout.prop(md, "strength")
+        layout.prop(md, "texture_sample_radius", text="Sample Radius")
+
+        layout.prop(md, "texture_mid_level", text="Mid Level")
