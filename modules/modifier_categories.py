@@ -121,17 +121,13 @@ LATTICE_ALL_NAMES_ICONS_TYPES = (
     + LATTICE_SIMULATE_NAMES_ICONS_TYPES
 )
 
-# === Point Cloud modifier by categories ===
-POINTCLOUD_MODIFY_NAMES_ICONS_TYPES = LATTICE_MODIFY_NAMES_ICONS_TYPES
-POINTCLOUD_DEFORM_NAMES_ICONS_TYPES = LATTICE_DEFORM_NAMES_ICONS_TYPES
-POINTCLOUD_SIMULATE_NAMES_ICONS_TYPES = (
-    ('Soft Body', 'MOD_SOFT', 'SOFT_BODY'),
-)
-
+# === Point Cloud modifiers by categories ===
+# Point Cloud object was formerly in master as an experimental feature.
+# Currently it exists in the geometry-nodes branch and is supposed to
+# come back to master in 2.92 (no longer experimental). Currently, in
+# the branch, it only has one modifier: Empty/Nodes modifier. This empty
+# tuple is a placeholder.
 POINTCLOUD_ALL_NAMES_ICONS_TYPES = (
-    POINTCLOUD_MODIFY_NAMES_ICONS_TYPES
-    + POINTCLOUD_DEFORM_NAMES_ICONS_TYPES
-    + POINTCLOUD_SIMULATE_NAMES_ICONS_TYPES
 )
 
 
