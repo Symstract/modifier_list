@@ -25,6 +25,10 @@ def sync_bpy_object_props(source, destiny):
 
 # ======================================================================
 
+def object_type_has_modifiers(object):
+    return object.type in {'MESH', 'CURVE', 'SURFACE', 'FONT', 'LATTICE', 'POINTCLOUD'}
+
+
 def get_favourite_modifiers():
     prefs = bpy.context.preferences.addons["modifier_list"].preferences
     return {attr: getattr(prefs, attr) for attr in prefs.__annotations__
