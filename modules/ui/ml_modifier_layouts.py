@@ -13,43 +13,101 @@ else:
 from..utils import get_gizmo_object_from_modifier
 
 
+BLENDER_VERSION_MAJOR_POINT_MINOR = float(bpy.app.version_string[0:4])
+
+
 def BOOLEAN(layout, ob, md):
     context = bpy.context
     mp = DATA_PT_modifiers(context)
     mp.BOOLEAN(layout, ob, md)
 
-    if not md.object:
-        return
+    if BLENDER_VERSION_MAJOR_POINT_MINOR < 2.91:
+        if not md.object:
+            return
+    else:
+        if ((md.operand_type == 'OBJECT' and not md.object)
+                or (md.operand_type == 'COLLECTION' and not md.collection)):
+            return
 
     layout.separator()
 
-    layout.label(text="Boolean Object:")
+    # Option to use a collection as the operand was added in
+    # Blender 2.91.
+    
+    if BLENDER_VERSION_MAJOR_POINT_MINOR < 2.91 or md.operand_type == 'OBJECT':
+        layout.label(text="Boolean Object:")
 
-    layout.separator()
+        layout.separator()
 
-    is_hidden = md.object.hide_get()
-    depress = is_hidden
-    icon = 'HIDE_ON' if is_hidden else 'HIDE_OFF'
-    layout.operator("object.ml_toggle_visibility_on_view_layer",
-                    text="Hide", icon=icon, depress=depress).object_name = md.object.name
+        is_hidden = md.object.hide_get()
+        depress = is_hidden
+        icon = 'HIDE_ON' if is_hidden else 'HIDE_OFF'
+        layout.operator("object.ml_toggle_visibility_on_view_layer",
+                        text="Hide", icon=icon, depress=depress).object_name = md.object.name
 
-    layout.separator()
+        layout.separator()
 
-    layout.prop(md.object, "display_type")
+        layout.prop(md.object, "display_type")
 
-    layout.separator()
+        layout.separator()
 
-    op = layout.operator("object.ml_smooth_shading_set", text="Shade Smooth")
-    op.object_name = md.object.name
-    op.shade_smooth = True
+        op = layout.operator("object.ml_smooth_shading_set", text="Shade Smooth")
+        op.object_name = md.object.name
+        op.shade_smooth = True
 
-    op = layout.operator("object.ml_smooth_shading_set", text="Shade Flat")
-    op.object_name = md.object.name
-    op.shade_smooth = False
+        op = layout.operator("object.ml_smooth_shading_set", text="Shade Flat")
+        op.object_name = md.object.name
+        op.shade_smooth = False
 
-    layout.separator()
+        layout.separator()
 
-    layout.operator("object.ml_select", text="Select").object_name = md.object.name
+        layout.operator("object.ml_select", text="Select").object_name = md.object.name
+    
+    elif md.operand_type == 'COLLECTION':
+        layout.label(text="Boolean Collection:")
+
+        layout.separator()
+        
+        layer_collection = context.view_layer.layer_collection.children[md.collection.name]
+        layout.prop(layer_collection, "hide_viewport", text="Hide")
+
+        layout.separator()
+
+        layout.label(text="Set Objects To Display As:")
+
+        row = layout.row(align=True)
+
+        op = row.operator("collection.objects_display_type_set", text="Textured")
+        op.collection_name = md.collection.name
+        op.display_type = 'TEXTURED'
+
+        op = row.operator("collection.objects_display_type_set", text="Solid")
+        op.collection_name = md.collection.name
+        op.display_type = 'SOLID'
+
+        op = row.operator("collection.objects_display_type_set", text="Wire")
+        op.collection_name = md.collection.name
+        op.display_type = 'WIRE'
+
+        op = row.operator("collection.objects_display_type_set", text="Bounds")
+        op.collection_name = md.collection.name
+        op.display_type = 'BOUNDS'
+
+        layout.separator()
+
+        op = layout.operator("collection.ml_objects_smooth_shading_set",
+                             text="Shade Objects Smooth")
+        op.collection_name = md.collection.name
+        op.shade_smooth = True
+
+        op = layout.operator("collection.ml_objects_smooth_shading_set", text="Shade Objects Flat")
+        op.collection_name = md.collection.name
+        op.shade_smooth = False
+
+        layout.separator()
+
+        op = layout.operator("collection.ml_select_objects", text="Select Objects")
+        op.collection_name = md.collection.name
 
 
 def LATTICE(layout, ob, md):
