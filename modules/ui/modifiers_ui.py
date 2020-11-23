@@ -353,23 +353,7 @@ class POINTCLOUD_MT_ml_add_modifier_menu(Menu):
         row.alignment = 'LEFT'
 
         col = row.column()
-        col.label(text="Modify")
-        col.separator(factor=0.3)
-        for name, icon, mod in modifier_categories.POINTCLOUD_MODIFY_NAMES_ICONS_TYPES:
-            col.operator("object.ml_modifier_add", text=name, icon=icon).modifier_type = mod
-
-        col = row.column()
-        col.label(text="Deform")
-        col.separator(factor=0.3)
-        for name, icon, mod in modifier_categories.POINTCLOUD_DEFORM_NAMES_ICONS_TYPES:
-            col.operator("object.ml_modifier_add", text=name, icon=icon).modifier_type = mod
-
-        col = row.column()
-        label = "Simulate" if BLENDER_VERSION_MAJOR_POINT_MINOR < 2.90 else "Physics"
-        col.label(text=label)
-        col.separator(factor=0.3)
-        for name, icon, mod in modifier_categories.POINTCLOUD_SIMULATE_NAMES_ICONS_TYPES:
-            col.operator("object.ml_modifier_add", text=name, icon=icon).modifier_type = mod
+        col.label(text="Point Cloud support is to come")
 
 
 class OBJECT_UL_ml_modifier_list(UIList):
