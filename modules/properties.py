@@ -123,6 +123,19 @@ def set_pointcloud_modifier_collection_items():
             item.value = mod
 
 
+def set_volume_modifier_collection_items():
+    """This is to be called on loading a new file or reloading addons
+    to make modifiers available in search.
+    """
+    volume_modifiers = bpy.context.window_manager.modifier_list.volume_modifiers
+
+    if not volume_modifiers:
+        for name, _, mod in modifier_categories.VOLUME_ALL_NAMES_ICONS_TYPES:
+            item = volume_modifiers.add()
+            item.name = name
+            item.value = mod
+
+
 @persistent
 def on_file_load(dummy):
     set_all_modifier_collection_items()
@@ -130,6 +143,7 @@ def on_file_load(dummy):
     set_curve_modifier_collection_items()
     set_lattice_modifier_collection_items()
     set_pointcloud_modifier_collection_items()
+    set_volume_modifier_collection_items()
 
 
 def add_modifier(self, context):
@@ -176,6 +190,11 @@ class PointcloudModifiersCollection(PropertyGroup):
     value: StringProperty(name="Type")
 
 
+class VolumeModifiersCollection(PropertyGroup):
+    # Collection Property for search
+    value: StringProperty(name="Type")
+
+
 # Property groups
 # ======================================================================
 
@@ -211,6 +230,7 @@ class ML_WindowManagerProperties(PropertyGroup):
     curve_modifiers: CollectionProperty(type=CurveModifiersCollection)
     lattice_modifiers: CollectionProperty(type=LatticeModifiersCollection)
     pointcloud_modifiers: CollectionProperty(type=PointcloudModifiersCollection)
+    volume_modifiers: CollectionProperty(type=VolumeModifiersCollection)
     popup_tabs_items = [
         ("MODIFIERS", "Modifiers", "Modifiers", 'MODIFIER', 1),
         ("OBJECT_DATA", "Object Data", "Object Data", 'MESH_DATA', 2),
@@ -232,6 +252,7 @@ classes = (
     CurveModifiersCollection,
     LatticeModifiersCollection,
     PointcloudModifiersCollection,
+    VolumeModifiersCollection,
     ML_SceneProperties,
     ML_PreferencesUIProperties,
     ML_WindowManagerProperties
@@ -257,6 +278,7 @@ def register():
     set_curve_modifier_collection_items()
     set_lattice_modifier_collection_items()
     set_pointcloud_modifier_collection_items()
+    set_volume_modifier_collection_items()
 
 
 def unregister():

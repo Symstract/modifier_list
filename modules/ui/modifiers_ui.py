@@ -356,6 +356,29 @@ class POINTCLOUD_MT_ml_add_modifier_menu(Menu):
         col.label(text="Point Cloud support is to come")
 
 
+class VOLUME_MT_ml_add_modifier_menu(Menu):
+    bl_label = "Add Modifier"
+    bl_description = "Add a procedural operation/effect to the active object"
+
+    def draw(self, context):
+        layout = self.layout
+
+        row = layout.row()
+        row.alignment = 'LEFT'
+
+        col = row.column()
+        col.label(text="Generate")
+        col.separator(factor=0.3)
+        for name, icon, mod in modifier_categories.VOLUME_GENERATE_NAMES_ICONS_TYPES:
+            col.operator("object.ml_modifier_add", text=name, icon=icon).modifier_type = mod
+
+        col = row.column()
+        col.label(text="Deform")
+        col.separator(factor=0.3)
+        for name, icon, mod in modifier_categories.VOLUME_DEFORM_NAMES_ICONS_TYPES:
+            col.operator("object.ml_modifier_add", text=name, icon=icon).modifier_type = mod
+
+
 class OBJECT_UL_ml_modifier_list(UIList):
 
     def draw_item(self, context, layout, data, item, icon, active_data, active_propname):
@@ -554,6 +577,10 @@ def modifiers_ui(context, layout, num_of_rows=False, use_in_popup=False):
         row.prop_search(ml_props, "modifier_to_add_from_search", ml_props, "pointcloud_modifiers",
                         text="", icon='MODIFIER')
         row.menu("POINTCLOUD_MT_ml_add_modifier_menu")
+    elif ob.type == 'VOLUME':
+        row.prop_search(ml_props, "modifier_to_add_from_search", ml_props, "volume_modifiers",
+                        text="", icon='MODIFIER')
+        row.menu("VOLUME_MT_ml_add_modifier_menu")
 
     # === Modifier list ===
     # Get the list index from
