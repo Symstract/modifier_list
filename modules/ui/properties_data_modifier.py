@@ -306,8 +306,9 @@ class DATA_PT_modifiers:
         if ob.type == 'MESH':
             box.row().prop(md, "read_data")
 
-        # 2.91 ADDITION
+        # 2.91 ADDITIONS
         if BLENDER_VERSION_MAJOR_POINT_MINOR >= 2.91:
+            box.prop(md, "use_vertex_interpolation")
             box.prop(md, "velocity_scale")
 
     def CAST(self, layout, ob, md):
