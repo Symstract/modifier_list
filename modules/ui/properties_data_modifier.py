@@ -756,7 +756,14 @@ class DATA_PT_modifiers:
         col.operator("object.multires_reshape", text="Reshape")
         col.operator("object.multires_base_apply", text="Apply Base")
         col.operator("object.multires_rebuild_subdiv", text="Rebuild Subdivisions")
+        col.label(text="UV Smooth:")
         col.prop(md, "uv_smooth", text="")
+
+        # 2.91 ADDITION
+        if BLENDER_VERSION_MAJOR_POINT_MINOR >= 2.91:
+            col.label(text="Boundary Smooth:")
+            col.prop(md, "boundary_smooth", text="")
+
         col.prop(md, "show_only_control_edges")
 
         sub = col.column()
