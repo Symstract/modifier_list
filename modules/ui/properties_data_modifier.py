@@ -1199,6 +1199,10 @@ class DATA_PT_modifiers:
 
             col.label(text="Viewport:")
             col.prop(md, "levels", text="Levels")
+
+            col.separator()
+
+            col.prop(md, "quality")
         else:
             col.label(text="Subdivisions:")
             sub = col.column(align=True)
