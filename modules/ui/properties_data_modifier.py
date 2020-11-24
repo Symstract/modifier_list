@@ -776,7 +776,11 @@ class DATA_PT_modifiers:
         col.operator("object.multires_unsubdivide", text="Unsubdivide")
         col.operator("object.multires_reshape", text="Reshape")
         col.operator("object.multires_base_apply", text="Apply Base")
-        col.operator("object.multires_rebuild_subdiv", text="Rebuild Subdivisions")
+
+        if not have_displacement:
+            col.separator()
+
+            col.operator("object.multires_rebuild_subdiv", text="Rebuild Subdivisions")
 
         col.separator()
 
