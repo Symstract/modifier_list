@@ -33,9 +33,13 @@ ALL_DEFORM_NAMES_ICONS_TYPES = [mod for mod in _mods[_def_start:_def_end]]
 ALL_SIMULATE_NAMES_ICONS_TYPES = [mod for mod in _mods[_sim_start:_sim_end]]
 
 # === Mesh modifiers by categories ===
+# Modifiers that don't apply to meshes need to be filtered out
+
 MESH_MODIFY_NAMES_ICONS_TYPES = ALL_MODIFY_NAMES_ICONS_TYPES
-MESH_GENERATE_NAMES_ICONS_TYPES = ALL_GENERATE_NAMES_ICONS_TYPES
-MESH_DEFORM_NAMES_ICONS_TYPES = ALL_DEFORM_NAMES_ICONS_TYPES
+MESH_GENERATE_NAMES_ICONS_TYPES = [mod for mod in ALL_GENERATE_NAMES_ICONS_TYPES
+                                   if mod[0] != "Mesh to Volume"]
+MESH_DEFORM_NAMES_ICONS_TYPES = [mod for mod in ALL_DEFORM_NAMES_ICONS_TYPES
+                                   if mod[0] != "Volume Displace"]
 MESH_SIMULATE_NAMES_ICONS_TYPES = ALL_SIMULATE_NAMES_ICONS_TYPES
 
 MESH_ALL_NAMES_ICONS_TYPES = (
