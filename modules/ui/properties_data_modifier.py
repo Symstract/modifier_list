@@ -1950,3 +1950,24 @@ class DATA_PT_modifiers:
         layout.prop(md, "texture_sample_radius", text="Sample Radius")
 
         layout.prop(md, "texture_mid_level", text="Mid Level")
+
+    def VOLUME_TO_MESH(self, layout, ob, md):
+        layout.prop(md, "object")
+        layout.prop(md, "grid_name")
+
+        layout.separator()
+
+        row = layout.row()
+        row.label(text="Resolution Mode:")
+        row.prop(md, "resolution_mode", text="")
+
+        if md.resolution_mode == 'VOXEL_AMOUNT':
+            layout.prop(md, "voxel_amount")
+        elif md.resolution_mode == 'VOXEL_SIZE':
+            layout.prop(md, "voxel_size")
+
+        layout.separator()
+
+        layout.prop(md, "threshold")
+        layout.prop(md, "adaptivity")
+        layout.prop(md, "use_smooth_shade")
