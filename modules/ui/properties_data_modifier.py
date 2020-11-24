@@ -726,6 +726,8 @@ class DATA_PT_modifiers:
             row.enabled = not have_displacement
             row.prop(md, "subdivision_type", expand=True)
 
+            layout.separator()
+
         split = layout.split()
         col = split.column()
         col.prop(md, "levels", text="Preview")
@@ -741,6 +743,22 @@ class DATA_PT_modifiers:
             row = col.row()
             row.enabled = ob.mode == 'SCULPT'
             row.prop(md, "use_sculpt_base_mesh")
+
+        col.label(text="UV Smooth:")
+        col.prop(md, "uv_smooth", text="")
+
+        # 2.91 ADDITION
+        if BLENDER_VERSION_MAJOR_POINT_MINOR >= 2.91:
+            col.label(text="Boundary Smooth:")
+            col.prop(md, "boundary_smooth", text="")
+
+        sub = col.column()
+        sub.enabled = not have_displacement
+        sub.prop(md, "show_only_control_edges")
+        sub.prop(md, "use_creases")
+        sub.prop(md, "use_custom_normals")
+
+        layout.separator()
 
         col = split.column()
 
@@ -759,33 +777,16 @@ class DATA_PT_modifiers:
         col.operator("object.multires_reshape", text="Reshape")
         col.operator("object.multires_base_apply", text="Apply Base")
         col.operator("object.multires_rebuild_subdiv", text="Rebuild Subdivisions")
-        col.label(text="UV Smooth:")
-        col.prop(md, "uv_smooth", text="")
 
-        # 2.91 ADDITION
-        if BLENDER_VERSION_MAJOR_POINT_MINOR >= 2.91:
-            col.label(text="Boundary Smooth:")
-            col.prop(md, "boundary_smooth", text="")
+        col.separator()
 
-        col.prop(md, "show_only_control_edges")
-
-        sub = col.column()
-        sub.enabled = not have_displacement
-        sub.prop(md, "use_creases")
-        sub.prop(md, "use_custom_normals")
-
-        layout.separator()
-
-        col = layout.column()
         row = col.row()
         if md.is_external:
             row.operator("object.multires_external_pack", text="Pack External")
-            row.label()
             row = col.row()
             row.prop(md, "filepath", text="")
         else:
             row.operator("object.multires_external_save", text="Save External...")
-            row.label()
 
     def OCEAN(self, layout, _ob, md):
         if not bpy.app.build_options.mod_oceansim:
