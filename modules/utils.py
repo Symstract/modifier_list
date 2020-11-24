@@ -168,6 +168,9 @@ def is_modifier_disabled(mod):
     elif mod.type == 'VOLUME_DISPLACE' and not mod.texture:
         return True
 
+    elif mod.type == 'VOLUME_TO_MESH' and not mod.object:
+        return True
+
     return False
 
 
