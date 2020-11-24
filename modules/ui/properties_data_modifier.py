@@ -1187,6 +1187,12 @@ class DATA_PT_modifiers:
             engine == 'CYCLES' and md == ob.modifiers[-1] and
             scene.cycles.feature_set == 'EXPERIMENTAL'
         )
+
+        # Adaptive subdivision works only with use_limit_surface.
+        # That setting was added in 2.91.
+        if BLENDER_VERSION_MAJOR_POINT_MINOR >= 2.91 and not md.use_limit_surface:
+            show_adaptive_options = False
+
         if show_adaptive_options:
             col.label(text="Render:")
             col.prop(ob.cycles, "use_adaptive_subdivision", text="Adaptive")
@@ -1212,13 +1218,23 @@ class DATA_PT_modifiers:
             col.prop(md, "quality")
 
         col = split.column()
-        col.label(text="Options:")
 
         sub = col.column()
         sub.active = (not show_adaptive_options) or (not ob.cycles.use_adaptive_subdivision)
+        sub.label(text="UV Smooth:")
         sub.prop(md, "uv_smooth", text="")
 
+        # 2.91 addition
+        if BLENDER_VERSION_MAJOR_POINT_MINOR >= 2.91:
+            col.label(text="Boundary Smooth:")
+            col.prop(md, "boundary_smooth", text="")
+
         col.prop(md, "show_only_control_edges")
+
+        # 2.91 addition
+        if BLENDER_VERSION_MAJOR_POINT_MINOR >= 2.91:
+            col.prop(md, "use_limit_surface")
+
         col.prop(md, "use_creases")
         col.prop(md, "use_custom_normals")
 
