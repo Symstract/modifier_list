@@ -1233,14 +1233,14 @@ class DATA_PT_modifiers:
         sub.label(text="UV Smooth:")
         sub.prop(md, "uv_smooth", text="")
 
-        # 2.91 addition
+        # 2.91 ADDITION
         if BLENDER_VERSION_MAJOR_POINT_MINOR >= 2.91:
             col.label(text="Boundary Smooth:")
             col.prop(md, "boundary_smooth", text="")
 
         col.prop(md, "show_only_control_edges")
 
-        # 2.91 addition
+        # 2.91 ADDITION
         if BLENDER_VERSION_MAJOR_POINT_MINOR >= 2.91:
             col.prop(md, "use_limit_surface")
 
@@ -1738,6 +1738,7 @@ class DATA_PT_modifiers:
     def WELD(self, layout, ob, md):
         layout.prop(md, "merge_threshold", text="Distance")
 
+        # 2.91 REMOVAL
         if BLENDER_VERSION_MAJOR_POINT_MINOR < 2.91:
             layout.prop(md, "max_interactions")
             
