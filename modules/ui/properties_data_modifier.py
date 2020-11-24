@@ -719,9 +719,11 @@ class DATA_PT_modifiers:
         # on every redraw.
         have_displacement = (md.total_levels != 0)
 
-        row = layout.row()
-        row.enabled = not have_displacement
-        row.prop(md, "subdivision_type", expand=True)
+        # 2.92 REMOVAL
+        if BLENDER_VERSION_MAJOR_POINT_MINOR < 2.92:
+            row = layout.row()
+            row.enabled = not have_displacement
+            row.prop(md, "subdivision_type", expand=True)
 
         split = layout.split()
         col = split.column()
