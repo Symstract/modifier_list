@@ -1,5 +1,61 @@
 # Changelog
 
+## 1.6.2 - 25.11.2020
+
+Updates for Blender 2.9x mainly.
+
+### 2.91:
+
+- **Fixed volume modifiers showing for meshes**
+
+- **Weld modifier: removed "Duplicate Limit" which no longer exists**
+
+- **Merge newboolean branch into master.**
+  https://developer.blender.org/rB9e09b5c418c0a436e3c84ccf38c065527988b0a0
+
+  - the extra settings (hiding, setting display type etc.) also have collection equivalents now
+
+- **Subdivision Surfaces: add boundary smooth option to modifiers**
+  https://developer.blender.org/rB6070f92ab94be7bd1d6729f178d71c71c4245fbb
+
+- **Subdivision Surfaces: add option disable using the limit surface**
+  https://developer.blender.org/rB53f20b940a1e520e131b8bb31cf0529ed4d30f9e
+  (only Subdivision Surface)
+
+- Fix T71981: Alembic override frame causes fluid sim mesh to have artifacts
+  **(Add an option to disable Alembic vertex interpolation.)**
+  https://developer.blender.org/D9041
+
+- **Volumes: new Mesh to Volume modifier**
+  https://developer.blender.org/D9032
+
+- **Volumes: new Volume Displace modifier**
+  https://developer.blender.org/rB1f50beb9f28edd2fe54d97647222ad6ee5808c1c
+
+- **Volumes: new Volume to Mesh modifier**
+  https://developer.blender.org/D9141
+
+### 2.92:
+
+- **Multires: Remove simple subdivision type**
+  https://developer.blender.org/rB17381c7b90eb3acde53eca013ae5a5a55699f17d
+
+### Other:
+
+- **Removed Simulation modifier as it's now longer in master.** It was available for the point cloud object which is not there anymore either. (Point cloud object will come back later, currently it's only in the geometry-nodes branch.)
+
+- **Removed modifiers from point cloud object.** It currently has only one modifier in the branch: Empty/Nodes modifier. Support for that will come later.
+
+- **Multires:**
+
+  - layout was improved by moving all options to the left column in order to make the columns more even
+  - "Rebuild Subdivisions" operator is now hidden when there's already subdivisions
+  - settings are now set inactive the same way as in the regular UI
+  - "Optimal Display" setting is now above the "UV Smooth" option
+
+- **Subdivision Surface:**
+  - "Quality" setting is now visible also when Cycles experimental features are enabled
+  - settings are now set inactive the same way as in the regular UI when using Cycles adaptive subdivision
 
 ## 1.6.1 - 18.8.2020
 
@@ -24,7 +80,6 @@ https://developer.blender.org/rBSb5dcf746369e51c08285292cd78f621999dd09e9
 Multires: Base Mesh Sculpting
 https://developer.blender.org/rB976f0113e008b4ff2d96760b0e83d5466dda8c54
 
-
 ## 1.6 - 20.7.2020
 
 ### New Features and changes
@@ -32,10 +87,11 @@ https://developer.blender.org/rB976f0113e008b4ff2d96760b0e83d5466dda8c54
 - **There's a new Modifier Extras popover** next to the batch operators. It currently contains only three operators. More on them below.
 
 - **Managing favourite modifiers has been greatly improved.** They can now be
-    - reordered manually
-    - sorted alphabetically
-    - selected from an enum menu which shows all modifiers (so you have a good overview which ones you have in already favourites and which one you don't)  and has a setting to sort them automatically when you add or remove one
-    - configured from a popup which can be accessed from the new Modifier Extras menu, so you don't need to open the preferences anymore for that.
+
+  - reordered manually
+  - sorted alphabetically
+  - selected from an enum menu which shows all modifiers (so you have a good overview which ones you have in already favourites and which one you don't) and has a setting to sort them automatically when you add or remove one
+  - configured from a popup which can be accessed from the new Modifier Extras menu, so you don't need to open the preferences anymore for that.
 
 - **There's two new operators for synchronizing one or all modifiers on instances** in the new Modifier Extras menu. (Note: custom bevel profiles don't get synchronized currently.)
 
@@ -76,17 +132,16 @@ https://developer.blender.org/rB976f0113e008b4ff2d96760b0e83d5466dda8c54
 - Fixed curve modifiers shown in lattice modifier search
 - Fixed the properties context change button missing for Fluid modifier in Blender 2.82 and later
 - Fixed Copy button showing for Fluid modifier in Blender 2.82 and later
-- Fixed the properties context change button missing for Soft Body modifier for other than meshes 
-
+- Fixed the properties context change button missing for Soft Body modifier for other than meshes
 
 ## 1.5.6 - 26.6.2020
 
 Updates for latest 2.90:
+
 - Fixed Bevel custom profile, the checkbox changed to an enum
-- Fixed Bevel Width property name for Absolute method 
+- Fixed Bevel Width property name for Absolute method
 
 I'll make some layout changes to Bevel to improve it in the future.
-
 
 ## 1.5.5 - 7.6.2020
 
@@ -95,25 +150,24 @@ I'll make some layout changes to Bevel to improve it in the future.
 
 **Note**: currently there's one **issue with the new modifier panels**: if the active object has modifiers and you then activate Modifier List, the regular panels don't disappear from the UI. It can also lead to a crash. So if you see the regular panels there, restart Blender. I've reported the bug and it will be fixed as soon as possible.
 
-
 ## 1.5.4 - 2.5.2020
 
 - Added support for linked objects and library overrides. Because of this, **the minimum Blender version required is now 2.81**.
 - All modifier layouts now update automatically (until they will move from Python to C in Blender, which is happening quite soon probably)
 - Fixed applying modifiers in edit mode not being possible in 2.83 and 2.90
 
-
 ## 1.5.3 - 21.4.2020
 
 - Fixed "Surface" modifier appearing in modifier search and menu. It's not meant to be seen by users.
 
-
 ## 1.5.2 - 13.4.2020
 
 **Blender 2.83 and earlier**
+
 - Multires: don't show the sculpt level setting. Sculpting on other levels than the highest has been disabled in vanilla Blender since 2.81... I will release another patch once support for it has been added.
 
 **Blender 2.83**
+
 - Updated layouts for the following modifiers so they are in synch with the latest Blender:
   - Corrective Smooth
   - Explode
@@ -123,11 +177,9 @@ I'll make some layout changes to Bevel to improve it in the future.
   - Ocean
   - Surface Deform
 
-
 ## 1.5.1 - 16.12.2019
 
 - Fix wrong modifier menu columns in 2.82 due to new Weld modifier
-
 
 ## 1.5 - 11.12.2019
 
@@ -139,17 +191,15 @@ I'll make some layout changes to Bevel to improve it in the future.
 - **Setting to keep Sidebar tab always visible**
 - **Setting to disallow applying hidden modifiers**, which affects both "Apply Modifier" and "Apply All Modifiers"
 - **"Apply on Spline" option for curve modifiers, which was missing, is now there**
-- **Deleting objects that are not actual gizmo objects (empties with "_Gizmo" in their name) is now prevented**
+- **Deleting objects that are not actual gizmo objects (empties with "\_Gizmo" in their name) is now prevented**
 - **"Move up" and "Move Down" operators have been combined**, so if someone had added shortcuts for them, they need to be added again
 - **Operators don't show unnecessary "Adjust Last Operation" panel any more**
 - **"Show In Edit Mode" is not shown for Boolean any more** (it doesn't work for it)
 - **Fix for ResourceWarning related to loading icons on register in console**
 
-
 ## 1.4.2 - 5.9.2019
 
 - Removed the offset from lattices. It was there so the lattice wouldn't overlap the mesh, but it didn't allow precise snapping. Now it does.
-
 
 ## 1.4.1 - 26.8.2019
 
@@ -158,7 +208,6 @@ I'll make some layout changes to Bevel to improve it in the future.
 - Fixed Hook Gizmo having parent transformation applied
 - Fixed error when removing a modifier and its gizmo from a pinned object if there's no active object
 - Some tooltip fixes
-
 
 ## 1.4 - 14.8.2019
 
@@ -175,8 +224,7 @@ I'll make some layout changes to Bevel to improve it in the future.
 - **The order of the list can now be reversed persistently** by enabling the "Reverse List" setting.
 - **Disabled modifiers (eg. Boolean with no object assigned) now have their icon shown in red inside the list as well as their name field inside the settings region.**
 - **Remesh Modifier in Pablo Dobarro's sculpting branch is now fully supported**
--  **You can now choose which batch operator's show info messages**
-
+- **You can now choose which batch operator's show info messages**
 
 ## 1.3.1 - 13.7.2019
 
@@ -191,7 +239,6 @@ I'll make some layout changes to Bevel to improve it in the future.
   - Skin
 - Added the missing button that changes Properties Editor's tab for simulation modifiers that use it (for Properties Editor)
 - Fixed the regular UI not being restored when disabling the addon
-
 
 ## 1.3 - 8.7.2019
 
@@ -225,7 +272,6 @@ I'll make some layout changes to Bevel to improve it in the future.
 
 - List ordering buttons behave better when the panel is narrow.
 
-
 ## 1.2.2 - 17.6.2019
 
 - Fixed Multiresolution modifier operators not working.
@@ -234,20 +280,19 @@ I'll make some layout changes to Bevel to improve it in the future.
 
 - Fixed the effect of a gizmo object not being taken into account when applying a modifier if the gizmo is deleted at the same time (by holding shift).
 
-
 ## 1.2 - 11.6.2019
 
 ### New Features and Changes
 
 - Modifier List is now also inside the properties editor, replacing the regular modifier UI! Grease Pencil still uses the regular UI for now. If you'd rather use the regular UI for all modifiers, there is a setting for it in the preferences.
 - Adding a control object - or as I decided to call them, a gizmo object - is now fast and effortless!
-   - There is now Add Gizmo button for adding a "gizmo object" to a modifier. It basically just adds an empty and assings it to the appropriate property of the modifier.
-   - All gizmos go to a gizmo objects collection.
-   - By default, the gizmo is placed at the origin of the active object. But if you are in edit mode and have a single vertex selected, the gizmo is placed at the vertex location.
-   - You can also hold shift when adding a modifier to add a gizmo at the same time, so you can save an extra click :)
-   - After adding a gizmo, the Add Gizmo button changes to a visibility toggle and a settings popover, in which you can change some gizmo setting, such as its location, rotation and parenting. You can also select or delete the gizmo from the popover. Note: selecting and deleting give some (harmless) errors/glitches when used from the modifier popup.
-   - There is a setting in the preferences for automatically parenting the gizmo to the active object on addition.
-   - You can hold shift when applying or removing a modifier to also delete its gizmo.
+  - There is now Add Gizmo button for adding a "gizmo object" to a modifier. It basically just adds an empty and assings it to the appropriate property of the modifier.
+  - All gizmos go to a gizmo objects collection.
+  - By default, the gizmo is placed at the origin of the active object. But if you are in edit mode and have a single vertex selected, the gizmo is placed at the vertex location.
+  - You can also hold shift when adding a modifier to add a gizmo at the same time, so you can save an extra click :)
+  - After adding a gizmo, the Add Gizmo button changes to a visibility toggle and a settings popover, in which you can change some gizmo setting, such as its location, rotation and parenting. You can also select or delete the gizmo from the popover. Note: selecting and deleting give some (harmless) errors/glitches when used from the modifier popup.
+  - There is a setting in the preferences for automatically parenting the gizmo to the active object on addition.
+  - You can hold shift when applying or removing a modifier to also delete its gizmo.
 - The popup now has header which you can use to move the popup.
 - You can now use a dialog type popup which doesn't close when you don't hover over it. The setting is in the preferences.
 - Auto Smooth is now enabled automatically when you add a Weighted Normal modifier.
@@ -256,18 +301,17 @@ I'll make some layout changes to Bevel to improve it in the future.
 - Updated the icon for Modifier Tools visibility toggle.
 
 ### Fixes
+
 - Bind buttons of Mesh Deform, Laplacian Deform and Surface Deform now work.
 - Various small fixes.
-
 
 ## 1.1.1 - 22.3.2019
 
 - Fixed ModuleNotFoundError on Linux and Mac
 
-
 ## 1.1 - 21.3.2019
 
-Only Blender 2.8 is supported from now on. Also, the name is changed from Modifier Popup Panel to Modifier List since this addon now also has a tab in  the sidebar. Because of that, when you install this new version, you need to remove the old version and add your favourite modifiers again.
+Only Blender 2.8 is supported from now on. Also, the name is changed from Modifier Popup Panel to Modifier List since this addon now also has a tab in the sidebar. Because of that, when you install this new version, you need to remove the old version and add your favourite modifiers again.
 
 By the way, the popup is now vertically a bit more compact. A bit too compact, I think, but that's unavoidable with the tabs.
 
@@ -276,7 +320,6 @@ By the way, the popup is now vertically a bit more compact. A bit too compact, I
 - This addon now has a tab in the sidebar (which can be disabled from addon preferences)
 - Popup now has tabs
 - Added a tab for vertex groups to the popup and a panel for them to the sidebar
-
 
 ## 1.0.1 - 28-2-2019
 
