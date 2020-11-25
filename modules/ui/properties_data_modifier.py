@@ -1224,15 +1224,15 @@ class DATA_PT_modifiers:
             col.prop(md, "levels", text="Levels")
 
             col.separator()
-
-            col.prop(md, "quality")
         else:
             col.label(text="Subdivisions:")
             sub = col.column(align=True)
             sub.prop(md, "render_levels", text="Render")
             sub.prop(md, "levels", text="Viewport")
 
-            col.prop(md, "quality")
+        sub = col.column()
+        sub.active = (not show_adaptive_options) or (not ob.cycles.use_adaptive_subdivision)
+        sub.prop(md, "quality")
 
         col = split.column()
 
@@ -1243,17 +1243,20 @@ class DATA_PT_modifiers:
 
         # 2.91 ADDITION
         if BLENDER_VERSION_MAJOR_POINT_MINOR >= 2.91:
-            col.label(text="Boundary Smooth:")
-            col.prop(md, "boundary_smooth", text="")
+            sub.label(text="Boundary Smooth:")
+            sub.prop(md, "boundary_smooth", text="")
 
         col.prop(md, "show_only_control_edges")
 
+        sub = col.column()
+        sub.active = (not show_adaptive_options) or (not ob.cycles.use_adaptive_subdivision)
+
         # 2.91 ADDITION
         if BLENDER_VERSION_MAJOR_POINT_MINOR >= 2.91:
-            col.prop(md, "use_limit_surface")
+            sub.prop(md, "use_limit_surface")
 
-        col.prop(md, "use_creases")
-        col.prop(md, "use_custom_normals")
+        sub.prop(md, "use_creases")
+        sub.prop(md, "use_custom_normals")
 
         if show_adaptive_options and ob.cycles.use_adaptive_subdivision:
             col = layout.column(align=True)
