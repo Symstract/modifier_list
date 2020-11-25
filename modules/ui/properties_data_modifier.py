@@ -744,17 +744,19 @@ class DATA_PT_modifiers:
             row.enabled = ob.mode == 'SCULPT'
             row.prop(md, "use_sculpt_base_mesh")
 
-        col.label(text="UV Smooth:")
-        col.prop(md, "uv_smooth", text="")
+        col.prop(md, "show_only_control_edges")
+
+        sub = col.column()
+        sub.active = not have_displacement
+
+        sub.label(text="UV Smooth:")
+        sub.prop(md, "uv_smooth", text="")
 
         # 2.91 ADDITION
         if BLENDER_VERSION_MAJOR_POINT_MINOR >= 2.91:
-            col.label(text="Boundary Smooth:")
-            col.prop(md, "boundary_smooth", text="")
+            sub.label(text="Boundary Smooth:")
+            sub.prop(md, "boundary_smooth", text="")
 
-        sub = col.column()
-        sub.enabled = not have_displacement
-        sub.prop(md, "show_only_control_edges")
         sub.prop(md, "use_creases")
         sub.prop(md, "use_custom_normals")
 
