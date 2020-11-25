@@ -1944,7 +1944,12 @@ class DATA_PT_modifiers:
         row.active = bool(md.vertex_group)
         row.prop(md, "invert_vertex_group", text="", icon='ARROW_LEFTRIGHT')
         col.prop(md, "thresh", text="Threshold")
-        col.prop(md, "face_influence")
+
+        # 2.91 CHANGE
+        if BLENDER_VERSION_MAJOR_POINT_MINOR < 2.91:
+            col.prop(md, "face_influence")
+        else:
+            col.prop(md, "use_face_influence")
 
     def MESH_TO_VOLUME(self, layout, ob, md):
         layout.prop(md, "object")
