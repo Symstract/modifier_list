@@ -8,6 +8,8 @@ Updates for Blender 2.9x mainly.
 
 - **Fixed volume modifiers showing for meshes**
 
+- **Weighted Normal: fixed "Face Influence" setting missing in Blender 2.91**
+
 - **Weld modifier: removed "Duplicate Limit" which no longer exists**
 
 - **Merge newboolean branch into master.**
