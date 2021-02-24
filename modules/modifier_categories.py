@@ -126,12 +126,12 @@ LATTICE_ALL_NAMES_ICONS_TYPES = (
 )
 
 # === Point Cloud modifiers by categories ===
-# Point Cloud object was formerly in master as an experimental feature.
-# Currently it exists in the geometry-nodes branch and is supposed to
-# come back to master in 2.92 (no longer experimental). Currently, in
-# the branch, it only has one modifier: Empty/Nodes modifier. This empty
-# tuple is a placeholder.
+POINTCLOUD_GENERATE_NAMES_ICONS_TYPES = (
+    ("Geometry Nodes", 'NODETREE', 'NODES'),
+)
+
 POINTCLOUD_ALL_NAMES_ICONS_TYPES = (
+    POINTCLOUD_GENERATE_NAMES_ICONS_TYPES
 )
 
 # === Volume modifiers by categories ===
