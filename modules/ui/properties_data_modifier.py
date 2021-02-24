@@ -2017,3 +2017,25 @@ class DATA_PT_modifiers:
         layout.prop(md, "threshold")
         layout.prop(md, "adaptivity")
         layout.prop(md, "use_smooth_shade")
+
+    def NODES(self, layout, ob, md):
+        layout.prop(md, "node_group")
+
+        valid_node_input_names = []
+        invalid_node_input_names = []
+
+        for node_input in md.node_group.inputs:
+            if node_input.type == 'GEOMETRY':
+                invalid_node_input_names.append(node_input.name)
+            else:
+                valid_node_input_names.append(node_input.name)
+
+        prop_ids = [prop_id for prop_id in md.keys() if prop_id.startswith("Input_")]
+
+        for prop_id, name in zip(prop_ids, valid_node_input_names):
+            layout.separator(factor=0.5)
+            layout.prop(md, f'["{prop_id}"]', text=name)
+
+        if len(invalid_node_input_names) > 1:
+            layout.separator()
+            layout.label(text="Node group can only have one geometry input", icon='ERROR')
