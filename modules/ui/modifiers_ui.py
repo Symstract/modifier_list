@@ -353,7 +353,10 @@ class POINTCLOUD_MT_ml_add_modifier_menu(Menu):
         row.alignment = 'LEFT'
 
         col = row.column()
-        col.label(text="Point Cloud support is to come")
+        col.label(text="Generate")
+        col.separator(factor=0.3)
+        for name, icon, mod in modifier_categories.POINTCLOUD_GENERATE_NAMES_ICONS_TYPES:
+            col.operator("object.ml_modifier_add", text=name, icon=icon).modifier_type = mod
 
 
 class VOLUME_MT_ml_add_modifier_menu(Menu):
