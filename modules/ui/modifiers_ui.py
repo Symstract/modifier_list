@@ -412,6 +412,17 @@ class OBJECT_PT_ml_modifier_extras(Panel):
     def draw(self, context):
         layout = self.layout
         layout.ui_units_x = 11
+
+        if BLENDER_VERSION_MAJOR_POINT_MINOR >= 2.92:
+            ob = get_ml_active_object()
+            if ob.modifiers:
+                active_mod = ob.modifiers[ob.ml_modifier_active_index]
+                layout.operator("object.modifier_copy_to_selected").modifier = active_mod.name
+            else:
+                row = layout.row()
+                row.enabled = False
+                row.operator("object.modifier_copy_to_selected")
+            layout.separator()
         
         layout.label(text="Syncronize Modifiers Between Instances:")
         layout.operator("object.ml_sync_active_modifier_between_instances", text="Active Only")
