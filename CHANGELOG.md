@@ -1,5 +1,27 @@
 # Changelog
 
+## 1.6.3 - 25.2.2021
+
+Updates for Blender 2.92 and 2.93
+
+- **Modifier: Add "Connected" mode to the weld modifier**
+  https://developer.blender.org/rB9b11a77
+
+- **Add Custom Falloff Curve to the Vertex Weight Proximity Modifier.**
+  https://developer.blender.org/rBe4204a3
+
+- **Add operator to copy a modifier to all selected objects**
+  https://developer.blender.org/rB6fbeb6e2e05408af448e9409f8e7e11470f82db6
+
+  - This can be found in the Modifier Extras popover
+
+- **Added Geometry Nodes support**
+
+  - Node editor context is set correctly
+  - The currently experimental Point Cloud object in 2.93 is also supported
+
+- **Added tooltip for Configure Favourite Modifiers**
+
 ## 1.6.2 - 25.11.2020
 
 Updates for Blender 2.9x mainly.
