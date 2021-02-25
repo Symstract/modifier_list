@@ -1747,6 +1747,10 @@ class DATA_PT_modifiers:
         col.prop(md, "material_offset", text="Material Offset")
 
     def WELD(self, layout, ob, md):
+        # 2.92 ADDITION
+        if BLENDER_VERSION_MAJOR_POINT_MINOR >= 2.92:
+            layout.prop(md, "mode")
+
         layout.prop(md, "merge_threshold", text="Distance")
 
         # 2.91 REMOVAL
