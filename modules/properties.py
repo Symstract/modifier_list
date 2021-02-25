@@ -32,6 +32,15 @@ def active_object_modifier_active_index_set(self, value):
         ob.ml_modifier_active_index = value
 
 
+def set_active_modifier(self, context):
+    """Sets the active modifier which is used for node editor context"""
+    ob = get_ml_active_object()
+    mods = ob.modifiers
+
+    if mods:
+        mods[ob.ml_modifier_active_index].is_active = True
+
+
 def pinned_object_ensure_users(scene):
     """Handler for making sure a pinned object which is only used by
     pinned_object, i.e. an object which was deleted while it was
@@ -264,7 +273,9 @@ def register():
     for cls in classes:
         bpy.utils.register_class(cls)
 
-    bpy.types.Object.ml_modifier_active_index = IntProperty(options={'LIBRARY_EDITABLE'})
+    bpy.types.Object.ml_modifier_active_index = IntProperty(
+        options={'LIBRARY_EDITABLE'},
+        update=set_active_modifier)
     
     wm = bpy.types.WindowManager
     wm.modifier_list = PointerProperty(type=ML_WindowManagerProperties)
