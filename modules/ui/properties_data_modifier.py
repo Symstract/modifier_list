@@ -1606,6 +1606,10 @@ class DATA_PT_modifiers:
         layout.separator()
         row = layout.row(align=True)
         row.prop(md, "falloff_type")
+
+        if md.falloff_type == 'CURVE':
+            layout.template_curve_mapping(md, "map_curve")
+
         row.prop(md, "invert_falloff", text="", icon='ARROW_LEFTRIGHT')
 
         row = layout.row(align=True)
