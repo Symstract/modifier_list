@@ -224,7 +224,10 @@ class DATA_PT_modifiers:
         if md.solver == 'FAST':
             layout.prop(md, "double_threshold")
         elif md.solver == 'EXACT':
-            layout.prop(md, "use_self")
+            row = layout.row()
+            row.prop(md, "use_self")
+            if BLENDER_VERSION_MAJOR_POINT_MINOR >= 2.93:
+                row.prop(md, "use_hole_tolerant")
 
         if bpy.app.debug:
             layout.prop(md, "debug_options")
