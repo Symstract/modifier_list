@@ -687,6 +687,11 @@ class DATA_PT_modifiers:
         if md.use_mirror_merge is True:
             col.prop(md, "merge_threshold")
 
+        if BLENDER_VERSION_MAJOR_POINT_MINOR >= 2.93:
+            row = layout.row()
+            row.active = any(md.use_bisect_axis)
+            row.prop(md, "bisect_threshold")
+
         layout.separator()
         col = layout.column()
 
