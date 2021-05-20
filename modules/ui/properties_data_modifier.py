@@ -1316,6 +1316,8 @@ class DATA_PT_modifiers:
             col.prop(proj, "object", text="")
 
         col = split.column()
+        col.active = any([p.object and p.object.type == 'CAMERA' for p in md.projectors])
+
         sub = col.column(align=True)
         sub.prop(md, "aspect_x", text="Aspect X")
         sub.prop(md, "aspect_y", text="Aspect Y")
