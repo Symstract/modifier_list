@@ -13,7 +13,7 @@ else:
 from..utils import get_gizmo_object_from_modifier
 
 
-BLENDER_VERSION_MAJOR_POINT_MINOR = float(bpy.app.version_string[0:4])
+BLENDER_VERSION_MAJOR_POINT_MINOR = float(bpy.app.version_string[0:4].strip("."))
 
 
 def BOOLEAN(layout, ob, md):
@@ -33,7 +33,7 @@ def BOOLEAN(layout, ob, md):
 
     # Option to use a collection as the operand was added in
     # Blender 2.91.
-    
+
     if BLENDER_VERSION_MAJOR_POINT_MINOR < 2.91 or md.operand_type == 'OBJECT':
         layout.label(text="Boolean Object:")
 
@@ -62,12 +62,12 @@ def BOOLEAN(layout, ob, md):
         layout.separator()
 
         layout.operator("object.ml_select", text="Select").object_name = md.object.name
-    
+
     elif md.operand_type == 'COLLECTION':
         layout.label(text="Boolean Collection:")
 
         layout.separator()
-        
+
         layer_collection = context.view_layer.layer_collection.children[md.collection.name]
         layout.prop(layer_collection, "hide_viewport", text="Hide")
 

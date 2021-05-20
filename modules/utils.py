@@ -5,7 +5,7 @@ from mathutils.geometry import distance_point_to_plane
 from .modifier_categories import ALL_MODIFIERS_NAMES_ICONS_TYPES, HAVE_GIZMO_PROPERTY
 
 
-BLENDER_VERSION_MAJOR_POINT_MINOR = float(bpy.app.version_string[0:4])
+BLENDER_VERSION_MAJOR_POINT_MINOR = float(bpy.app.version_string[0:4].strip("."))
 
 
 # Generic utils
@@ -200,7 +200,7 @@ def _create_vertex_group_from_vertices(object, vertex_indices, group_name):
 
 def _get_selected_points_from_curve(curve):
     sel_points = []
-    
+
     for spline in curve.splines:
         if spline.type == 'BEZIER':
             for p in spline.bezier_points:
@@ -211,7 +211,7 @@ def _get_selected_points_from_curve(curve):
                 if p.select:
                     sel_points.append(p)
                     print(p.co)
-    
+
     return sel_points
 
 
@@ -232,7 +232,7 @@ def _position_gizmo_object_at_object(gizmo_object, object):
             sel_points = _get_selected_points_from_curve(data)
         if sel_points:
             place_at_verts = True
-    
+
     if place_at_verts:
         sel_points_coords = [v.co for v in sel_points]
         if ob.type == 'CURVE':
