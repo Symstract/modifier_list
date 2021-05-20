@@ -50,7 +50,7 @@ class OBJECT_OT_ml_modifier_move_down(Operator):
         mods_max_index = len(ml_active_ob.modifiers) - 1
 
         if self.shift:
-            if float(bpy.app.version_string[0:4]) >= 2.90:
+            if float(bpy.app.version_string[0:4].strip(".")) >= 2.90:
                 bpy.ops.object.modifier_move_to_index(modifier=active_mod_name,
                                                       index=mods_max_index)
             else:

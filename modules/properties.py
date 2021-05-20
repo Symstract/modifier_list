@@ -7,7 +7,7 @@ from . import modifier_categories
 from .utils import get_ml_active_object
 
 
-BLENDER_VERSION_MAJOR_POINT_MINOR = float(bpy.app.version_string[0:4])
+BLENDER_VERSION_MAJOR_POINT_MINOR = float(bpy.app.version_string[0:4].strip("."))
 
 
 # Callbacks
@@ -50,7 +50,7 @@ def pinned_object_ensure_users(scene):
     pinned, really gets deleted + the property gets reset.
     """
     ml_props = scene.modifier_list
-    
+
     if ml_props.pinned_object:
         if ml_props.pinned_object.users == 1 and not ml_props.pinned_object.use_fake_user:
             bpy.data.objects.remove(ml_props.pinned_object)
@@ -287,7 +287,7 @@ def register():
     wm.modifier_list = PointerProperty(type=ML_WindowManagerProperties)
 
     bpy.types.Scene.modifier_list = PointerProperty(type=ML_SceneProperties)
-    
+
     bpy.app.handlers.load_post.append(on_file_load)
 
     set_all_modifier_collection_items()

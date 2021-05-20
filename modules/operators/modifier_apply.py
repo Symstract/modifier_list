@@ -123,7 +123,7 @@ class ApplyModifier:
             self.linked_object_data_changer.make_active_instance_data_unique()
 
         success = self.apply_modifier(context, ml_active_ob, is_editmode)
-        
+
         if not success:
             return {'CANCELLED'}
 
@@ -165,9 +165,9 @@ class ApplyModifier:
 
         # Applying as a shape key for multi-user data is possible since
         # Blender 2.90.
-        if float(bpy.app.version_string[0:4]) >= 2.90 and self.apply_as == 'SHAPE':
+        if float(bpy.app.version_string[0:4].strip(".")) >= 2.90 and self.apply_as == 'SHAPE':
             return self.execute(context)
-        
+
         if self.multi_user_data_apply_method == 'NONE' and ml_active_ob.data.users > 1:
             bpy.ops.object.ml_modifier_apply_multi_user_data_dialog('INVOKE_DEFAULT',
                                                                     modifier=self.modifier,
@@ -185,7 +185,7 @@ class ApplyModifier:
         try:
             # Applying a modifier as a shape key is done with a separate
             # operator since 2.90.
-            if float(bpy.app.version_string[0:4]) < 2.90:
+            if float(bpy.app.version_string[0:4].strip(".")) < 2.90:
                 bpy.ops.object.modifier_apply(override, apply_as=self.apply_as,
                                               modifier=self.modifier)
             else:
@@ -195,23 +195,23 @@ class ApplyModifier:
                         bpy.ops.object.modifier_apply_as_shapekey(
                             override, modifier=self.modifier,
                             keep_modifier=self.keep_modifier_when_applying_as_shapekey)
-            
+
             if ml_active_object.type in {'CURVE', 'SURFACE'}:
                 self.curve_modifier_apply_report(mod_type)
-            
+
             return True
-        
+
         except RuntimeError as rte:
             message = str(rte).replace("Error: ", "")
             message = message[:-1]
             self.report(type={'ERROR'}, message=message)
-            
+
             if self.multi_user_data_apply_method != 'NONE':
                 self.linked_object_data_changer.reassign_old_data_to_active_instance()
-            
+
             if is_init_mode_editmode:
                 bpy.ops.object.editmode_toggle()
-            
+
             return False
 
     def curve_modifier_apply_report(self, modifier_type):
@@ -219,7 +219,7 @@ class ApplyModifier:
         if modifier_type in curve_deform_mods:
             self.report({'INFO'}, "Applied modifier only changed CV points, "
                         "not tessellated/bevel vertices")
-                        
+
     def ensure_correct_mode_after_applying_lattice(self, context):
         # When using lattice_toggle_editmode(_prop_editor)
         # operator, the mode the user was in before that is

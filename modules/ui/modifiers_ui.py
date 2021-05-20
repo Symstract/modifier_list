@@ -33,7 +33,7 @@ from ..utils import (
 )
 
 
-BLENDER_VERSION_MAJOR_POINT_MINOR = float(bpy.app.version_string[0:4])
+BLENDER_VERSION_MAJOR_POINT_MINOR = float(bpy.app.version_string[0:4].strip("."))
 
 
 # UI elements
@@ -130,7 +130,7 @@ def show_on_cage_button(object, modifier, layout, pcoll, use_in_list):
 def curve_properties_context_change_button(layout, pcoll, use_in_list):
     sub = layout.row(align=True)
     empy_icon = pcoll['EMPTY_SPACE']
-    
+
     if use_in_list:
         sub.label(text="", translate=False, icon_value=empy_icon.icon_id)
     else:
@@ -402,7 +402,7 @@ class OBJECT_UL_ml_modifier_list(UIList):
         elif self.layout_type in {'GRID'}:
             layout.alignment = 'CENTER'
             layout.label(text="", icon_value=icon)
-                
+
 
 class OBJECT_PT_ml_modifier_extras(Panel):
     bl_label = "Modifier Extras"
@@ -423,7 +423,7 @@ class OBJECT_PT_ml_modifier_extras(Panel):
                 row.enabled = False
                 row.operator("object.modifier_copy_to_selected")
             layout.separator()
-        
+
         layout.label(text="Syncronize Modifiers Between Instances:")
         layout.operator("object.ml_sync_active_modifier_between_instances", text="Active Only")
         layout.operator("object.ml_sync_all_modifiers_between_instances", text="All")
@@ -701,7 +701,7 @@ def modifiers_ui(context, layout, num_of_rows=False, use_in_popup=False):
                 icon = pcoll['SAVE_MODIFIER_AS_SHAPEKEY']
                 sub.operator("object.ml_modifier_save_as_shapekey", text="",
                              icon_value=icon.icon_id).modifier = active_mod.name
-                
+
         if active_mod.type not in modifier_categories.DONT_SUPPORT_COPY:
             sub.operator("object.ml_modifier_copy",
                         text="", icon='DUPLICATE').modifier = active_mod.name

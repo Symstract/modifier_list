@@ -31,7 +31,7 @@ import bpy
 from bpy.app.translations import pgettext_iface as iface_
 
 
-BLENDER_VERSION_MAJOR_POINT_MINOR = float(bpy.app.version_string[0:4])
+BLENDER_VERSION_MAJOR_POINT_MINOR = float(bpy.app.version_string[0:4].strip("."))
 
 
 class DATA_PT_modifiers:
@@ -132,11 +132,11 @@ class DATA_PT_modifiers:
             elif offset_type == 'OFFSET':
                 offset_text = "Offset"
             layout.prop(md, "width", text=offset_text)
-        
+
         layout.row().prop(md, "segments")
         layout.row().prop(md, "profile")
         layout.row().prop(md, "material")
-        
+
         layout.label(text="Limit Method:")
         layout.row().prop(md, "limit_method", expand=True)
         if md.limit_method == 'ANGLE':
@@ -145,7 +145,7 @@ class DATA_PT_modifiers:
             row = layout.row(align=True)
             row.prop_search(md, "vertex_group", ob, "vertex_groups", text="")
             row.prop(md, "invert_vertex_group", text="", icon='ARROW_LEFTRIGHT')
-        
+
         layout.separator()
 
         split = layout.split()
@@ -157,7 +157,7 @@ class DATA_PT_modifiers:
         col.prop(md, "mark_seam")
         col.prop(md, "mark_sharp")
         col.prop(md, "harden_normals")
-        
+
         layout.label(text="Offset Type:")
         layout.row().prop(md, "offset_type", expand=True)
 
@@ -172,7 +172,7 @@ class DATA_PT_modifiers:
 
         layout.label(text="Intersection Type:")
         layout.row().prop(md, "vmesh_method", expand=True)
-        
+
         layout.label(text="Profile Type:")
         layout.row().prop(md, "profile_type", expand=True)
         row = layout.row()
@@ -737,7 +737,7 @@ class DATA_PT_modifiers:
         row = col.row()
         row.enabled = not have_displacement
         row.prop(md, "quality")
-        
+
         # 2.91 ADDITION
         if BLENDER_VERSION_MAJOR_POINT_MINOR >= 2.91:
             row = col.row()
@@ -1760,7 +1760,7 @@ class DATA_PT_modifiers:
         # 2.91 REMOVAL
         if BLENDER_VERSION_MAJOR_POINT_MINOR < 2.91:
             layout.prop(md, "max_interactions")
-            
+
         row = layout.row(align=True)
         row.prop_search(md, "vertex_group", ob, "vertex_groups")
         row.prop(md, "invert_vertex_group", text="", icon='ARROW_LEFTRIGHT')
@@ -1967,7 +1967,7 @@ class DATA_PT_modifiers:
         layout.prop(md, "density")
         layout.prop(md, "use_fill_volume")
         layout.prop(md, "exterior_band_width")
-            
+
         row = layout.row()
         row.active = not md.use_fill_volume
         row.prop(md, "interior_band_width")
