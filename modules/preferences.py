@@ -21,13 +21,15 @@ def read_prefs(prefs_file):
     prefs = bpy.context.preferences.addons["modifier_list"].preferences
 
     with open(prefs_file) as f:
-        prefs_dict = json.load(f)
-
-        for prop in prefs_dict.keys():
-            if prop in prefs.__annotations__:
-                value = prefs_dict[prop]
-                ensured_value = set(value) if type(value) is list else value
-                setattr(prefs, prop, ensured_value)
+        try:
+            prefs_dict = json.load(f)
+            for prop in prefs_dict.keys():
+                if prop in prefs.__annotations__:
+                    value = prefs_dict[prop]
+                    ensured_value = set(value) if type(value) is list else value
+                    setattr(prefs, prop, ensured_value)
+        except json.decoder.JSONDecodeError:
+            pass
 
 
 def write_prefs():
@@ -263,10 +265,10 @@ class Preferences(AddonPreferences):
 
         layout.prop(self, "use_properties_editor")
         layout.prop(self, "use_sidebar")
-        
+
         if self.use_sidebar:
             layout.separator()
-            
+
             layout.prop(self, "keep_sidebar_visible")
             split = layout.split()
             split.label(text="Sidebar Category")
