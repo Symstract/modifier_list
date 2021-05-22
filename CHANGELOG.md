@@ -1,5 +1,31 @@
 # Changelog
 
+## 1.6.4 - 22.5.2021
+
+Updates for Blender 2.93 and 3.0 mainly.
+
+### 2.93
+
+- Added missing bisect distance parameter to Mirror
+- Added missing Hole Tolerant parameter to Boolean
+
+### 3.0
+
+- Fixed a broken Blender version check which caused the addon not to even register
+- Fixed the documentation link missing due to a changed dictionary key in bl_info ("wiki_url" -> "doc_url"). Because of this change, **the minimum Blender version required is now 2.83**.
+
+### Other
+
+- UV Project: aspect/scale settings are only activated when using a camera projector as done in the default UI now.
+
+- Prevented an error if the preference file happens to have become corrupted and can't be read
+
+- Batch operator idname changes:
+  - object.ml_toggle_all_modifiers -> view3d.ml_toggle_all_modifiers
+  - object.ml_apply_all_modifiers -> view3d.ml_apply_all_modifiers
+  - object.ml_remove_all_modifiers -> view3d.ml_remove_all_modifiers
+    This is to make shortcuts work by default in all modes when added via the context menu. (It was already possible to make them work by adding them under 3D View in the hotkey editor manually.) Note that adding them via the context menu doesn't seem to be possible in the properties editor.
+
 ## 1.6.3 - 25.2.2021
 
 Updates for Blender 2.92 and 2.93
