@@ -11,8 +11,8 @@ from bpy.types import Operator
 from ..utils import get_ml_active_object
 
 
-class OBJECT_OT_ml_toggle_all_modifiers(Operator):
-    bl_idname = "object.ml_toggle_all_modifiers"
+class VIEW3D_OT_ml_toggle_all_modifiers(Operator):
+    bl_idname = "view3d.ml_toggle_all_modifiers"
     bl_label = "Toggle Visibility Of All Modifiers"
     bl_description = ("Toggle the visibility of all modifiers of the selected object(s). "
                       "The active object must have modifiers")

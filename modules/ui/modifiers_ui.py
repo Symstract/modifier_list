@@ -623,13 +623,13 @@ def modifiers_ui(context, layout, num_of_rows=False, use_in_popup=False):
     sub.scale_x = 3 if align_button_groups else 1.34
 
     icon = pcoll['TOGGLE_ALL_MODIFIERS_VISIBILITY']
-    sub.operator("object.ml_toggle_all_modifiers", icon_value=icon.icon_id, text="")
+    sub.operator("view3d.ml_toggle_all_modifiers", icon_value=icon.icon_id, text="")
 
     icon = pcoll['APPLY_ALL_MODIFIERS']
-    sub.operator("object.ml_apply_all_modifiers", icon_value=icon.icon_id, text="")
+    sub.operator("view3d.ml_apply_all_modifiers", icon_value=icon.icon_id, text="")
 
     icon = pcoll['DELETE_ALL_MODIFIERS']
-    sub.operator("object.ml_remove_all_modifiers", icon_value=icon.icon_id, text="")
+    sub.operator("view3d.ml_remove_all_modifiers", icon_value=icon.icon_id, text="")
 
     sub_sub = sub.row(align=True)
     sub_sub.scale_x = 0.65 if align_button_groups else 0.85

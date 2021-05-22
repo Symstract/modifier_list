@@ -11,8 +11,8 @@ from bpy.types import Operator
 from ..utils import get_ml_active_object, is_modifier_local
 
 
-class OBJECT_OT_ml_remove_all_modifiers(Operator):
-    bl_idname = "object.ml_remove_all_modifiers"
+class VIEW3D_OT_ml_remove_all_modifiers(Operator):
+    bl_idname = "view3d.ml_remove_all_modifiers"
     bl_label = "Remove All Modifiers"
     bl_description = "Remove all modifiers from the selected object(s)"
     bl_options = {'REGISTER', 'UNDO'}
