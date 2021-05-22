@@ -17,8 +17,8 @@ from ..utils import get_ml_active_object
 show_done_label_in_dialog = False
 
 
-class OBJECT_OT_ml_apply_all_modifiers_multi_user_data_dialog(Operator):
-    bl_idname = "object.ml_apply_all_modifiers_multi_user_data_dialog"
+class VIEW3D_OT_ml_apply_all_modifiers_multi_user_data_dialog(Operator):
+    bl_idname = "view3d.ml_apply_all_modifiers_multi_user_data_dialog"
     bl_label = "Apply All Modifiers Dialog"
     bl_options = {'INTERNAL'}
 
@@ -65,8 +65,8 @@ class OBJECT_OT_ml_apply_all_modifiers_multi_user_data_dialog(Operator):
 disallow_applying_hidden_modifiers = False
 
 
-class OBJECT_OT_ml_apply_all_modifiers(Operator):
-    bl_idname = "object.ml_apply_all_modifiers"
+class VIEW3D_OT_ml_apply_all_modifiers(Operator):
+    bl_idname = "view3d.ml_apply_all_modifiers"
     bl_label = "Apply All Modifiers"
     bl_description = "Apply all modifiers of the selected object(s)"
     bl_options = {'REGISTER', 'UNDO'}
@@ -108,14 +108,14 @@ class OBJECT_OT_ml_apply_all_modifiers(Operator):
         self.apply_modifiers(context)
 
         # Cancel if no modifiers were applied
-        
+
         some_mods_were_applied = self.check_for_applied_modifiers_and_report()
-        
+
         if not some_mods_were_applied:
             if self.multi_user_data_apply_method != 'NONE':
                 self.linked_object_data_changer.reassign_old_data_to_active_instance()
             return {'CANCELLED'}
-        
+
         if is_edit_mode:
             bpy.ops.ed.undo_push(message="Apply All Modifiers")
             bpy.ops.object.editmode_toggle()
@@ -147,7 +147,7 @@ class OBJECT_OT_ml_apply_all_modifiers(Operator):
         if self.multi_user_data_apply_method == 'NONE' and get_ml_active_object().data.users > 1:
             global show_done_label_in_dialog
             show_done_label_in_dialog = False
-            bpy.ops.object.ml_apply_all_modifiers_multi_user_data_dialog('INVOKE_DEFAULT',
+            bpy.ops.view3d.ml_apply_all_modifiers_multi_user_data_dialog('INVOKE_DEFAULT',
                                                                          op_name=self.bl_idname)
             return {'CANCELLED'}
         elif prefs.show_confirmation_popups and self.multi_user_data_apply_method == 'NONE':
@@ -157,7 +157,7 @@ class OBJECT_OT_ml_apply_all_modifiers(Operator):
 
     def apply_modifiers(self, context):
         ml_act_ob = get_ml_active_object()
-        
+
         # When the active object has multi-user data, only its modifiers
         # should be applied.
         if self.multi_user_data_apply_method != 'NONE':
