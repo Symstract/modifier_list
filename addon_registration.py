@@ -3,6 +3,10 @@
 import importlib
 import inspect
 import os
+import sys
+
+from bpy.types import bpy_struct, WorkSpaceTool
+from bpy.utils import register_class, unregister_class
 
 
 imported_modules = []
@@ -13,11 +17,12 @@ sorted_classes = []
 # ======================================================================
 
 def _find_modules(root_dir):
-    """Finds all modules in a given directory and returns them in a set.
+    """Finds all modules in the given directory and returns them in a
+    set.
 
-    Form of returned modules is 'relative.path.module'.
+    The form of the returned modules is 'relative.path.module'.
 
-    Directories that have "__" in their name are ignored.
+    Directories whose name contains "__" are ignored.
     """
     current_directory = os.path.dirname(__file__)
     root_directory = os.path.join(current_directory, root_dir)
@@ -29,9 +34,7 @@ def _find_modules(root_dir):
 
     for root, dirs, files in os.walk(root_directory):
         dirs[:] = [d for d in dirs if "__" not in d]
-
         relative_root = os.path.relpath(root, current_directory)
-
         for f in files:
             if f.endswith(".py") and "__" not in f:
                 joined = os.path.join(relative_root, f[:-3])
@@ -40,55 +43,25 @@ def _find_modules(root_dir):
     return modules
 
 
-first_call = True
-
-
 def _import_modules(modules):
-    """Imports or reloads given modules and returns them in a list.
+    """Imports or reloads the given modules and returns them in a list.
 
-    Modules must include relative path.
+    Modules must contain their relative paths.
     """
-    # Tried importing with absolute path but for some reason it didn't
-    # work. Anyway, using relative path works...
+    if imported_modules:
+        for mod in imported_modules:
+            try:
+                sys.modules.pop(mod.__name__)
+            except KeyError:
+                pass
 
-    global first_call
-
-    imported_modules = []
-
-    if first_call:
-        for mod in modules:
-            module = importlib.import_module("." + mod, package=__package__)
-            imported_modules.append(module)
-    else:
-        # Reload modules twice so modules that import from other modules
-        # always get stuff that's up to date.
-        for _ in range(2):
-            imported_modules.clear()
-
-            for mod in modules:
-                module = importlib.import_module("." + mod, package=__package__)
-
-                # Clear everything else than builtins to get rid of
-                # renamed and removed stuff.
-                module_dict = dict(module.__dict__)
-                for i in module_dict:
-                    if "__" not in i:
-                        module.__dict__.pop(i)
-
-                module = importlib.reload(module)
-                imported_modules.append(module)
-
-    first_call = False
-
-    return imported_modules
+    return [importlib.import_module("." + mod, package=__package__) for mod in modules]
 
 
-def _store_modules_globally(modules):
-    """Puts given modules into a global 'imported_modules' list"""
+def _store_modules(modules):
+    """Puts the given modules into a global 'imported_modules' list"""
     global imported_modules
-
     imported_modules.clear()
-
     imported_modules = modules
 
 
@@ -97,12 +70,10 @@ def _store_modules_globally(modules):
 
 def _find_bl_classes(modules):
     """Finds all add-on classes (excluding subclasses of WorkSpaceTool)
-    from given modules and returns them in a list.
+    in the given modules and returns them in a list.
 
-    Modules must include a relative path.
+    Modules must contain their relative paths.
     """
-    from bpy.types import bpy_struct, WorkSpaceTool
-
     bl_classes = []
 
     cur_dir_path = os.path.dirname(__file__)
@@ -112,10 +83,9 @@ def _find_bl_classes(modules):
         full_module_path = mod.__file__
         module_path_from_cur_dir = full_module_path.replace(cur_dir_path, cur_dir_basename)
         formatted_module_path = module_path_from_cur_dir.replace(os.path.sep, ".")[:-3]
-
-        classmembers = [m[1] for m in inspect.getmembers(mod, inspect.isclass)
+        class_members = [m[1] for m in inspect.getmembers(mod, inspect.isclass)
                         if m[1].__module__ == formatted_module_path]
-        bpy_subclasses = [cm for cm in classmembers if issubclass(cm, bpy_struct) and
+        bpy_subclasses = [cm for cm in class_members if issubclass(cm, bpy_struct) and
                           not issubclass(cm, WorkSpaceTool)]
         bl_classes.extend(bpy_subclasses)
 
@@ -124,9 +94,10 @@ def _find_bl_classes(modules):
 
 def _sort_classes_topologically(classes):
     """Sorts classes based on their hierarchy."""
-    # TODO: Handle circular dependencies
     unsorted_classes = classes[:]
     sorted_classes_from_bottom = []
+
+    safety_counter = 0
 
     while unsorted_classes:
         for cls in unsorted_classes:
@@ -134,26 +105,27 @@ def _sort_classes_topologically(classes):
                 sorted_classes_from_bottom.append(cls)
                 unsorted_classes.remove(cls)
 
+        safety_counter += 1
+        assert safety_counter < 10000, "Infinite loop in_sort_classes_topologically"
+
     return list(reversed(sorted_classes_from_bottom))
 
 
 def _sort_panel_classes(classes, panel_order):
-    """Sorts panel classes and returns a list in which they are at the end.
+    """Sorts the panel classes in the given classes iteratable and
+    returns a new list in which they are at the end.
 
     classes: an iteratable of classes
     panel_order: an iteratable of panel class names
     """
     other_classes = [cls for cls in classes if cls.__name__ not in panel_order]
     panel_classes = [cls for panel in panel_order for cls in classes if cls.__name__ == panel]
-
     return other_classes + panel_classes
 
 
-def _store_classes_globally(modules):
+def _store_classes(modules):
     global sorted_classes
-
     sorted_classes.clear()
-
     sorted_classes = modules
 
 
@@ -161,10 +133,8 @@ def _store_classes_globally(modules):
 # ======================================================================
 
 def _register_classes(classes, addon_name_for_counter=None):
-    """Register all add-on classes that inherit from bpy_struct from all
-    modules."""
-    from bpy.utils import register_class
-
+    """Registers all add-on classes that inherit from bpy_struct from
+    all modules."""
     for cls in classes:
         register_class(cls)
 
@@ -175,20 +145,30 @@ def _register_classes(classes, addon_name_for_counter=None):
 # Public functions
 # ======================================================================
 
-def register_bl_classes(root_dir, modules_to_ignore=None, classes_to_ignore=None, panel_order=None,
+def import_modules(root_dir):
+    """Imports all modules in the given directory in order to make them
+    available for other functions in addon_registration.
+    """
+    modules = _find_modules(root_dir)
+    modules = _import_modules(modules)
+    _store_modules(modules)
+
+
+def register_bl_classes(modules_to_ignore=None, classes_to_ignore=None, panel_order=None,
                         addon_name_for_counter=None):
-    """Register all add-on classes that inherit from bpy_struct from all
-    modules.
+    """Registers all add-on classes that inherit from bpy_struct from
+    all modules.
+
+    import_modules needs to be called before this.
 
     Args:
-        root_dir: root directory to search in
         modules_to_ignore: an iteratable of the names of the
             moduless that should be ignored
         classes_to_ignore: an iteratable of the names of the
             classes that should be ignored
         panel_order: an iteratable of panel class names
-        addon_name_for_counter: specify this if you want to print out
-            the number of registered classes
+        addon_name_for_counter: The name of the addon. If given, the
+            number of the registered classes is printed out.
 
     Modules and packages that have "__" in their name are ignored.
 
@@ -196,12 +176,11 @@ def register_bl_classes(root_dir, modules_to_ignore=None, classes_to_ignore=None
     of panels in Blender's UI is defined by the order they are
     registered in.
     """
-    modules = _find_modules(root_dir)
-    modules = _import_modules(modules)
-    _store_modules_globally(modules)
-
     if modules_to_ignore:
-        modules = [m for m in modules if m.__name__.split(".")[-1] not in modules_to_ignore]
+        modules = [m for m in imported_modules
+                   if m.__name__.split(".")[-1] not in modules_to_ignore]
+    else:
+        modules = imported_modules
 
     classes = _find_bl_classes(modules)
     classes = _sort_classes_topologically(classes)
@@ -212,20 +191,17 @@ def register_bl_classes(root_dir, modules_to_ignore=None, classes_to_ignore=None
     if panel_order:
         classes = _sort_panel_classes(classes, panel_order)
 
-    _store_classes_globally(classes)
-
+    _store_classes(classes)
     _register_classes(classes, addon_name_for_counter)
 
 
 def unregister_bl_classes(addon_name_for_counter=None):
-    """Unregister all add-on classes.
+    """Unregisters all add-on classes.
 
     Args:
-        addon_name_for_counter: specify this if you want to print out
-            the number of unregistered classes
+        addon_name_for_counter: The name of the addon. If given, the
+            number of the unregistered classes is printed out.
     """
-    from bpy.utils import unregister_class
-
     classes = list(reversed(sorted_classes))
 
     for cls in classes:
@@ -237,15 +213,18 @@ def unregister_bl_classes(addon_name_for_counter=None):
 
 # Calling (un)register
 
-def call_register(root_dir):
-    """Call register from all add-on modules"""
+def call_register():
+    """Calls register of all add-on modules.
+
+    import_modules must have been called before this.
+    """
     for mod in imported_modules:
         if hasattr(mod, "register"):
             mod.register()
 
 
-def call_unregister(root_dir):
-    """Call unregister from all add-on modules"""
+def call_unregister():
+    """Calls unregister of all add-on modules."""
     for mod in imported_modules:
         if hasattr(mod, "unregister"):
             mod.unregister()

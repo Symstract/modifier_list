@@ -34,6 +34,8 @@ bl_info = {
 
 import bpy
 
+from . import addon_registration
+
 
 modules_to_ignore = (
     "properties",
@@ -53,13 +55,12 @@ addon_keymaps = []
 
 
 def register():
-    from .addon_registration import register_bl_classes, call_register
-
-    register_bl_classes("modules", modules_to_ignore=modules_to_ignore,
-                        classes_to_ignore=classes_to_ignore, panel_order=panel_order,
-                        addon_name_for_counter=bl_info["name"])
-
-    call_register("modules")
+    addon_registration.import_modules("modules")
+    addon_registration.register_bl_classes(modules_to_ignore=modules_to_ignore,
+                                           classes_to_ignore=classes_to_ignore, 
+                                           panel_order=panel_order,
+                                           addon_name_for_counter=bl_info["name"])
+    addon_registration.call_register()
 
     # === Keymap ===
     wm = bpy.context.window_manager
@@ -76,8 +77,5 @@ def unregister():
         km.keymap_items.remove(kmi)
     addon_keymaps.clear()
 
-    from .addon_registration import unregister_bl_classes, call_unregister
-
-    call_unregister("modules")
-
-    unregister_bl_classes(addon_name_for_counter=bl_info["name"])
+    addon_registration.call_unregister()
+    addon_registration.unregister_bl_classes(addon_name_for_counter=bl_info["name"])
