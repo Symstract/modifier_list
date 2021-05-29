@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.7 - Unreleased
+
+- Fixed possible error when reloading the addon. Now it should always work.
+
 ## 1.6.4 - 22.5.2021
 
 Updates for Blender 2.93 and 3.0 mainly.
