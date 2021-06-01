@@ -690,17 +690,16 @@ def modifiers_ui(context, layout, num_of_rows=False, use_in_popup=False):
     else:
         sub.scale_x = 5
         icon = pcoll['APPLY_MODIFIER']
-        sub.operator("object.ml_modifier_apply", text="",
-                    icon_value=icon.icon_id).modifier = active_mod.name
+        sub.operator("object.ml_modifier_apply", text="", icon_value=icon.icon_id)
 
         if active_mod.type in modifier_categories.SUPPORT_APPLY_AS_SHAPE_KEY:
             icon = pcoll['APPLY_MODIFIER_AS_SHAPEKEY']
             sub.operator("object.ml_modifier_apply_as_shapekey", text="",
-                        icon_value=icon.icon_id).modifier = active_mod.name
+                        icon_value=icon.icon_id)
             if BLENDER_VERSION_MAJOR_POINT_MINOR >= 2.90:
                 icon = pcoll['SAVE_MODIFIER_AS_SHAPEKEY']
                 sub.operator("object.ml_modifier_save_as_shapekey", text="",
-                             icon_value=icon.icon_id).modifier = active_mod.name
+                             icon_value=icon.icon_id)
 
         if active_mod.type not in modifier_categories.DONT_SUPPORT_COPY:
             sub.operator("object.ml_modifier_copy",

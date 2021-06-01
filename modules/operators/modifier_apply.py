@@ -20,13 +20,16 @@ class OBJECT_OT_ml_modifier_apply_multi_user_data_dialog(Operator):
     bl_label = "Apply Modifier Dialog"
     bl_options = {'INTERNAL'}
 
-    modifier: StringProperty(options={'HIDDEN', 'SKIP_SAVE'})
     op_name: StringProperty(options={'HIDDEN', 'SKIP_SAVE'})
 
     def execute(self, context):
         return {'FINISHED'}
 
     def invoke(self, context, event):
+        ml_active_ob = get_ml_active_object()
+        active_mod_index = ml_active_ob.ml_modifier_active_index
+        self.modifier_name = ml_active_ob.modifiers[active_mod_index].name
+
         return context.window_manager.invoke_popup(self, width=360)
 
     def draw(self, context):
@@ -37,7 +40,7 @@ class OBJECT_OT_ml_modifier_apply_multi_user_data_dialog(Operator):
         # Popups can't be closed manually, so just show a label after
         # the modifier has been applied.
         try:
-            ml_active_ob.modifiers[self.modifier]
+            ml_active_ob.modifiers[self.modifier_name]
         except KeyError:
             layout.label(text="Done")
             return
@@ -47,11 +50,9 @@ class OBJECT_OT_ml_modifier_apply_multi_user_data_dialog(Operator):
         layout.separator()
 
         op = layout.operator(self.op_name, text="Apply To Active Object Only (Break Link)")
-        op.modifier = self.modifier
         op.multi_user_data_apply_method = 'APPLY_TO_SINGLE'
 
         op = layout.operator(self.op_name, text="Apply To All Objects")
-        op.modifier = self.modifier
         op.multi_user_data_apply_method = 'APPLY_TO_ALL'
 
 
@@ -63,8 +64,6 @@ class ApplyModifier:
                       "\n"
                       "Hold shift to also delete its gizmo object (if it has one)")
     bl_options = {'REGISTER', 'INTERNAL', 'UNDO'}
-
-    modifier: StringProperty(options={'HIDDEN', 'SKIP_SAVE'})
 
     multi_user_data_apply_method_items = [
         ('NONE', "None", ""),
@@ -99,7 +98,8 @@ class ApplyModifier:
         prefs = bpy.context.preferences.addons["modifier_list"].preferences
         ob = context.active_object
         ml_active_ob = get_ml_active_object()
-        mod = ml_active_ob.modifiers[self.modifier]
+        active_mod_index = ml_active_ob.ml_modifier_active_index
+        mod = ml_active_ob.modifiers[active_mod_index]
 
         # Get the gizmo object and the vertex group, so they can be
         # deleted after applying the modifier. Also get the modifier
@@ -152,14 +152,16 @@ class ApplyModifier:
     def invoke(self, context, event):
         self.shift = event.shift
         ml_active_ob = get_ml_active_object()
+        active_mod_index = ml_active_ob.ml_modifier_active_index
+        active_mod = ml_active_ob.modifiers[active_mod_index]
         prefs = bpy.context.preferences.addons["modifier_list"].preferences
         disallow_applying_hidden_modifiers = (
             not prefs.disallow_applying_hidden_modifiers if event.alt
             else prefs.disallow_applying_hidden_modifiers)
 
         if disallow_applying_hidden_modifiers:
-            mod = ml_active_ob.modifiers[self.modifier]
-            if not mod.show_viewport:
+
+            if not active_mod.show_viewport:
                 self.report({'INFO'}, "Modifier is hidden in viewport, skipped apply")
                 return {'CANCELLED'}
 
@@ -170,7 +172,6 @@ class ApplyModifier:
 
         if self.multi_user_data_apply_method == 'NONE' and ml_active_ob.data.users > 1:
             bpy.ops.object.ml_modifier_apply_multi_user_data_dialog('INVOKE_DEFAULT',
-                                                                    modifier=self.modifier,
                                                                     op_name=self.bl_idname)
             return {'CANCELLED'}
 
@@ -180,20 +181,23 @@ class ApplyModifier:
         # Make applying modifiers possible when an object is pinned
         override = context.copy()
         override['object'] = ml_active_object
-        mod_type = ml_active_object.modifiers[self.modifier].type
+        active_mod_index = ml_active_object.ml_modifier_active_index
+        mod = ml_active_object.modifiers[active_mod_index]
+        mod_type = mod.type
+        mod_name = mod.name
 
         try:
             # Applying a modifier as a shape key is done with a separate
             # operator since 2.90.
             if float(bpy.app.version_string[0:4].strip(".")) < 2.90:
                 bpy.ops.object.modifier_apply(override, apply_as=self.apply_as,
-                                              modifier=self.modifier)
+                                              modifier=mod_name)
             else:
                 if self.apply_as == 'DATA':
-                    bpy.ops.object.modifier_apply(override, modifier=self.modifier)
+                    bpy.ops.object.modifier_apply(override, modifier=mod_name)
                 elif self.apply_as == 'SHAPE':
                         bpy.ops.object.modifier_apply_as_shapekey(
-                            override, modifier=self.modifier,
+                            override, modifier=mod_name,
                             keep_modifier=self.keep_modifier_when_applying_as_shapekey)
 
             if ml_active_object.type in {'CURVE', 'SURFACE'}:
