@@ -224,18 +224,18 @@ class VIEW3D_OT_ml_apply_all_modifiers(Operator):
             self.report({'INFO'}, f"Some modifier(s) couldn't be applied on {failed_obs}")
         else:
             self.report({'INFO'}, "Some modifier(s) couldn't be applied. Check the system "
-                                    "console for a list of the objects.")
+                                  "console for a list of the objects.")
             print(f"Some modifier(s) couldn't be applied on {failed_obs}")
 
     def apply_report(self):
         skipped_obs_with_non_local_data_message = (" for objects with local data"
-                                                    if self.skipped_objects_with_non_local_data
-                                                    else "")
+                                                   if self.skipped_objects_with_non_local_data
+                                                   else "")
         if disallow_applying_hidden_modifiers:
             message = ("Applied all visible local modifiers" if self.skipped_linked_modifiers
-                        else "Applied all visible modifiers")
+                       else "Applied all visible modifiers")
             self.report({'INFO'}, message + skipped_obs_with_non_local_data_message)
         else:
             message = ("Applied all local modifiers" if self.skipped_linked_modifiers
-                        else "Applied all modifiers")
+                       else "Applied all modifiers")
             self.report({'INFO'}, message + skipped_obs_with_non_local_data_message)
