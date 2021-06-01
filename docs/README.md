@@ -23,7 +23,7 @@
 - **Modifier list**
   - The settings of the active modifier are shown under the list, so you will see only one modifier at a time
   - The default list size inside the popup can be set in the addon preferences
-  - The order of the list can be reversed persitently by enabling the "Reverse List" setting
+  - The order of the list can be reversed persistently by enabling the "Reverse List" setting
 - **Modifier search**
 - **Modifier menu**
 - **Favourite modifiers** which can be set in the addon preferences or from a popup available from the Modifier Extras menu
