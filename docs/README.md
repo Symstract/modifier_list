@@ -87,6 +87,6 @@ Default hotkey is **Alt + Space**. Inside the keymap editor, you can find it und
 - Inside the popup, lists don't remember their sizes after they are resized. Popups are not really ment for this kind of stuff, so that's a limitation of Blender.
 - Using the popup, picking an object from viewport is not possible. A limitation of popups. Hopefully that could be possible at some point because that applies also to the driver editor popup and there's an open bug report about it in the bug tracker.
 - Warnings like "Enable 'Auto Smooth' option in mesh settings" are not displayed
-- Data Transfer's "Generate Data Layers" doesn't use automatic settings, insted it opens a menu
+- Data Transfer's "Generate Data Layers" doesn't use automatic settings, instead it opens a menu
 - Add Modifier's tooltip doesn't fit to Lattice
 - Custom bevel profiles don't get synchronized when synchronizing modifiers between instances
