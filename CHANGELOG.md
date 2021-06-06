@@ -3,6 +3,8 @@
 ## 1.7 - Unreleased
 
 - Fixed possible error when reloading the addon. Now it should always work.
+- Adding shortcuts to modifier applying operators is now possible because they don't need the modifier name as an argument any more
+- When applying a modifier to all instances, the modifier is now removed from the instances (based on the name and type)
 
 ## 1.6.4 - 22.5.2021
 
