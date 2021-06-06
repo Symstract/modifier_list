@@ -177,7 +177,7 @@ class ApplyModifier:
 
         return self.execute(context)
 
-    def apply_modifier(self, context, ml_active_object, is_init_mode_editmode):
+    def apply_modifier(self, context, ml_active_object, init_mode_is_editmode):
         # Make applying modifiers possible when an object is pinned
         override = context.copy()
         override['object'] = ml_active_object
@@ -213,7 +213,7 @@ class ApplyModifier:
             if self.multi_user_data_apply_method != 'NONE':
                 self.linked_object_data_changer.reassign_old_data_to_active_instance()
 
-            if is_init_mode_editmode:
+            if init_mode_is_editmode:
                 bpy.ops.object.editmode_toggle()
 
             return False
