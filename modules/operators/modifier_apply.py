@@ -98,8 +98,10 @@ class ApplyModifier:
         prefs = bpy.context.preferences.addons["modifier_list"].preferences
         ob = context.active_object
         ml_active_ob = get_ml_active_object()
+        ml_active_ob_init_data_name = ml_active_ob.data.name
         active_mod_index = ml_active_ob.ml_modifier_active_index
         mod = ml_active_ob.modifiers[active_mod_index]
+        mod_name = mod.name
 
         # Get the gizmo object and the vertex group, so they can be
         # deleted after applying the modifier. Also get the modifier
@@ -137,6 +139,7 @@ class ApplyModifier:
 
         # Apply the modifier to all instances
         if self.multi_user_data_apply_method == 'APPLY_TO_ALL':
+            self.remove_modifier_from_instances(ml_active_ob_init_data_name, mod_name, mod_type)
             self.linked_object_data_changer.assign_new_data_to_other_instances()
 
         self.ensure_correct_modifier_active_index(ml_active_ob)
@@ -217,6 +220,15 @@ class ApplyModifier:
                 bpy.ops.object.editmode_toggle()
 
             return False
+
+    def remove_modifier_from_instances(self, data_name, modifier_name, modifier_type):
+        obs_with_same_data = [ob for ob in bpy.data.objects
+                              if ob.data and ob.data.name == data_name]
+
+        for ob in obs_with_same_data:
+            mod = ob.modifiers[modifier_name]
+            if mod.type == modifier_type:
+                ob.modifiers.remove(mod)
 
     def curve_modifier_apply_report(self, modifier_type):
         curve_deform_mods = [mod[2] for mod in CURVE_DEFORM_NAMES_ICONS_TYPES]
