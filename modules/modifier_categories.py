@@ -39,7 +39,7 @@ MESH_MODIFY_NAMES_ICONS_TYPES = ALL_MODIFY_NAMES_ICONS_TYPES
 MESH_GENERATE_NAMES_ICONS_TYPES = [mod for mod in ALL_GENERATE_NAMES_ICONS_TYPES
                                    if mod[0] != "Mesh to Volume"]
 MESH_DEFORM_NAMES_ICONS_TYPES = [mod for mod in ALL_DEFORM_NAMES_ICONS_TYPES
-                                   if mod[0] != "Volume Displace"]
+                                 if mod[0] != "Volume Displace"]
 MESH_SIMULATE_NAMES_ICONS_TYPES = ALL_SIMULATE_NAMES_ICONS_TYPES
 
 MESH_ALL_NAMES_ICONS_TYPES = (
