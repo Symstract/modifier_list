@@ -17,10 +17,10 @@ def get_editable_bpy_object_props(bpy_object, props_to_ignore={}):
     return [p[:] if type(p).__name__ == "bpy_prop_array" else p for p in props]
 
 
-def sync_bpy_object_props(source, destiny):
+def sync_bpy_object_props(source, dest):
     for p in source.bl_rna.properties:
         if not p.is_readonly:
-            setattr(destiny, p.identifier, getattr(source, p.identifier))
+            setattr(dest, p.identifier, getattr(source, p.identifier))
 
 
 # ======================================================================

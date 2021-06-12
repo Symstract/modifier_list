@@ -37,12 +37,12 @@ class OBJECT_OT_ml_sync_active_modifier_between_instances(Operator):
 
         return {'FINISHED'}
 
-    def sync_modifiers(self, source_modifier, destiny_objects):
+    def sync_modifiers(self, source_modifier, dest_objects):
         props_to_sync_separately = {"show_render"}
         source_mod_geom_updating_props = get_editable_bpy_object_props(source_modifier,
                                                                        props_to_sync_separately)
 
-        for dest_ob in destiny_objects:
+        for dest_ob in dest_objects:
             dest_ob_mod_names = [mod.name for mod in dest_ob.modifiers]
 
             if source_modifier.name not in dest_ob_mod_names:
@@ -74,12 +74,12 @@ class OBJECT_OT_ml_sync_active_modifier_between_instances(Operator):
             else:
                 self.obs_already_in_sync_count += 1
 
-    def check_if_modifiers_were_synced_and_report(self, destiny_objects):
+    def check_if_modifiers_were_synced_and_report(self, dest_objects):
         # No modifier synced
-        if self.obs_already_in_sync_count == len(destiny_objects):
+        if self.obs_already_in_sync_count == len(dest_objects):
             self.report({'INFO'}, "Modifer already in sync on all instances")
             return False
-        elif self.obs_without_syncable_modifier_count == len(destiny_objects):
+        elif self.obs_without_syncable_modifier_count == len(dest_objects):
             self.report({'ERROR'}, "No instance has a synchronizable modifier")
             return False
         elif self.obs_without_syncable_modifier_count and self.obs_already_in_sync_count:
@@ -88,7 +88,7 @@ class OBJECT_OT_ml_sync_active_modifier_between_instances(Operator):
             return False
 
         # Modifier synced
-        if self.obs_synced_count == len(destiny_objects):
+        if self.obs_synced_count == len(dest_objects):
             self.report({'INFO'}, "Synchronized a modifier on all instances")
         else:
             self.report({'INFO'}, "Synchronized a modifier on some instances")
