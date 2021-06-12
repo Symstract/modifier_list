@@ -37,7 +37,7 @@ def object_type_has_modifiers(object):
 def get_favourite_modifiers():
     prefs = bpy.context.preferences.addons["modifier_list"].preferences
     return {attr: getattr(prefs, attr) for attr in prefs.__annotations__
-            if attr.startswith("modifier_")}
+            if attr.startswith("modifier_") and attr[-1].isdigit()}
 
 
 def favourite_modifiers_names_icons_types():
