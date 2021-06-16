@@ -129,6 +129,25 @@ def _store_classes(modules):
     sorted_classes = modules
 
 
+from time import perf_counter
+
+
+def _sort_modules(module_order):
+    modules_to_be_sorted = []
+    unsorted_modules = []
+
+    for mod in imported_modules:
+        if mod.__name__.split(".")[-1] in module_order:
+            modules_to_be_sorted.append(mod)
+        else:
+            unsorted_modules.append(mod)
+
+    sorted_modules = sorted(modules_to_be_sorted,
+                            key=lambda mod: module_order.index(mod.__name__.split(".")[-1]))
+
+    return sorted_modules + unsorted_modules
+
+
 # Registering classes
 # ======================================================================
 
@@ -213,18 +232,33 @@ def unregister_bl_classes(addon_name_for_counter=None):
 
 # Calling (un)register
 
-def call_register():
+def call_register(module_order=None):
     """Calls register of all add-on modules.
+
+    Args:
+        module_order: list of module names. Register functions in
+            modules in the list are called before other modules
+            register.
 
     import_modules must have been called before this.
     """
-    for mod in imported_modules:
+    modules = _sort_modules(module_order) if module_order else imported_modules
+
+    for mod in modules:
         if hasattr(mod, "register"):
             mod.register()
 
 
-def call_unregister():
-    """Calls unregister of all add-on modules."""
-    for mod in imported_modules:
+def call_unregister(module_order=None):
+    """Calls unregister of all add-on modules.
+
+    Args:
+        module_order: list of module names. Unregister functions in
+            modules in the list are called before other modules
+            unregister.
+    """
+    modules = _sort_modules(module_order) if module_order else imported_modules
+
+    for mod in modules:
         if hasattr(mod, "unregister"):
             mod.unregister()
