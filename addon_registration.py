@@ -129,9 +129,6 @@ def _store_classes(modules):
     sorted_classes = modules
 
 
-from time import perf_counter
-
-
 def _sort_modules(module_order):
     modules_to_be_sorted = []
     unsorted_modules = []
