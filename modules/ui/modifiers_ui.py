@@ -1,16 +1,8 @@
-import math
 import numpy as np
 
 import bpy
-from bpy.app.handlers import persistent
 from bpy.props import *
-from bpy.types import (
-    Menu,
-    Operator,
-    Panel,
-    PropertyGroup,
-    UIList
-)
+from bpy.types import Menu, Panel, UIList
 
 # Check if the modifier layouts can be imported from Blender. If not,
 # import the layouts included in this addon. This is needed for 2.90 and
