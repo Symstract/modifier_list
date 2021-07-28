@@ -57,7 +57,7 @@ addon_keymaps = []
 def register():
     addon_registration.import_modules("modules")
     addon_registration.register_bl_classes(modules_to_ignore=modules_to_ignore,
-                                           classes_to_ignore=classes_to_ignore, 
+                                           classes_to_ignore=classes_to_ignore,
                                            panel_order=panel_order,
                                            addon_name_for_counter=bl_info["name"])
     addon_registration.call_register()
