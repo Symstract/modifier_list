@@ -409,6 +409,26 @@ class Preferences(AddonPreferences):
         default=True,
         update=use_properties_editor_callback)
 
+    style_items = [
+        ("LIST", "List", "", 1),
+        ("STACK", "Stack", "", 2)
+    ]
+
+    properties_editor_style: EnumProperty(
+        items=style_items,
+        name="Properties Editor Style",
+        description="Display modifiers inside Properties Editor as")
+
+    sidebar_style: EnumProperty(
+        items=style_items,
+        name="Sidebar Style",
+        description="Display modifiers inside the sidebar as")
+
+    popup_style: EnumProperty(
+        items=style_items,
+        name="Popup Style",
+        description="Display modifiers inside the popup as")
+
     keep_sidebar_visible: BoolProperty(
         name="Keep Sidebar Panels Visible",
         description="Keep the sidebar panels always visible")
@@ -486,6 +506,12 @@ class Preferences(AddonPreferences):
         name="Show Confirmation Popups",
         description="Show confirmation popups for Apply All Modifiers "
                     "and Remove All Modifiers operators",
+        default=True)
+
+    show_batch_ops_in_main_layout_with_stack_style: BoolProperty(
+        name="Show Batch Operators In Main Layout With Stack Style",
+        description="When using the stack layout, show the batch operators in the main layout in "
+                    "their own row. Otherwise they are located in the Modifier Extras menu",
         default=True)
 
     batch_ops_reports_items = [
@@ -571,6 +597,32 @@ class Preferences(AddonPreferences):
         layout.prop(self, "use_properties_editor")
         layout.prop(self, "use_sidebar")
 
+        layout.separator()
+
+        layout.label(text="Style:")
+
+        split = layout.split()
+        split.label(text="Properties Editor")
+        split.row().prop(self, "properties_editor_style", expand=True)
+
+        # template_modifiers() doesn't currently work outside of
+        # Properties Editor, so sidebar_style and popup_style are
+        # disabled. https://developer.blender.org/T88655.
+        layout.label(text="The next two settings are currently disabled because of a bug in "
+                     "Blender (T88655)", icon='INFO')
+
+        split = layout.split()
+        split.label(text="Sidebar")
+        row = split.row()
+        row.enabled = False
+        row.prop(self, "sidebar_style", expand=True)
+
+        split = layout.split()
+        split.label(text="Popup")
+        row = split.row()
+        row.enabled = False
+        row.prop(self, "popup_style", expand=True)
+
         if self.use_sidebar:
             layout.separator()
 
@@ -584,8 +636,8 @@ class Preferences(AddonPreferences):
         layout.separator()
 
         # === Favourite modifiers ===
-        box = box_with_header(layout, "Favourite Modifiers", prefs_ui_props,
-                              "favourite_modifiers_expand")
+        _, box = box_with_header(layout, "Favourite Modifiers", prefs_ui_props,
+                                 "favourite_modifiers_expand")
 
         if prefs_ui_props.favourite_modifiers_expand:
             split = box.split()
@@ -601,7 +653,7 @@ class Preferences(AddonPreferences):
             box.prop(self, "use_icons_in_favourites")
 
         # === General settings ===
-        box = box_with_header(layout, "General", prefs_ui_props, "general_expand")
+        _, box = box_with_header(layout, "General", prefs_ui_props, "general_expand")
 
         if prefs_ui_props.general_expand:
             box.prop(self, "insert_modifier_after_active")
@@ -614,13 +666,14 @@ class Preferences(AddonPreferences):
             box.prop(self, "reverse_list")
             box.prop(self, "hide_general_settings_region")
             box.prop(self, "show_confirmation_popups")
+            box.prop(self, "show_batch_ops_in_main_layout_with_stack_style")
 
             split = box.split()
             split.label(text="Show Info Messages For")
             split.row().prop(self, "batch_ops_reports", expand=True)
 
         # === Popup settings ===
-        box = box_with_header(layout, "Popup", prefs_ui_props, "popup_expand")
+        _, box = box_with_header(layout, "Popup", prefs_ui_props, "popup_expand")
 
         if prefs_ui_props.popup_expand:
             row = box.row()
@@ -647,7 +700,7 @@ class Preferences(AddonPreferences):
         # layout.separator()
 
         # === Gizmo object settings ===
-        box = box_with_header(layout, "Gizmo", prefs_ui_props, "gizmo_expand")
+        _, box = box_with_header(layout, "Gizmo", prefs_ui_props, "gizmo_expand")
 
         if prefs_ui_props.gizmo_expand:
             box.prop(self, "parent_new_gizmo_to_object")
@@ -655,8 +708,8 @@ class Preferences(AddonPreferences):
             box.prop(self, "always_delete_gizmo")
 
         # === Modifier Defaults ===
-        box = box_with_header(layout, "Modifier Defaults", prefs_ui_props,
-                              "modifier_defaults_expand")
+        _, box = box_with_header(layout, "Modifier Defaults", prefs_ui_props,
+                                 "modifier_defaults_expand")
 
         if prefs_ui_props.modifier_defaults_expand:
             row = box.row()

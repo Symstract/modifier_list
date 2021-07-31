@@ -2,7 +2,7 @@ import bpy
 from bpy.types import Panel
 from bl_ui.properties_data_modifier import DATA_PT_modifiers as original_DATA_PT_modifiers
 
-from .modifiers_ui import modifiers_ui
+from .modifiers_ui import modifiers_ui_with_list, modifiers_ui_with_stack
 from ..utils import get_ml_active_object, object_type_has_modifiers
 
 
@@ -22,7 +22,13 @@ class DATA_PT_modifiers(Panel):
 
     def draw(self, context):
         layout = self.layout
-        modifiers_ui(context, layout)
+        
+        prefs = bpy.context.preferences.addons["modifier_list"].preferences
+        
+        if prefs.properties_editor_style == 'LIST':
+            modifiers_ui_with_list(context, layout)
+        else:
+            modifiers_ui_with_stack(context, layout)
 
 
 def register_DATA_PT_modifiers(self, context):

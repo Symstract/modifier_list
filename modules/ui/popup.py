@@ -2,7 +2,7 @@ import bpy
 from bpy.props import *
 from bpy.types import Operator
 
-from .modifiers_ui import modifiers_ui
+from .modifiers_ui import modifiers_ui_with_list, modifiers_ui_with_stack
 from .ui_common import pin_object_button
 from .vertex_groups_ui import vertex_groups_ui
 from ..utils import get_ml_active_object, object_type_has_modifiers
@@ -42,7 +42,7 @@ class VIEW3D_OT_ml_modifier_popup(Operator):
         elif not object_type_has_modifiers(ob):
             layout.label(text="Wrong object type")
             return
-        
+
         ml_props = bpy.context.window_manager.modifier_list
         popup_tab = ml_props.popup_active_tab
 
@@ -61,8 +61,11 @@ class VIEW3D_OT_ml_modifier_popup(Operator):
         # === Content ===
         col = split.column()
         if popup_tab == 'MODIFIERS':
-            num_of_rows = prefs.mod_list_def_len
-            modifiers_ui(context, col, num_of_rows=num_of_rows, use_in_popup=True)
+            if prefs.popup_style == 'LIST':
+                num_of_rows = prefs.mod_list_def_len
+                modifiers_ui_with_list(context, col, num_of_rows=num_of_rows, use_in_popup=True)
+            else:
+                modifiers_ui_with_stack(context, col, use_in_popup=True)
         elif popup_tab == 'OBJECT_DATA':
             vertex_groups_ui(context, col, num_of_rows=7)
 

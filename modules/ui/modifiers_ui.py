@@ -15,6 +15,7 @@ else:
     from .properties_data_modifier import DATA_PT_modifiers
 
 from . import ml_modifier_layouts
+from .ui_common import box_with_header
 from .. import icons, modifier_categories
 from ..utils import (
     favourite_modifiers_names_icons_types,
@@ -30,6 +31,105 @@ BLENDER_VERSION_MAJOR_POINT_MINOR = float(bpy.app.version_string[0:4].strip(".")
 
 # UI elements
 # =======================================================================
+
+def favourite_modifier_buttons(layout):
+    """Adds 2 or 3 buttons per row according to addon preferences.
+
+    Empty rows in preferences are skipped."""
+
+    prefs = bpy.context.preferences.addons["modifier_list"].preferences
+    fav_names_icons_types_iter = favourite_modifiers_names_icons_types()
+
+    place_three_per_row = prefs.favourites_per_row == '3'
+
+    for name, icon, mod in fav_names_icons_types_iter:
+        next_mod_1 = next(fav_names_icons_types_iter)
+        if place_three_per_row:
+            next_mod_2 = next(fav_names_icons_types_iter)
+
+        if name or next_mod_1[0] or (place_three_per_row and next_mod_2[0]):
+            row = layout.row(align=True)
+
+            if name:
+                icon = icon if prefs.use_icons_in_favourites else 'NONE'
+                row.operator("object.ml_modifier_add", text=name, icon=icon).modifier_type = mod
+            else:
+                row.label(text="")
+
+            if next_mod_1[0]:
+                icon = next_mod_1[1] if prefs.use_icons_in_favourites else 'NONE'
+                row.operator("object.ml_modifier_add", text=next_mod_1[0],
+                                icon=icon).modifier_type = next_mod_1[2]
+            else:
+                row.label(text="")
+
+            if place_three_per_row:
+                if next_mod_2[0]:
+                    icon = next_mod_2[1] if prefs.use_icons_in_favourites else 'NONE'
+                    row.operator("object.ml_modifier_add", text=next_mod_2[0],
+                                icon=icon).modifier_type = next_mod_2[2]
+                else:
+                    row.label(text="")
+
+
+def modifier_search_and_menu(layout, object):
+    """Creates the modifier search and menu row.
+
+    Returns a sub row which contains the menu so that the modifier
+    extras menu can be added to that in the stack version.
+    """
+    ob = object
+    ml_props = bpy.context.window_manager.modifier_list
+
+    row = layout.split(factor=0.59)
+    row.enabled = ob.library is None or ob.override_library is not None
+
+    if ob.type == 'MESH':
+        row.prop_search(ml_props, "modifier_to_add_from_search", ml_props, "mesh_modifiers",
+                        text="", icon='MODIFIER')
+        sub = row.row()
+        sub.menu("MESH_MT_ml_add_modifier_menu")
+    elif ob.type in {'CURVE', 'SURFACE', 'FONT'}:
+        row.prop_search(ml_props, "modifier_to_add_from_search", ml_props, "curve_modifiers",
+                        text="", icon='MODIFIER')
+        sub = row.row()
+        sub.menu("CURVE_MT_ml_add_modifier_menu")
+    elif ob.type == 'LATTICE':
+        row.prop_search(ml_props, "modifier_to_add_from_search", ml_props, "lattice_modifiers",
+                        text="", icon='MODIFIER')
+        sub = row.row()
+        sub.menu("LATTICE_MT_ml_add_modifier_menu")
+    elif ob.type == 'POINTCLOUD':
+        row.prop_search(ml_props, "modifier_to_add_from_search", ml_props, "pointcloud_modifiers",
+                        text="", icon='MODIFIER')
+        sub = row.row()
+        sub.menu("POINTCLOUD_MT_ml_add_modifier_menu")
+    elif ob.type == 'VOLUME':
+        row.prop_search(ml_props, "modifier_to_add_from_search", ml_props, "volume_modifiers",
+                        text="", icon='MODIFIER')
+        sub = row.row()
+        sub.menu("VOLUME_MT_ml_add_modifier_menu")
+
+    return sub
+
+
+def batch_operators(layout, use_with_stack=False):
+    """Adds the the batch operators into the given layout."""
+    pcoll = icons.preview_collections["main"]
+
+    icon = pcoll['TOGGLE_ALL_MODIFIERS_VISIBILITY']
+    layout.operator("view3d.ml_toggle_all_modifiers", icon_value=icon.icon_id, text="")
+
+    icon = pcoll['APPLY_ALL_MODIFIERS']
+    layout.operator("view3d.ml_apply_all_modifiers", icon_value=icon.icon_id, text="")
+
+    icon = pcoll['DELETE_ALL_MODIFIERS']
+    layout.operator("view3d.ml_remove_all_modifiers", icon_value=icon.icon_id, text="")
+
+    if use_with_stack:
+        icon = pcoll['TOGGLE_ALL_MODIFIER_PANELS']
+        layout.operator("object.ml_toggle_all_modifier_panels", icon_value=icon.icon_id, text="")
+
 
 def show_in_editmode_button(modifier, layout, pcoll, use_in_list):
     row = layout.row(align=True)
@@ -232,6 +332,89 @@ def modifier_visibility_buttons(modifier, layout, use_in_list=False):
         sub.label(text="", translate=False, icon_value=empy_icon.icon_id)
 
 
+def gizmo_object_settings(layout):
+    ob = get_ml_active_object()
+    active_mod_index = ob.ml_modifier_active_index
+    active_mod = ob.modifiers[active_mod_index]
+    gizmo_ob = get_gizmo_object_from_modifier(active_mod)
+
+    # Avoid an error when the gizmo is deleted when using the popup
+    # because in that case the popover doesn't get closed when running
+    # an operator. This label is also shown in the Modifier Extras menu
+    # when the layout style is stack.
+    if not gizmo_ob:
+        layout.label(text="No gizmo")
+        return
+
+    layout.prop(gizmo_ob, "name", text="")
+
+    if gizmo_ob.type == 'EMPTY':
+        layout.prop(gizmo_ob, "empty_display_type", text="")
+        layout.prop(gizmo_ob, "empty_display_size", text="Display Size")
+
+    layout.separator()
+
+    layout.operator("object.ml_gizmo_object_reset_transform", text="Reset Transform")
+
+    layout.label(text="Location:")
+    col = layout.column()
+    col.prop(gizmo_ob, "location", text="")
+
+    layout.label(text="Rotation:")
+    col = layout.column()
+    col.prop(gizmo_ob, "rotation_euler", text="")
+
+    layout.label(text="Parent")
+
+    is_ob_parented_to_gizmo = True if ob.parent == gizmo_ob else False
+    is_gizmo_parented_to_ob = True if gizmo_ob.parent == ob else False
+
+    col = layout.column(align=True)
+
+    sub = col.row()
+    if is_ob_parented_to_gizmo:
+        sub.enabled = False
+    depress = is_gizmo_parented_to_ob
+    unset = is_gizmo_parented_to_ob
+    sub.operator("object.ml_gizmo_object_parent_set", text="Gizmo To Active Object",
+                    depress=depress).unset = unset
+
+    sub = col.row()
+    if is_gizmo_parented_to_ob:
+        sub.enabled = False
+    depress = is_ob_parented_to_gizmo
+    unset = is_ob_parented_to_gizmo
+    sub.operator("object.ml_gizmo_object_child_set", text="Active Object To Gizmo",
+                    depress=depress).unset = unset
+
+    layout.separator()
+
+    layout.operator("object.ml_select", text="Select Gizmo").object_name = gizmo_ob.name
+
+    if gizmo_ob.type in {'EMPTY', 'LATTICE'} and "_Gizmo" in gizmo_ob.name:
+        layout.operator("object.ml_gizmo_object_delete")
+
+
+def modifier_extras_button(context, layout, use_in_popup=False):
+    """Adds the correct popover for the current area type into the given
+    layout.
+
+    This is needed because the content of the popover can be different
+    depending on the layout style. The popover, sidebar and Properties
+    Editor each have a separate setting to choose between a list or a
+    stack layout.
+    """
+    area_type = context.area.type
+
+    if use_in_popup:
+        layout.popover("OBJECT_PT_ml_modifier_extras_for_popup", icon='DOWNARROW_HLT', text="")
+    elif area_type == 'PROPERTIES':
+        layout.popover("OBJECT_PT_ml_modifier_extras_for_properties_editor", icon='DOWNARROW_HLT',
+                       text="")
+    elif area_type == 'VIEW_3D':
+        layout.popover("OBJECT_PT_ml_modifier_extras_for_sidebar", icon='DOWNARROW_HLT', text="")
+
+
 class MESH_MT_ml_add_modifier_menu(Menu):
     bl_label = "Add Modifier"
     bl_description = "Add a procedural operation/effect to the active object"
@@ -396,19 +579,63 @@ class OBJECT_UL_ml_modifier_list(UIList):
             layout.label(text="", icon_value=icon)
 
 
-class OBJECT_PT_ml_modifier_extras(Panel):
+class ModifierExtrasBase:
     bl_label = "Modifier Extras"
     bl_space_type = 'VIEW_3D'
     bl_region_type = 'WINDOW'
 
     def draw(self, context):
+        prefs = bpy.context.preferences.addons["modifier_list"].preferences
+        ml_props = context.window_manager.modifier_list
+        pcoll = icons.preview_collections["main"]
+        ob = get_ml_active_object()
+        active_mod = ob.modifiers[ob.ml_modifier_active_index] if ob.modifiers else None
+
+        class_name = type(self).__name__
+        layout_style_is_stack = any((
+            (class_name.endswith("popup") and prefs.popup_style == 'STACK'),
+            (class_name.endswith("sidebar") and prefs.sidebar_style == 'STACK'),
+            (class_name.endswith("properties_editor") and prefs.properties_editor_style == 'STACK')
+        ))
+
         layout = self.layout
         layout.ui_units_x = 11
 
+        if layout_style_is_stack:
+            if not prefs.show_batch_ops_in_main_layout_with_stack_style:
+                row = layout.row(align=True)
+                row.scale_x = 50
+                batch_operators(row, use_with_stack=layout_style_is_stack)
+                layout.separator()
+
+            if ob.type in {'CURVE', 'FONT', 'LATTICE', 'MESH', 'SURFACE'} and active_mod:
+                if (active_mod.type in modifier_categories.HAVE_GIZMO_PROPERTY
+                        or active_mod.type == 'UV_PROJECT'):
+                    row, box = box_with_header(layout, "Gizmo", ml_props,
+                                               "gizmo_object_settings_expand")
+
+                    gizmo_ob = get_gizmo_object_from_modifier(active_mod)
+
+                    sub = row.row()
+                    sub.scale_x = 1.2
+                    sub.enabled = is_modifier_local(ob, active_mod)
+
+                    if not gizmo_ob:
+                        icon = pcoll['ADD_GIZMO']
+                        sub.operator("object.ml_gizmo_object_add", text="",
+                                     icon_value=icon.icon_id).modifier = active_mod.name
+                    else:
+                        depress = not gizmo_ob.hide_viewport
+                        sub.operator("object.ml_gizmo_object_toggle_visibility", text="",
+                                     icon='EMPTY_ARROWS', depress=depress)
+
+                    if ml_props.gizmo_object_settings_expand:
+                        gizmo_object_settings(box)
+
+                    layout.separator()
+
         if BLENDER_VERSION_MAJOR_POINT_MINOR >= 2.92:
-            ob = get_ml_active_object()
-            if ob.modifiers:
-                active_mod = ob.modifiers[ob.ml_modifier_active_index]
+            if active_mod:
                 layout.operator("object.modifier_copy_to_selected").modifier = active_mod.name
             else:
                 row = layout.row()
@@ -423,6 +650,18 @@ class OBJECT_PT_ml_modifier_extras(Panel):
         layout.separator()
 
         layout.operator("wm.ml_favourite_modifiers_configuration_popup")
+
+
+class OBJECT_PT_ml_modifier_extras_for_popup(Panel, ModifierExtrasBase):
+    pass
+
+
+class OBJECT_PT_ml_modifier_extras_for_sidebar(Panel, ModifierExtrasBase):
+    pass
+
+
+class OBJECT_PT_ml_modifier_extras_for_properties_editor(Panel, ModifierExtrasBase):
+    pass
 
 
 class OBJECT_PT_ml_gizmo_object_settings(Panel):
@@ -441,71 +680,13 @@ class OBJECT_PT_ml_gizmo_object_settings(Panel):
         if not ob.modifiers:
             return
 
-        active_mod_index = ob.ml_modifier_active_index
-        active_mod = ob.modifiers[active_mod_index]
-        gizmo_ob = get_gizmo_object_from_modifier(active_mod)
-
-        # Avoid an error when the gizmo is deleted when using the popup
-        # because in that case the popover doesn't get closed when
-        # running an operator.
-        if not gizmo_ob:
-            layout.label(text="Deleted gizmo")
-            return
-
-        layout.prop(gizmo_ob, "name", text="")
-
-        if gizmo_ob.type == 'EMPTY':
-            layout.prop(gizmo_ob, "empty_display_type", text="")
-            layout.prop(gizmo_ob, "empty_display_size", text="Display Size")
-
-        layout.separator()
-
-        layout.operator("object.ml_gizmo_object_reset_transform", text="Reset Transform")
-
-        layout.label(text="Location:")
-        col = layout.column()
-        col.prop(gizmo_ob, "location", text="")
-
-        layout.label(text="Rotation:")
-        col = layout.column()
-        col.prop(gizmo_ob, "rotation_euler", text="")
-
-        layout.label(text="Parent")
-
-        is_ob_parented_to_gizmo = True if ob.parent == gizmo_ob else False
-        is_gizmo_parented_to_ob = True if gizmo_ob.parent == ob else False
-
-        col = layout.column(align=True)
-
-        sub = col.row()
-        if is_ob_parented_to_gizmo:
-            sub.enabled = False
-        depress = is_gizmo_parented_to_ob
-        unset = is_gizmo_parented_to_ob
-        sub.operator("object.ml_gizmo_object_parent_set", text="Gizmo To Active Object",
-                        depress=depress).unset = unset
-
-        sub = col.row()
-        if is_gizmo_parented_to_ob:
-            sub.enabled = False
-        depress = is_ob_parented_to_gizmo
-        unset = is_ob_parented_to_gizmo
-        sub.operator("object.ml_gizmo_object_child_set", text="Active Object To Gizmo",
-                        depress=depress).unset = unset
-
-        layout.separator()
-
-        layout.operator("object.ml_select", text="Select Gizmo").object_name = gizmo_ob.name
-
-        if gizmo_ob.type in {'EMPTY', 'LATTICE'} and "_Gizmo" in gizmo_ob.name:
-            layout.operator("object.ml_gizmo_object_delete")
+        gizmo_object_settings(layout)
 
 
 # UI
 # =======================================================================
 
-def modifiers_ui(context, layout, num_of_rows=False, use_in_popup=False):
-    ml_props = bpy.context.window_manager.modifier_list
+def modifiers_ui_with_list(context, layout, num_of_rows=False, use_in_popup=False):
     ob = get_ml_active_object()
     active_mod_index = ob.ml_modifier_active_index
     prefs = bpy.context.preferences.addons["modifier_list"].preferences
@@ -526,77 +707,15 @@ def modifiers_ui(context, layout, num_of_rows=False, use_in_popup=False):
 
     # === Favourite modifiers ===
     col = layout.column(align=True)
-
-    # Check if an item or the next item in
-    # favourite_modifiers_names_icons_types has a value and add rows
-    # and buttons accordingly (2 or 3 buttons per row).
-    fav_names_icons_types_iter = favourite_modifiers_names_icons_types()
-
-    place_three_per_row = prefs.favourites_per_row == '3'
-
-    for name, icon, mod in fav_names_icons_types_iter:
-        next_mod_1 = next(fav_names_icons_types_iter)
-        if place_three_per_row:
-            next_mod_2 = next(fav_names_icons_types_iter)
-
-        if name or next_mod_1[0] or (place_three_per_row and next_mod_2[0]):
-            row = col.row(align=True)
-
-            if name:
-                icon = icon if prefs.use_icons_in_favourites else 'NONE'
-                row.operator("object.ml_modifier_add", text=name, icon=icon).modifier_type = mod
-            else:
-                row.label(text="")
-
-            if next_mod_1[0]:
-                icon = next_mod_1[1] if prefs.use_icons_in_favourites else 'NONE'
-                row.operator("object.ml_modifier_add", text=next_mod_1[0],
-                                icon=icon).modifier_type = next_mod_1[2]
-            else:
-                row.label(text="")
-
-            if place_three_per_row:
-                if next_mod_2[0]:
-                    icon = next_mod_2[1] if prefs.use_icons_in_favourites else 'NONE'
-                    row.operator("object.ml_modifier_add", text=next_mod_2[0],
-                                icon=icon).modifier_type = next_mod_2[2]
-                else:
-                    row.label(text="")
+    favourite_modifier_buttons(col)
 
     # === Modifier search and menu ===
     col = layout.column()
-    row = col.split(factor=0.59)
-    row.enabled = ob.library is None or ob.override_library is not None
-    if ob.type == 'MESH':
-        row.prop_search(ml_props, "modifier_to_add_from_search", ml_props, "mesh_modifiers",
-                        text="", icon='MODIFIER')
-        row.menu("MESH_MT_ml_add_modifier_menu")
-    elif ob.type in {'CURVE', 'SURFACE', 'FONT'}:
-        row.prop_search(ml_props, "modifier_to_add_from_search", ml_props, "curve_modifiers",
-                        text="", icon='MODIFIER')
-        row.menu("CURVE_MT_ml_add_modifier_menu")
-    elif ob.type == 'LATTICE':
-        row.prop_search(ml_props, "modifier_to_add_from_search", ml_props, "lattice_modifiers",
-                        text="", icon='MODIFIER')
-        row.menu("LATTICE_MT_ml_add_modifier_menu")
-    elif ob.type == 'POINTCLOUD':
-        row.prop_search(ml_props, "modifier_to_add_from_search", ml_props, "pointcloud_modifiers",
-                        text="", icon='MODIFIER')
-        row.menu("POINTCLOUD_MT_ml_add_modifier_menu")
-    elif ob.type == 'VOLUME':
-        row.prop_search(ml_props, "modifier_to_add_from_search", ml_props, "volume_modifiers",
-                        text="", icon='MODIFIER')
-        row.menu("VOLUME_MT_ml_add_modifier_menu")
+    modifier_search_and_menu(col, ob)
 
     # === Modifier list ===
-    # Get the list index from
-    # ml_props.ml_active_object_modifier_active_index instead of
-    # ob.ml_modifier_active_index because library overrides prevent
-    # editing that value directly.
-    # ml_props.ml_active_object_modifier_active_index has get and set
-    # methods for accessing ob.ml_modifier_active_index indirectly.
     layout.template_list("OBJECT_UL_ml_modifier_list", "", ob, "modifiers",
-                         ml_props, "active_object_modifier_active_index", rows=num_of_rows,
+                         ob, "ml_modifier_active_index", rows=num_of_rows,
                          sort_reverse=prefs.reverse_list)
 
     # When sub.scale_x is 1.5 and the area/region is narrow, the buttons
@@ -610,22 +729,14 @@ def modifiers_ui(context, layout, num_of_rows=False, use_in_popup=False):
 
     row = layout.row(align=align_button_groups)
 
-    # === Modifier batch operators ===
+    # === Modifier batch operators and modifier extras menu ===
     sub = row.row(align=True)
     sub.scale_x = 3 if align_button_groups else 1.34
-
-    icon = pcoll['TOGGLE_ALL_MODIFIERS_VISIBILITY']
-    sub.operator("view3d.ml_toggle_all_modifiers", icon_value=icon.icon_id, text="")
-
-    icon = pcoll['APPLY_ALL_MODIFIERS']
-    sub.operator("view3d.ml_apply_all_modifiers", icon_value=icon.icon_id, text="")
-
-    icon = pcoll['DELETE_ALL_MODIFIERS']
-    sub.operator("view3d.ml_remove_all_modifiers", icon_value=icon.icon_id, text="")
+    batch_operators(sub)
 
     sub_sub = sub.row(align=True)
     sub_sub.scale_x = 0.65 if align_button_groups else 0.85
-    sub_sub.popover("OBJECT_PT_ml_modifier_extras", icon='DOWNARROW_HLT', text="")
+    modifier_extras_button(context, sub_sub, use_in_popup=use_in_popup)
 
     # === List manipulation ===
     sub = row.row(align=True)
@@ -742,3 +853,40 @@ def modifiers_ui(context, layout, num_of_rows=False, use_in_popup=False):
     else:
         mp = DATA_PT_modifiers(context)
         getattr(mp, active_mod.type)(col, ob, active_mod)
+
+
+def modifiers_ui_with_stack(context, layout, use_in_popup=False):
+    ob = get_ml_active_object()
+    active_mod_index = ob.ml_modifier_active_index
+    prefs = bpy.context.preferences.addons["modifier_list"].preferences
+
+    # Ensure the active index is never out of range. That can happen if
+    # a modifier gets deleted without using Modifier List, e.g. when
+    # removing a Cloth modifier from within the physics panel.
+    if ob.modifiers and active_mod_index > len(ob.modifiers) - 1:
+        layout.label(text="The active modifier index has gotten out of range...")
+        layout.operator("object.ml_reset_modifier_active_index")
+        return
+
+    if ob.modifiers:
+        # This makes operators work without passing the active modifier
+        # to them manually as an argument.
+        layout.context_pointer_set("modifier", ob.modifiers[ob.ml_modifier_active_index])
+
+    # === Favourite modifiers ===
+    col = layout.column(align=True)
+    favourite_modifier_buttons(col)
+
+    # === Modifier search and menu and modifier extras menu ===
+    col = layout.column()
+    row = modifier_search_and_menu(col, ob)
+    modifier_extras_button(context, row, use_in_popup=use_in_popup)
+
+    # === Modifier batch operators ===
+    if prefs.show_batch_ops_in_main_layout_with_stack_style:
+        row = layout.row(align=True)
+        row.scale_x = 50
+        batch_operators(row, use_with_stack=True)
+
+    # === Modifier stack ===
+    layout.template_modifiers()

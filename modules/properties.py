@@ -13,35 +13,18 @@ BLENDER_VERSION_MAJOR_POINT_MINOR = float(bpy.app.version_string[0:4].strip(".")
 # Callbacks
 # ======================================================================
 
-def active_object_modifier_active_index_get(self):
-    """Function for reading ob.ml_modifier_active_index indirectly
-    to avoid problems when using library overrides.
-    """
+def modifier_active_index_get(self):
     ob = get_ml_active_object()
 
-    if not ob:
-        return 0
+    for mod in ob.modifiers:
+        if mod.is_active:
+            return ob.modifiers.find(mod.name)
 
-    return ob.ml_modifier_active_index
-
-
-def active_object_modifier_active_index_set(self, value):
-    """Function for writing ob.ml_modifier_active_index indirectly
-    to avoid problems when using library overrides.
-    """
-    ob = get_ml_active_object()
-
-    if ob:
-        ob.ml_modifier_active_index = value
+    return 0
 
 
-def set_active_modifier(self, context):
-    """Sets the active modifier which is used for node editor context"""
-    ob = get_ml_active_object()
-    mods = ob.modifiers
-
-    if mods:
-        mods[ob.ml_modifier_active_index].is_active = True
+def modifier_active_index_set(self, value):
+    get_ml_active_object().modifiers[value].is_active = True
 
 
 def pinned_object_ensure_users(scene):
@@ -230,14 +213,6 @@ class ML_PreferencesUIProperties(PropertyGroup):
 
 
 class ML_WindowManagerProperties(PropertyGroup):
-    # Property to access ob.ml_modifier_active_index through, to avoid
-    # the problem of modifier_active_index not being possible to be
-    # changed directly by the modifier list when using library
-    # overrides.
-    active_object_modifier_active_index: IntProperty(
-        get=active_object_modifier_active_index_get,
-        set=active_object_modifier_active_index_set
-    )
     modifier_to_add_from_search: StringProperty(
         name="Modifier to add",
         update=add_modifier,
@@ -258,6 +233,7 @@ class ML_WindowManagerProperties(PropertyGroup):
         default='MODIFIERS')
     preferences_ui_props: PointerProperty(type=ML_PreferencesUIProperties)
     active_favourite_modifier_slot_index: IntProperty()
+    gizmo_object_settings_expand: BoolProperty()
 
 
 # Registering
@@ -286,7 +262,9 @@ def register():
     else:
         bpy.types.Object.ml_modifier_active_index = IntProperty(
             options={'LIBRARY_EDITABLE'},
-            update=set_active_modifier)
+            override={'LIBRARY_OVERRIDABLE'},
+            get=modifier_active_index_get,
+            set=modifier_active_index_set)
 
     wm = bpy.types.WindowManager
     wm.modifier_list = PointerProperty(type=ML_WindowManagerProperties)

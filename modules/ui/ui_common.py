@@ -6,11 +6,11 @@ from ..utils import get_favourite_modifiers
 
 def box_with_header(layout, text, expand_data, expand_prop):
     """Template for a header for boxes used as panels.
-    
+
     Includes a triangle icon whose state is defined by expand_prop, a
     property of expand_data.
 
-    Returns a box.
+    Returns the header row and the box.
     """
     box = layout.box()
 
@@ -19,7 +19,7 @@ def box_with_header(layout, text, expand_data, expand_prop):
     row.prop(expand_data, expand_prop, icon=icon, text="", emboss=False)
     row.label(text=text)
 
-    return box
+    return row, box
 
 
 def favourite_modifiers_configuration_layout(context, layout):
@@ -31,8 +31,8 @@ def favourite_modifiers_configuration_layout(context, layout):
 
     # === Modifier menu ===
 
-    box = box_with_header(layout, "Menu", ml_props.preferences_ui_props,
-                          "favourite_modifiers_menu_expand")
+    _, box = box_with_header(layout, "Menu", ml_props.preferences_ui_props,
+                             "favourite_modifiers_menu_expand")
 
     if ml_props.preferences_ui_props.favourite_modifiers_menu_expand:
         box.prop(prefs, "auto_sort_favourites_when_choosing_from_menu")
@@ -70,7 +70,7 @@ def favourite_modifiers_configuration_layout(context, layout):
         for name, icon, _ in modifier_categories.ALL_SIMULATE_NAMES_ICONS_TYPES:
             col.operator("ui.ml_favourite_modifier_toggle", text=name, icon=icon,
                          depress=name in favourite_mods).modifier = name
-        
+
         layout.separator()
 
     # === Favourite slots ===
@@ -86,7 +86,7 @@ def favourite_modifiers_configuration_layout(context, layout):
         if (i == 0 or (prefs.favourites_per_row == '2' and i % 2 == 0)
                 or (prefs.favourites_per_row == '3' and i % 3 == 0)):
             split = col.split(align=True)
-        
+
         sub_row = split.row(align=True)
         icon = 'LAYER_ACTIVE' if i == active_slot_index else 'LAYER_USED'
         sub_row.operator("ui.ml_active_favourite_modifier_slot_set", icon=icon, text="",

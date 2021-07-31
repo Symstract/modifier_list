@@ -1,7 +1,7 @@
 import bpy
 from bpy.types import Panel
 
-from .modifiers_ui import modifiers_ui
+from .modifiers_ui import modifiers_ui_with_list, modifiers_ui_with_stack
 from .ui_common import pin_object_button
 from .vertex_groups_ui import vertex_groups_ui
 from ..utils import get_ml_active_object, object_type_has_modifiers
@@ -42,13 +42,17 @@ class VIEW3D_PT_ml_modifiers(Panel, BasePanel):
         layout = self.layout
 
         ob = get_ml_active_object()
+        prefs = bpy.context.preferences.addons["modifier_list"].preferences
 
         if not ob:
             layout.label(text="No active object")
         elif not object_type_has_modifiers(ob):
             layout.label(text="Wrong object type")
         else:
-            modifiers_ui(context, layout)
+            if prefs.sidebar_style == 'LIST':
+                modifiers_ui_with_list(context, layout)
+            else:
+                modifiers_ui_with_stack(context, layout)
 
 
 class VIEW3D_PT_ml_vertex_groups(Panel, BasePanel):
