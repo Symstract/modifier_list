@@ -654,6 +654,7 @@ class Preferences(AddonPreferences):
             box.prop(self, "match_gizmo_size_to_object")
             box.prop(self, "always_delete_gizmo")
 
+        # === Modifier Defaults ===
         box = box_with_header(layout, "Modifier Defaults", prefs_ui_props,
                               "modifier_defaults_expand")
 
