@@ -5,12 +5,40 @@ import os
 import bpy
 # import rna_keymap_ui
 from bpy.props import *
-from bpy.types import AddonPreferences
+from bpy.types import AddonPreferences, PropertyGroup
+from mathutils import Vector
 
 from .icons import load_icons
+from .modifier_categories import ALL_MODIFIERS_NAMES_ICONS_TYPES
 from .ui.properties_editor import register_DATA_PT_modifiers
 from .ui.ui_common import box_with_header, favourite_modifiers_configuration_layout
 from .ui.sidebar import update_sidebar_category
+
+
+# Property reading
+# ======================================================================
+
+def ensure_valid_read_value(value):
+    if isinstance(value, list):
+        if not value or isinstance(value[0], str):
+            return set(value)
+    elif isinstance(value, dict) and value["type"] == "Vector":
+        return Vector(value["value"])
+
+    return value
+
+
+def fill_prefs(prefs_dict, prefs):
+    for prop in prefs_dict.keys():
+        if prop not in prefs.__annotations__:
+            continue
+
+        prop_in_prefs = getattr(prefs, prop)
+
+        if isinstance(prop_in_prefs, PropertyGroup):
+            fill_prefs(prefs_dict[prop], prop_in_prefs)
+        else:
+            setattr(prefs, prop, ensure_valid_read_value(prefs_dict[prop]))
 
 
 def read_prefs(prefs_file):
@@ -18,31 +46,53 @@ def read_prefs(prefs_file):
     if not os.path.exists(prefs_file) or not prefs_file.endswith(".json"):
         return
 
-    prefs = bpy.context.preferences.addons["modifier_list"].preferences
-
     with open(prefs_file) as f:
         try:
             prefs_dict = json.load(f)
-            for prop in prefs_dict.keys():
-                if prop in prefs.__annotations__:
-                    value = prefs_dict[prop]
-                    ensured_value = set(value) if type(value) is list else value
-                    setattr(prefs, prop, ensured_value)
         except json.decoder.JSONDecodeError:
-            pass
+            return
+
+    prefs = bpy.context.preferences.addons["modifier_list"].preferences
+    fill_prefs(prefs_dict, prefs)
+
+
+# Property writing
+# ======================================================================
+
+def ensure_valid_write_value(value):
+    if isinstance(value, set):
+        return list(value)
+    elif isinstance(value, Vector):
+        return {
+            "type": "Vector",
+            "value": value.to_tuple()
+        }
+    elif type(value).__name__ == "bpy_prop_array":
+        return list(value)
+
+    return value
+
+
+def create_prefs_dict():
+    prefs = bpy.context.preferences.addons["modifier_list"].preferences
+    prefs_dict = {}
+    fill_prefs_dict(prefs, prefs_dict)
+    return prefs_dict
+
+
+def fill_prefs_dict(prefs, prefs_dict):
+    for prop in prefs.__annotations__:
+        prop_in_prefs = getattr(prefs, prop)
+        if isinstance(prop_in_prefs, PropertyGroup):
+            prefs_dict[prop] = {}
+            fill_prefs_dict(prop_in_prefs, prefs_dict[prop])
+        else:
+            prefs_dict[prop] = ensure_valid_write_value(prop_in_prefs)
 
 
 def write_prefs():
     """Write preferences into a json"""
-    prefs = bpy.context.preferences.addons["modifier_list"].preferences
-
-    prefs_dict = {}
-
-    for prop in prefs.__annotations__:
-        value = getattr(prefs, prop)
-        ensured_value = list(value) if type(value) is set else value
-        prefs_dict[prop] = ensured_value
-
+    prefs_dict = create_prefs_dict()
     config_dir = bpy.utils.user_resource('CONFIG')
     ml_config_dir = os.path.join(config_dir, "modifier_list")
 
@@ -55,6 +105,9 @@ def write_prefs():
         json.dump(prefs_dict, f, ensure_ascii=False, indent=4)
 
 
+# Callbacks
+# ======================================================================
+
 def use_properties_editor_callback(self, context):
     register_DATA_PT_modifiers(self, context)
 
@@ -66,6 +119,276 @@ def sidebar_category_callback(self, context):
 def icon_color_callback(self, context):
     load_icons()
 
+
+# Modifier default settings
+# ======================================================================
+
+MODIFIER_CLASS_MAP = {
+    "ARMATURE": "ArmatureModifier",
+    "ARRAY": "ArrayModifier",
+    "BEVEL": "BevelModifier",
+    "BOOLEAN": "BooleanModifier",
+    "BUILD": "BuildModifier",
+    "CAST": "CastModifier",
+    "CLOTH": "ClothModifier",
+    "COLLISION": "CollisionModifier",
+    "CORRECTIVE_SMOOTH": "CorrectiveSmoothModifier",
+    "CURVE": "CurveModifier",
+    "DATA_TRANSFER": "DataTransferModifier",
+    "DECIMATE": "DecimateModifier",
+    "DISPLACE": "DisplaceModifier",
+    "DYNAMIC_PAINT": "DynamicPaintModifier",
+    "EDGE_SPLIT": "EdgeSplitModifier",
+    "EXPLODE": "ExplodeModifier",
+    "FLUID": "FluidModifier",
+    "HOOK": "HookModifier",
+    "LAPLACIANDEFORM": "LaplacianDeformModifier",
+    "LAPLACIANSMOOTH": "LaplacianSmoothModifier",
+    "LATTICE": "LatticeModifier",
+    "MASK": "MaskModifier",
+    "MESH_CACHE": "MeshCacheModifier",
+    "MESH_DEFORM": "MeshDeformModifier",
+    "MESH_SEQUENCE_CACHE": "MeshSequenceCacheModifier",
+    "MESH_TO_VOLUME": "MeshToVolumeModifier",
+    "MIRROR": "MirrorModifier",
+    "MULTIRES": "MultiresModifier",
+    "NODES": "NodesModifier",
+    "NORMAL_EDIT": "NormalEditModifier",
+    "OCEAN": "OceanModifier",
+    "PARTICLE_INSTANCE": "ParticleInstanceModifier",
+    "PARTICLE_SYSTEM": "ParticleSystemModifier",
+    "REMESH": "RemeshModifier",
+    "SCREW": "ScrewModifier",
+    "SHRINKWRAP": "ShrinkwrapModifier",
+    "SIMPLE_DEFORM": "SimpleDeformModifier",
+    "SKIN": "SkinModifier",
+    "SMOOTH": "SmoothModifier",
+    "SOFT_BODY": "SoftBodyModifier",
+    "SOLIDIFY": "SolidifyModifier",
+    "SUBSURF": "SubsurfModifier",
+    "SURFACE_DEFORM": "SurfaceDeformModifier",
+    "TRIANGULATE": "TriangulateModifier",
+    "UV_PROJECT": "UVProjectModifier",
+    "UV_WARP": "UVWarpModifier",
+    "VERTEX_WEIGHT_EDIT": "VertexWeightEditModifier",
+    "VERTEX_WEIGHT_MIX": "VertexWeightMixModifier",
+    "VERTEX_WEIGHT_PROXIMITY": "VertexWeightProximityModifier",
+    "VOLUME_DISPLACE": "VolumeDisplaceModifier",
+    "VOLUME_TO_MESH": "VolumeToMeshModifier",
+    "WARP": "WarpModifier",
+    "WAVE": "WaveModifier",
+    "WEIGHTED_NORMAL": "WeightedNormalModifier",
+    "WELD": "WeldModifier",
+    "WIREFRAME": "WireframeModifier"
+}
+
+
+# For some reason some modifier properties' RNA defaults are different
+# than the actual initial values the modifier has when it's added, so
+# these need to be listed here.
+ACTUAL_MODIFIER_DEFAULTS_PER_MODIFIER = {
+    "BEVEL": {
+        "loop_slide": True,
+        "use_clamp_overlap": True
+    },
+    "DATA_TRANSFER": {
+        "data_types_edges": set(),
+        "data_types_loops": set(),
+        "data_types_polys": set(),
+        "data_types_verts": set(),
+        "mix_factor": 1.0
+    },
+    "DECIMATE": {"delimit": set()},
+    "HOOK": {"matrix_inverse": (
+                0.0, 0.0, 0.0, 0.0,
+                0.0, 0.0, 0.0, 0.0,
+                0.0, 0.0, 0.0, 0.0,
+                0.0, 0.0, 0.0, 0.0
+            )
+    },
+    "MESH_CACHE": {"flip_axis": set()},
+    "MESH_SEQUENCE_CACHE": {"read_data": {'VERT', 'UV', 'POLY', 'COLOR'}},
+    "MESH_TO_VOLUME": {
+        "density": 1.0,
+        "exterior_band_width": 0.1,
+        "interior_band_width": 0.1,
+        "use_fill_volume": True,
+        "voxel_amount": 32,
+        "voxel_size": 0.1
+    },
+    "MIRROR": {
+        "use_axis": (True, False, False),
+        "use_mirror_merge": True
+    },
+    "NORMAL_EDIT": {"use_direction_parallel": False},
+    "SUBSURF": {"use_limit_surface": True},
+    "VERTEX_WEIGHT_PROXIMITY": {
+        "proximity_geometry": {'VERTEX'},
+        "proximity_mode": 'OBJECT'
+    },
+    "VOLUME_DISPLACE": {
+        "strength": 0.5,
+        "texture_mid_level": (0.5, 0.5, 0.5),
+        "texture_sample_radius": 1.0},
+    "VOLUME_TO_MESH": {
+        "threshold": 0.1,
+        "voxel_amount": 32,
+        "voxel_size": 0.1
+    },
+}
+
+
+SETTINGS_TO_IGNORE_PER_MODIFIER = {
+    "DATA_TRANSFER": {
+        # These are enums whose items depend on the source object and
+        # can't therefore be set beforehand. Or, actually, one of the
+        # items in enum_items seems to be 'ACTIVE' but then it doesn't
+        # seem to be a valid option for the modifier.
+        "layers_vgroup_select_src",
+        "layers_vcol_select_src",
+        "layers_uv_select_src",
+        # As with the settings above, these settings' enum_items also
+        # include the option 'ACTIVE' but again it's not a valid option
+        # to set for the modifier. Other options are 'NAME' and 'INDEX'
+        # and the data layer names of the destination object. The
+        # simplest thing is to just ignore these as well.
+        "layers_vgroup_select_dst",
+        "layers_vcol_select_dst",
+        "layers_uv_select_dst",
+        # For some reason, setting data_types_polys to any value
+        # disables the 'UV' option in data_types_loops enum, so it has
+        # to be ignored.
+        "data_types_polys"
+    },
+    "HOOK": {
+        # It shouldn't be useful to set a default for this, this isn't
+        # even shown in the modifier's UI.
+        "matrix_inverse"
+    },
+    "MULTIRES": {
+        # levels, sculpt_levels or render_levels can't be set directly,
+        # which wouldn't make sense anyway.
+        "levels",
+        "sculpt_levels",
+        "render_levels"
+    }
+}
+
+
+class ModifierDefaults(PropertyGroup):
+    pass
+
+
+def add_modifier_defaults_groups():
+    modifier_defaults_groups = []
+
+    ModifierDefaults.__annotations__ = dict()
+
+    for identifier, class_name in MODIFIER_CLASS_MAP.items():
+        specific_modifier_group = type(identifier + "_Defaults", (PropertyGroup,), {})
+        modifier_defaults_groups.append(specific_modifier_group)
+        ModifierDefaults.__annotations__[identifier] = PointerProperty(
+            type=specific_modifier_group)
+        cls = getattr(bpy.types, class_name)
+        add_modifier_defaults_group_props(identifier, cls, specific_modifier_group)
+
+    return modifier_defaults_groups
+
+
+def add_modifier_defaults_group_props(identifier, cls, property_group):
+    attrs_to_filter = {
+        "show_render",
+        "show_viewport",
+        "show_in_editmode",
+        "show_on_cage",
+        "use_apply_on_spline",
+        "show_expanded",
+        "is_active",
+        "debug_options"
+    }
+    all_mod_attrs = cls.bl_rna.properties.values()
+    mod_settings = [attr for attr in all_mod_attrs
+                    if attr.identifier not in attrs_to_filter
+                    and not attr.identifier.startswith("_")]
+
+    property_group.__annotations__ = dict()
+
+    for setting in mod_settings:
+        if setting.is_readonly:
+            continue
+
+        if identifier in SETTINGS_TO_IGNORE_PER_MODIFIER.keys():
+            if setting.identifier in SETTINGS_TO_IGNORE_PER_MODIFIER[identifier]:
+                continue
+
+        prop_class_name = type(setting).__name__
+
+        if prop_class_name in {"CollectionProperty", "PointerProperty", "StringProperty"}:
+            continue
+
+        kwargs = {
+            "name": setting.name,
+            "description": setting.description
+        }
+
+        if prop_class_name == "EnumProperty":
+            enum_items = [(s.identifier, s.name, s.description, s.value)
+                            for s in setting.enum_items.values()]
+            kwargs["items"] = enum_items
+            if setting.is_enum_flag:
+                kwargs["options"] = {'ENUM_FLAG'}
+                kwargs["default"] = setting.default_flag
+            else:
+                kwargs["default"] = setting.default
+        elif prop_class_name in {"FloatProperty", "IntProperty"}:
+            kwargs["min"] = setting.hard_min
+            kwargs["max"] = setting.hard_max
+            kwargs["soft_min"] = setting.soft_min
+            kwargs["soft_max"] = setting.soft_max
+
+            # Some modifier properties have a wrong subtype, which need
+            # to be worked around. Also, even reading some would cause
+            # warnings in the console.
+            # https://developer.blender.org/T89213
+            # Shrkinwrap's "offset" and "project_limit" and Warp's
+            # "falloff_radius" have been fixed in Blender 3.0.
+            if ((identifier == 'SHRINKWRAP' and setting.identifier in {"offset", "project_limit"})
+                    or (identifier == 'WARP' and setting.identifier == "falloff_radius")):
+                kwargs["subtype"] = 'DISTANCE'
+            elif identifier == 'NORMAL_EDIT' and setting.identifier == "offset":
+                kwargs["subtype"] = 'COORDINATES'
+            elif not (identifier == 'OCEAN' and setting.identifier == "wind_velocity"):
+                kwargs["subtype"] = setting.subtype
+
+            if prop_class_name == "FloatProperty":
+                kwargs["unit"] = setting.unit
+
+        if hasattr(setting, "is_array") and setting.is_array:
+            kwargs["size"] = setting.array_length
+            kwargs["default"] = setting.default_array
+            if prop_class_name == "FloatProperty":
+                prop = FloatVectorProperty
+            elif prop_class_name == "IntProperty":
+                prop = IntVectorProperty
+            elif prop_class_name == "BoolProperty":
+                prop = BoolVectorProperty
+        else:
+            prop = getattr(bpy.props, prop_class_name)
+            if prop_class_name != "EnumProperty":
+                kwargs["default"] = setting.default
+
+        # Override the RNA default with the actual default if they don't
+        # match.
+        if identifier in ACTUAL_MODIFIER_DEFAULTS_PER_MODIFIER.keys():
+            actual_defaults = ACTUAL_MODIFIER_DEFAULTS_PER_MODIFIER[identifier]
+            if setting.identifier in actual_defaults.keys():
+                kwargs["default"] = actual_defaults[setting.identifier]
+
+        property_group.__annotations__[setting.identifier] = prop(**kwargs)
+
+
+# Preferences
+# ======================================================================
 
 class Preferences(AddonPreferences):
     bl_idname = "modifier_list"
@@ -209,10 +532,14 @@ class Preferences(AddonPreferences):
         description="Always delete the gizmo object when applying or removing a modifier. "
                     "When off, the gizmo object is deleted only when holding shift")
 
+    # === Modifier defaults ===
+    modifier_defaults: PointerProperty(type=ModifierDefaults)
+
     def draw(self, context):
         layout = self.layout
 
-        prefs_ui_props = context.window_manager.modifier_list.preferences_ui_props
+        ml_props = context.window_manager.modifier_list
+        prefs_ui_props = ml_props.preferences_ui_props
 
         # === Info ===
         col = layout.column()
@@ -251,6 +578,8 @@ class Preferences(AddonPreferences):
             split = layout.split()
             split.label(text="Sidebar Category")
             split.prop(self, "sidebar_category", text="")
+
+            category = self.sidebar_category
 
         layout.separator()
 
@@ -325,8 +654,59 @@ class Preferences(AddonPreferences):
             box.prop(self, "match_gizmo_size_to_object")
             box.prop(self, "always_delete_gizmo")
 
+        box = box_with_header(layout, "Modifier Defaults", prefs_ui_props,
+                              "modifier_defaults_expand")
+
+        if prefs_ui_props.modifier_defaults_expand:
+            row = box.row()
+            row.prop_search(prefs_ui_props, "modifier_to_show_defaults_for", ml_props,
+                            "all_modifiers", text="", icon='MODIFIER')
+
+            sub = row.row()
+            sub.scale_x = 0.7
+            sub.operator("wm.ml_modifier_defaults_reset", text="Reset to Defaults",
+                         icon='LOOP_BACK')
+
+            mod_name = prefs_ui_props.modifier_to_show_defaults_for
+
+            if not mod_name:
+                box.label(text="Select a modifier to show defaults for")
+                return
+
+            if mod_name == "Geometry Nodes":
+                box.label(text="No supported settings")
+                return
+
+            box.separator(factor=0.1)
+
+            sub = box.box()
+
+            mod_type = ml_props.all_modifiers[mod_name].value
+            prop_group = getattr(self.modifier_defaults, mod_type)
+
+            for prop in prop_group.__annotations__.keys():
+                sub.prop(prop_group, prop)
+
+
+# Registering
+# ======================================================================
+
+classes = None
+
 
 def register():
+    defaults_groups = add_modifier_defaults_groups()
+
+    global classes
+    classes = [
+        *defaults_groups,
+        ModifierDefaults,
+        Preferences
+    ]
+
+    for cls in classes:
+        bpy.utils.register_class(cls)
+
     # === Read preferences from a json ===
     config_dir = bpy.utils.user_resource('CONFIG')
     prefs_file = os.path.join(config_dir, "modifier_list", "preferences.json")
@@ -336,3 +716,6 @@ def register():
 def unregister():
     # === Write preferences into a json ===
     write_prefs()
+
+    for cls in reversed(classes):
+        bpy.utils.unregister_class(cls)

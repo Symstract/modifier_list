@@ -45,6 +45,8 @@ class OBJECT_OT_ml_modifier_add(Operator):
             self.report({'ERROR'}, f"Cannot add {modifier_name} modifier for this object type")
             return {'FINISHED'}
 
+        self.set_modifier_default_settings()
+
         # Enable auto smooth if modifier is weighted normal
         if self.modifier_type == 'WEIGHTED_NORMAL':
             ob.data.use_auto_smooth = True
@@ -105,3 +107,36 @@ class OBJECT_OT_ml_modifier_add(Operator):
         self.alt = event.alt
 
         return self.execute(context)
+
+    def set_modifier_default_settings(self):
+        mod = get_ml_active_object().modifiers[-1]
+        mod_type = mod.type
+        prefs = bpy.context.preferences.addons["modifier_list"].preferences
+        defaults_group = getattr(prefs.modifier_defaults, mod.type)
+        defaults = [(attr, getattr(defaults_group, attr))
+                    for attr in defaults_group.__annotations__]
+
+        for setting, value in defaults:
+            # Some setting are synched, so the other one would override
+            # the first one. So, only the other should be set, according
+            # to the setting that determines which one is used.
+
+            if mod_type == 'BEVEL':
+                offset_type = defaults_group.offset_type
+
+                if setting == "width" and offset_type == 'PERCENT':
+                    continue
+
+                if setting == "width_pct" and offset_type != 'PERCENT':
+                    continue
+
+            elif mod_type == 'SIMPLE_DEFORM':
+                deform_method = defaults_group.deform_method
+
+                if setting == "angle" and deform_method not in {'TWIST', 'BEND'}:
+                    continue
+
+                if setting == "factor" and deform_method not in {'TAPER', 'STRETCH'}:
+                    continue
+
+            setattr(mod, setting, value)

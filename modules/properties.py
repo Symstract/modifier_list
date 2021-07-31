@@ -222,6 +222,11 @@ class ML_PreferencesUIProperties(PropertyGroup):
     general_expand: BoolProperty(name="")
     popup_expand: BoolProperty(name="")
     gizmo_expand: BoolProperty(name="")
+    modifier_defaults_expand: BoolProperty()
+    modifier_to_show_defaults_for: StringProperty(
+        name="Modifier to show defaults for",
+        description="Search for a modifier and show its default settings to customize",
+        default="Armature")
 
 
 class ML_WindowManagerProperties(PropertyGroup):

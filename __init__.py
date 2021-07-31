@@ -37,7 +37,10 @@ import bpy
 from . import addon_registration
 
 
+# register_bl_classes arguments
+
 modules_to_ignore = (
+    "preferences",
     "properties",
 )
 
@@ -50,6 +53,12 @@ panel_order = (
     "VIEW3D_PT_ml_vertex_groups",
 )
 
+# call_register arguments
+
+module_order = (
+    "preferences",
+)
+
 
 addon_keymaps = []
 
@@ -60,7 +69,7 @@ def register():
                                            classes_to_ignore=classes_to_ignore,
                                            panel_order=panel_order,
                                            addon_name_for_counter=bl_info["name"])
-    addon_registration.call_register()
+    addon_registration.call_register(module_order=module_order)
 
     # === Keymap ===
     wm = bpy.context.window_manager
@@ -77,5 +86,5 @@ def unregister():
         km.keymap_items.remove(kmi)
     addon_keymaps.clear()
 
-    addon_registration.call_unregister()
+    addon_registration.call_unregister(module_order=reversed(module_order))
     addon_registration.unregister_bl_classes(addon_name_for_counter=bl_info["name"])
