@@ -24,7 +24,10 @@ def modifier_active_index_get(self):
 
 
 def modifier_active_index_set(self, value):
-    get_ml_active_object().modifiers[value].is_active = True
+    mods = get_ml_active_object().modifiers
+
+    if mods:
+        mods[value].is_active = True
 
 
 def pinned_object_ensure_users(scene):
