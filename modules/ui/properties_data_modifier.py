@@ -1407,7 +1407,7 @@ class DATA_PT_modifiers:
             layout.label(text="Built without Remesh modifier")
             return
 
-        layout.prop(md, "mode")
+        layout.row().prop(md, "mode", expand=True)
 
         row = layout.row()
         if md.mode == 'VOXEL':
