@@ -13,28 +13,18 @@ else:
 from..utils import get_gizmo_object_from_modifier
 
 
-BLENDER_VERSION_MAJOR_POINT_MINOR = float(bpy.app.version_string[0:4].strip("."))
-
-
 def BOOLEAN(layout, ob, md):
     context = bpy.context
     mp = DATA_PT_modifiers(context)
     mp.BOOLEAN(layout, ob, md)
 
-    if BLENDER_VERSION_MAJOR_POINT_MINOR < 2.91:
-        if not md.object:
-            return
-    else:
-        if ((md.operand_type == 'OBJECT' and not md.object)
-                or (md.operand_type == 'COLLECTION' and not md.collection)):
-            return
+    if ((md.operand_type == 'OBJECT' and not md.object)
+            or (md.operand_type == 'COLLECTION' and not md.collection)):
+        return
 
     layout.separator()
 
-    # Option to use a collection as the operand was added in
-    # Blender 2.91.
-
-    if BLENDER_VERSION_MAJOR_POINT_MINOR < 2.91 or md.operand_type == 'OBJECT':
+    if md.operand_type == 'OBJECT':
         layout.label(text="Boolean Object:")
 
         layout.separator()
