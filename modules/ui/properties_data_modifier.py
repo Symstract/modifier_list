@@ -1073,7 +1073,7 @@ class DATA_PT_modifiers:
 
     def SOLIDIFY(self, layout, ob, md):
 
-        layout.row().prop(md, "solidify_mode")
+        layout.row().prop(md, "solidify_mode", expand=True)
 
         solidify_mode = md.solidify_mode
 
