@@ -17,7 +17,7 @@ class OBJECT_OT_ml_modifier_copy(Operator):
     def poll(cls, ontext):
         ob = get_ml_active_object()
 
-        if float(bpy.app.version_string[0:4].strip(".")) >= 2.90 and ob.override_library:
+        if ob.override_library:
             return True
 
         mod = ob.modifiers[ob.ml_modifier_active_index]
