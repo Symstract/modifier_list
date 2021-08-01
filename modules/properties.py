@@ -58,9 +58,11 @@ def set_all_modifier_collection_items():
     to make modifiers available in search.
     """
     all_modifiers = bpy.context.window_manager.modifier_list.all_modifiers
+    sorted_names_icons_types = sorted(modifier_categories.ALL_MODIFIERS_NAMES_ICONS_TYPES,
+                                      key=lambda mod: mod[0])
 
     if not all_modifiers:
-        for name, _, mod in modifier_categories.ALL_MODIFIERS_NAMES_ICONS_TYPES:
+        for name, _, mod in sorted_names_icons_types:
             item = all_modifiers.add()
             item.name = name
             item.value = mod
@@ -71,9 +73,11 @@ def set_mesh_modifier_collection_items():
     to make modifiers available in search.
     """
     mesh_modifiers = bpy.context.window_manager.modifier_list.mesh_modifiers
+    sorted_names_icons_types = sorted(modifier_categories.MESH_ALL_NAMES_ICONS_TYPES,
+                                      key=lambda mod: mod[0])
 
     if not mesh_modifiers:
-        for name, _, mod in modifier_categories.MESH_ALL_NAMES_ICONS_TYPES:
+        for name, _, mod in sorted_names_icons_types:
             item = mesh_modifiers.add()
             item.name = name
             item.value = mod
@@ -84,9 +88,11 @@ def set_curve_modifier_collection_items():
     to make modifiers available in search.
     """
     curve_modifiers = bpy.context.window_manager.modifier_list.curve_modifiers
+    sorted_names_icons_types = sorted(modifier_categories.CURVE_ALL_NAMES_ICONS_TYPES,
+                                      key=lambda mod: mod[0])
 
     if not curve_modifiers:
-        for name, _, mod in modifier_categories.CURVE_ALL_NAMES_ICONS_TYPES:
+        for name, _, mod in sorted_names_icons_types:
             item = curve_modifiers.add()
             item.name = name
             item.value = mod
@@ -97,9 +103,11 @@ def set_lattice_modifier_collection_items():
     to make modifiers available in search.
     """
     lattice_modifiers = bpy.context.window_manager.modifier_list.lattice_modifiers
+    sorted_names_icons_types = sorted(modifier_categories.LATTICE_ALL_NAMES_ICONS_TYPES,
+                                      key=lambda mod: mod[0])
 
     if not lattice_modifiers:
-        for name, _, mod in modifier_categories.LATTICE_ALL_NAMES_ICONS_TYPES:
+        for name, _, mod in sorted_names_icons_types:
             item = lattice_modifiers.add()
             item.name = name
             item.value = mod
@@ -110,9 +118,11 @@ def set_pointcloud_modifier_collection_items():
     to make modifiers available in search.
     """
     pointcloud_modifiers = bpy.context.window_manager.modifier_list.pointcloud_modifiers
+    sorted_names_icons_types = sorted(modifier_categories.POINTCLOUD_ALL_NAMES_ICONS_TYPES,
+                                      key=lambda mod: mod[0])
 
     if not pointcloud_modifiers:
-        for name, _, mod in modifier_categories.POINTCLOUD_ALL_NAMES_ICONS_TYPES:
+        for name, _, mod in sorted_names_icons_types:
             item = pointcloud_modifiers.add()
             item.name = name
             item.value = mod
@@ -123,9 +133,11 @@ def set_volume_modifier_collection_items():
     to make modifiers available in search.
     """
     volume_modifiers = bpy.context.window_manager.modifier_list.volume_modifiers
+    sorted_names_icons_types = sorted(modifier_categories.VOLUME_ALL_NAMES_ICONS_TYPES,
+                                      key=lambda mod: mod[0])
 
     if not volume_modifiers:
-        for name, _, mod in modifier_categories.VOLUME_ALL_NAMES_ICONS_TYPES:
+        for name, _, mod in sorted_names_icons_types:
             item = volume_modifiers.add()
             item.name = name
             item.value = mod
