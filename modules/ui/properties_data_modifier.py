@@ -180,23 +180,7 @@ class DATA_PT_modifiers:
         if md.profile_type == 'CUSTOM':
             layout.template_curveprofile(md, "custom_profile")
 
-    def _boolean_2_90(self, layout, _ob, md):
-        split = layout.split()
-
-        col = split.column()
-        col.label(text="Operation:")
-        col.prop(md, "operation", text="")
-
-        col = split.column()
-        col.label(text="Object:")
-        col.prop(md, "object", text="")
-
-        layout.prop(md, "double_threshold")
-
-        if bpy.app.debug:
-            layout.prop(md, "debug_options")
-
-    def _boolean_2_91(self, layout, _ob, md):
+    def BOOLEAN(self, layout, _ob, md):
         layout.row().prop(md, "operation", expand=True)
 
         split = layout.split()
@@ -231,12 +215,6 @@ class DATA_PT_modifiers:
 
         if bpy.app.debug:
             layout.prop(md, "debug_options")
-
-    def BOOLEAN(self, layout, _ob, md):
-        if BLENDER_VERSION_MAJOR_POINT_MINOR < 2.91:
-            self._boolean_2_90(layout, _ob, md)
-        else:
-            self._boolean_2_91(layout, _ob, md)
 
     def BUILD(self, layout, _ob, md):
         split = layout.split()
@@ -309,10 +287,8 @@ class DATA_PT_modifiers:
         if ob.type == 'MESH':
             box.row().prop(md, "read_data")
 
-        # 2.91 ADDITIONS
-        if BLENDER_VERSION_MAJOR_POINT_MINOR >= 2.91:
-            box.prop(md, "use_vertex_interpolation")
-            box.prop(md, "velocity_scale")
+        box.prop(md, "use_vertex_interpolation")
+        box.prop(md, "velocity_scale")
 
     def CAST(self, layout, ob, md):
         split = layout.split(factor=0.25)
@@ -728,14 +704,6 @@ class DATA_PT_modifiers:
         # on every redraw.
         have_displacement = (md.total_levels != 0)
 
-        # 2.92 REMOVAL
-        if BLENDER_VERSION_MAJOR_POINT_MINOR < 2.92:
-            row = layout.row()
-            row.enabled = not have_displacement
-            row.prop(md, "subdivision_type", expand=True)
-
-            layout.separator()
-
         split = layout.split()
         col = split.column()
         col.prop(md, "levels", text="Preview")
@@ -746,11 +714,9 @@ class DATA_PT_modifiers:
         row.enabled = not have_displacement
         row.prop(md, "quality")
 
-        # 2.91 ADDITION
-        if BLENDER_VERSION_MAJOR_POINT_MINOR >= 2.91:
-            row = col.row()
-            row.enabled = ob.mode == 'SCULPT'
-            row.prop(md, "use_sculpt_base_mesh")
+        row = col.row()
+        row.enabled = ob.mode == 'SCULPT'
+        row.prop(md, "use_sculpt_base_mesh")
 
         col.prop(md, "show_only_control_edges")
 
@@ -760,10 +726,8 @@ class DATA_PT_modifiers:
         sub.label(text="UV Smooth:")
         sub.prop(md, "uv_smooth", text="")
 
-        # 2.91 ADDITION
-        if BLENDER_VERSION_MAJOR_POINT_MINOR >= 2.91:
-            sub.label(text="Boundary Smooth:")
-            sub.prop(md, "boundary_smooth", text="")
+        sub.label(text="Boundary Smooth:")
+        sub.prop(md, "boundary_smooth", text="")
 
         sub.prop(md, "use_creases")
         sub.prop(md, "use_custom_normals")
@@ -824,9 +788,7 @@ class DATA_PT_modifiers:
         col.prop(md, "random_seed")
 
         col = split.column()
-        # 2.91 ADDITION
-        if BLENDER_VERSION_MAJOR_POINT_MINOR >= 2.91:
-            col.prop(md, "viewport_resolution")
+        col.prop(md, "viewport_resolution")
         col.prop(md, "resolution")
         col.prop(md, "size")
         col.prop(md, "spatial_size")
@@ -1209,14 +1171,9 @@ class DATA_PT_modifiers:
         scene = context.scene
         engine = context.engine
         show_adaptive_options = (
-            engine == 'CYCLES' and md == ob.modifiers[-1] and
-            scene.cycles.feature_set == 'EXPERIMENTAL'
+            engine == 'CYCLES' and md == ob.modifiers[-1]
+            and scene.cycles.feature_set == 'EXPERIMENTAL' and md.use_limit_surface
         )
-
-        # Adaptive subdivision works only with use_limit_surface.
-        # That setting was added in 2.91.
-        if BLENDER_VERSION_MAJOR_POINT_MINOR >= 2.91 and not md.use_limit_surface:
-            show_adaptive_options = False
 
         if show_adaptive_options:
             col.label(text="Render:")
@@ -1248,21 +1205,14 @@ class DATA_PT_modifiers:
         sub.active = (not show_adaptive_options) or (not ob.cycles.use_adaptive_subdivision)
         sub.label(text="UV Smooth:")
         sub.prop(md, "uv_smooth", text="")
-
-        # 2.91 ADDITION
-        if BLENDER_VERSION_MAJOR_POINT_MINOR >= 2.91:
-            sub.label(text="Boundary Smooth:")
-            sub.prop(md, "boundary_smooth", text="")
+        sub.label(text="Boundary Smooth:")
+        sub.prop(md, "boundary_smooth", text="")
 
         col.prop(md, "show_only_control_edges")
 
         sub = col.column()
         sub.active = (not show_adaptive_options) or (not ob.cycles.use_adaptive_subdivision)
-
-        # 2.91 ADDITION
-        if BLENDER_VERSION_MAJOR_POINT_MINOR >= 2.91:
-            sub.prop(md, "use_limit_surface")
-
+        sub.prop(md, "use_limit_surface")
         sub.prop(md, "use_creases")
         sub.prop(md, "use_custom_normals")
 
@@ -1761,15 +1711,8 @@ class DATA_PT_modifiers:
         col.prop(md, "material_offset", text="Material Offset")
 
     def WELD(self, layout, ob, md):
-        # 2.92 ADDITION
-        if BLENDER_VERSION_MAJOR_POINT_MINOR >= 2.92:
-            layout.prop(md, "mode")
-
+        layout.prop(md, "mode")
         layout.prop(md, "merge_threshold", text="Distance")
-
-        # 2.91 REMOVAL
-        if BLENDER_VERSION_MAJOR_POINT_MINOR < 2.91:
-            layout.prop(md, "max_interactions")
 
         row = layout.row(align=True)
         row.prop_search(md, "vertex_group", ob, "vertex_groups")
@@ -1962,12 +1905,7 @@ class DATA_PT_modifiers:
         row.active = bool(md.vertex_group)
         row.prop(md, "invert_vertex_group", text="", icon='ARROW_LEFTRIGHT')
         col.prop(md, "thresh", text="Threshold")
-
-        # 2.91 CHANGE
-        if BLENDER_VERSION_MAJOR_POINT_MINOR < 2.91:
-            col.prop(md, "face_influence")
-        else:
-            col.prop(md, "use_face_influence")
+        col.prop(md, "use_face_influence")
 
     def MESH_TO_VOLUME(self, layout, ob, md):
         layout.prop(md, "object")
