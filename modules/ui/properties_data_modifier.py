@@ -1237,6 +1237,7 @@ class DATA_PT_modifiers:
 
         split = layout.split()
         col = split.column()
+        col.active = not md.is_bound
         col.prop(md, "falloff")
 
         if BLENDER_VERSION_MAJOR_POINT_MINOR >= 3.0:
