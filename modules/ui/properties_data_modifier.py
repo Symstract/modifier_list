@@ -1713,6 +1713,10 @@ class DATA_PT_modifiers:
         layout.row().prop(md, "mode", expand=True)
         layout.prop(md, "merge_threshold", text="Distance")
 
+        if BLENDER_VERSION_MAJOR_POINT_MINOR >= 3.0:
+            if md.mode == 'CONNECTED':
+                layout.prop(md, "loose_edges")
+
         row = layout.row(align=True)
         row.prop_search(md, "vertex_group", ob, "vertex_groups")
         row.prop(md, "invert_vertex_group", text="", icon='ARROW_LEFTRIGHT')
