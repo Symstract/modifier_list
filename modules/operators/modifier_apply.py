@@ -170,9 +170,7 @@ class ApplyModifier:
                 self.report({'INFO'}, "Modifier is hidden in viewport, skipped apply")
                 return {'CANCELLED'}
 
-        # Applying as a shape key for multi-user data is possible since
-        # Blender 2.90.
-        if float(bpy.app.version_string[0:4].strip(".")) >= 2.90 and self.apply_as == 'SHAPE':
+        if self.apply_as == 'SHAPE':
             return self.execute(context)
 
         if self.multi_user_data_apply_method == 'NONE' and ml_active_ob.data.users > 1:
@@ -192,18 +190,12 @@ class ApplyModifier:
         mod_name = mod.name
 
         try:
-            # Applying a modifier as a shape key is done with a separate
-            # operator since 2.90.
-            if float(bpy.app.version_string[0:4].strip(".")) < 2.90:
-                bpy.ops.object.modifier_apply(override, apply_as=self.apply_as,
-                                              modifier=mod_name)
-            else:
-                if self.apply_as == 'DATA':
-                    bpy.ops.object.modifier_apply(override, modifier=mod_name)
-                elif self.apply_as == 'SHAPE':
-                        bpy.ops.object.modifier_apply_as_shapekey(
-                            override, modifier=mod_name,
-                            keep_modifier=self.keep_modifier_when_applying_as_shapekey)
+            if self.apply_as == 'DATA':
+                bpy.ops.object.modifier_apply(override, modifier=mod_name)
+            elif self.apply_as == 'SHAPE':
+                    bpy.ops.object.modifier_apply_as_shapekey(
+                        override, modifier=mod_name,
+                        keep_modifier=self.keep_modifier_when_applying_as_shapekey)
 
             if ml_active_object.type in {'CURVE', 'SURFACE'}:
                 self.curve_modifier_apply_report(mod_type)
