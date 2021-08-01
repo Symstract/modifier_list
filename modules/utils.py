@@ -5,9 +5,6 @@ from mathutils.geometry import distance_point_to_plane
 from .modifier_categories import ALL_MODIFIERS_NAMES_ICONS_TYPES, HAVE_GIZMO_PROPERTY
 
 
-BLENDER_VERSION_MAJOR_POINT_MINOR = float(bpy.app.version_string[0:4].strip("."))
-
-
 # Generic utils
 # ======================================================================
 
@@ -26,12 +23,7 @@ def sync_bpy_object_props(source, dest):
 # ======================================================================
 
 def object_type_has_modifiers(object):
-    have_modifiers = {'MESH', 'CURVE', 'SURFACE', 'FONT', 'LATTICE', 'POINTCLOUD'}
-
-    if BLENDER_VERSION_MAJOR_POINT_MINOR >= 2.91:
-        have_modifiers.add("VOLUME")
-
-    return object.type in have_modifiers
+    return object.type in {'MESH', 'CURVE', 'SURFACE', 'FONT', 'LATTICE', 'POINTCLOUD', 'VOLUME'}
 
 
 def get_favourite_modifiers():
@@ -81,13 +73,9 @@ def is_modifier_disabled(mod):
         return True
 
     elif mod.type == 'BOOLEAN':
-        if BLENDER_VERSION_MAJOR_POINT_MINOR < 2.91:
-            if not mod.object:
-                return True
-        else:
-            if ((mod.operand_type == 'OBJECT' and not mod.object)
-                    or (mod.operand_type == 'COLLECTION' and not mod.collection)):
-                return True
+        if ((mod.operand_type == 'OBJECT' and not mod.object)
+                or (mod.operand_type == 'COLLECTION' and not mod.collection)):
+            return True
 
     elif mod.type == 'CAST':
         if not any((mod.use_x, mod.use_y, mod.use_z)) or mod.factor == 0:
