@@ -569,23 +569,18 @@ class DATA_PT_modifiers:
         layout.prop(md, "strength", slider=True)
 
     def MASK(self, layout, ob, md):
-        split = layout.split()
+        layout.row().prop(md, "mode", expand=True)
 
-        col = split.column()
-        col.label(text="Mode:")
-        col.prop(md, "mode", text="")
-
-        col = split.column()
         if md.mode == 'ARMATURE':
-            col.label(text="Armature:")
-            row = col.row(align=True)
+            layout.label(text="Armature:")
+            row = layout.row(align=True)
             row.prop(md, "armature", text="")
             sub = row.row(align=True)
             sub.active = (md.armature is not None)
             sub.prop(md, "invert_vertex_group", text="", icon='ARROW_LEFTRIGHT')
         elif md.mode == 'VERTEX_GROUP':
-            col.label(text="Vertex Group:")
-            row = col.row(align=True)
+            layout.label(text="Vertex Group:")
+            row = layout.row(align=True)
             row.prop_search(md, "vertex_group", ob, "vertex_groups", text="")
             sub = row.row(align=True)
             sub.active = bool(md.vertex_group)
