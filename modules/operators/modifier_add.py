@@ -102,7 +102,7 @@ class OBJECT_OT_ml_modifier_add(Operator):
         return self.execute(context)
 
     def add_modifier_pre_step(self, object):
-        if self.modifier_type == 'WEIGHTED_NORMAL':
+        if self.modifier_type in {'NORMAL_EDIT', 'WEIGHTED_NORMAL'}:
             object.data.use_auto_smooth = True
 
     def set_modifier_default_settings(self):
