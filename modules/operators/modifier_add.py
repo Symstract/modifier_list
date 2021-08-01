@@ -74,7 +74,7 @@ class OBJECT_OT_ml_modifier_add(Operator):
         # of the layout can be wrong.
         # layout.context_pointer_set("modifier", active_modifier) is
         # used to set the modifier for the context of the layout and
-        # modifier_move_up seems to use that modifier in it's poll,
+        # modifier_move_to_index seems to use that modifier in it's poll,
         # instead of the one passed as an argument. And linked modifiers
         # can't be moved.
         if ob.override_library:
@@ -88,14 +88,9 @@ class OBJECT_OT_ml_modifier_add(Operator):
             move = prefs.insert_modifier_after_active
 
         if move:
-            if float(bpy.app.version_string[0:4].strip(".")) >= 2.90:
-                if init_active_mod_index != max_active_mod_index:
-                    bpy.ops.object.modifier_move_to_index(modifier=mod.name,
-                                                          index=init_active_mod_index + 1)
-            else:
-                for _ in range(max_active_mod_index - 1 - init_active_mod_index):
-                    bpy.ops.object.modifier_move_up(override, modifier=mod.name)
-
+            if init_active_mod_index != max_active_mod_index:
+                bpy.ops.object.modifier_move_to_index(modifier=mod.name,
+                                                      index=init_active_mod_index + 1)
             if init_active_mod_index < max_active_mod_index - 1:
                 ob.ml_modifier_active_index = init_active_mod_index + 1
 
