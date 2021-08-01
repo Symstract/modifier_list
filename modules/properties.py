@@ -7,9 +7,6 @@ from . import modifier_categories
 from .utils import get_ml_active_object
 
 
-BLENDER_VERSION_MAJOR_POINT_MINOR = float(bpy.app.version_string[0:4].strip("."))
-
-
 # Callbacks
 # ======================================================================
 
@@ -260,14 +257,11 @@ def register():
     for cls in classes:
         bpy.utils.register_class(cls)
 
-    if BLENDER_VERSION_MAJOR_POINT_MINOR < 2.92:
-        bpy.types.Object.ml_modifier_active_index = IntProperty(options={'LIBRARY_EDITABLE'})
-    else:
-        bpy.types.Object.ml_modifier_active_index = IntProperty(
-            options={'LIBRARY_EDITABLE'},
-            override={'LIBRARY_OVERRIDABLE'},
-            get=modifier_active_index_get,
-            set=modifier_active_index_set)
+    bpy.types.Object.ml_modifier_active_index = IntProperty(
+        options={'LIBRARY_EDITABLE'},
+        override={'LIBRARY_OVERRIDABLE'},
+        get=modifier_active_index_get,
+        set=modifier_active_index_set)
 
     wm = bpy.types.WindowManager
     wm.modifier_list = PointerProperty(type=ML_WindowManagerProperties)
