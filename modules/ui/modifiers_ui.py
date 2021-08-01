@@ -16,7 +16,8 @@ else:
 
 from . import ml_modifier_layouts
 from .ui_common import box_with_header
-from .. import icons, modifier_categories
+from ..icons import get_icons
+from .. import modifier_categories
 from ..utils import (
     favourite_modifiers_names_icons_types,
     get_gizmo_object_from_modifier,
@@ -115,7 +116,7 @@ def modifier_search_and_menu(layout, object):
 
 def batch_operators(layout, use_with_stack=False):
     """Adds the the batch operators into the given layout."""
-    pcoll = icons.preview_collections["main"]
+    pcoll = get_icons()
 
     icon = pcoll['TOGGLE_ALL_MODIFIERS_VISIBILITY']
     layout.operator("view3d.ml_toggle_all_modifiers", icon_value=icon.icon_id, text="")
@@ -282,7 +283,7 @@ def modifier_visibility_buttons(modifier, layout, use_in_list=False):
     account but instead shows the button always in those cases. It's
     easier to achieve and hardly makes a difference.
     """
-    pcoll = icons.preview_collections["main"]
+    pcoll = get_icons()
     empy_icon = pcoll['EMPTY_SPACE']
 
     # Main layout
@@ -587,7 +588,7 @@ class ModifierExtrasBase:
     def draw(self, context):
         prefs = bpy.context.preferences.addons["modifier_list"].preferences
         ml_props = context.window_manager.modifier_list
-        pcoll = icons.preview_collections["main"]
+        pcoll = get_icons()
         ob = get_ml_active_object()
         active_mod = ob.modifiers[ob.ml_modifier_active_index] if ob.modifiers else None
 
@@ -690,7 +691,7 @@ def modifiers_ui_with_list(context, layout, num_of_rows=False, use_in_popup=Fals
     ob = get_ml_active_object()
     active_mod_index = ob.ml_modifier_active_index
     prefs = bpy.context.preferences.addons["modifier_list"].preferences
-    pcoll = icons.preview_collections["main"]
+    pcoll = get_icons()
 
     # Ensure the active index is never out of range. That can happen if
     # a modifier gets deleted without using Modifier List, e.g. when

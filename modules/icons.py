@@ -4,7 +4,12 @@ import bpy
 from bpy.utils import previews
 
 
-preview_collections = {}
+_preview_collections = {}
+
+
+def get_icons():
+    """Returns the preview collection containing all icons."""
+    return _preview_collections["main"]
 
 
 def load_icons():
@@ -14,10 +19,10 @@ def load_icons():
     makes changing icon color possible without reloading the addon.
     """
     # === Remove the current icons and clear preview_collections ===
-    for pcoll in preview_collections.values():
+    for pcoll in _preview_collections.values():
         previews.remove(pcoll)
 
-    preview_collections.clear()
+    _preview_collections.clear()
 
     # === Load new icons ===
     pcoll = previews.new()
@@ -35,7 +40,7 @@ def load_icons():
     for icon_name, icon_file in all_icon_files_and_names:
         pcoll.load(icon_name, os.path.join(icons_dir, icon_file), 'IMAGE')
 
-    preview_collections["main"] = pcoll
+    _preview_collections["main"] = pcoll
 
 
 def register():
@@ -43,6 +48,6 @@ def register():
 
 
 def unregister():
-    for pcoll in preview_collections.values():
+    for pcoll in _preview_collections.values():
         previews.remove(pcoll)
-    preview_collections.clear()
+    _preview_collections.clear()
