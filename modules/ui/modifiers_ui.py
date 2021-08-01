@@ -114,10 +114,8 @@ def modifier_search_and_menu(layout, object):
     return sub
 
 
-def batch_operators(layout, use_with_stack=False):
+def batch_operators(layout, pcoll, use_with_stack=False):
     """Adds the the batch operators into the given layout."""
-    pcoll = get_icons()
-
     icon = pcoll['TOGGLE_ALL_MODIFIERS_VISIBILITY']
     layout.operator("view3d.ml_toggle_all_modifiers", icon_value=icon.icon_id, text="")
 
@@ -268,7 +266,7 @@ def mesh_properties_context_change_button(modifier, layout, use_in_list):
     return False
 
 
-def modifier_visibility_buttons(modifier, layout, use_in_list=False):
+def modifier_visibility_buttons(modifier, layout, pcoll, use_in_list=False):
     """This handles the modifier visibility buttons (and also the
     properties_context_change button) to match the behaviour of the
     regular UI .
@@ -283,7 +281,6 @@ def modifier_visibility_buttons(modifier, layout, use_in_list=False):
     account but instead shows the button always in those cases. It's
     easier to achieve and hardly makes a difference.
     """
-    pcoll = get_icons()
     empy_icon = pcoll['EMPTY_SPACE']
 
     # Main layout
@@ -571,7 +568,7 @@ class OBJECT_UL_ml_modifier_list(UIList):
 
                 layout.prop(mod, "name", text="", emboss=False, icon_value=icon)
 
-                modifier_visibility_buttons(mod, layout, use_in_list=True)
+                modifier_visibility_buttons(mod, layout, get_icons(), use_in_list=True)
             else:
                 layout.label(text="", translate=False, icon_value=icon)
 
@@ -606,7 +603,7 @@ class ModifierExtrasBase:
             if not prefs.show_batch_ops_in_main_layout_with_stack_style:
                 row = layout.row(align=True)
                 row.scale_x = 50
-                batch_operators(row, use_with_stack=layout_style_is_stack)
+                batch_operators(row, pcoll, use_with_stack=layout_style_is_stack)
                 layout.separator()
 
             if ob.type in {'CURVE', 'FONT', 'LATTICE', 'MESH', 'SURFACE'} and active_mod:
@@ -733,7 +730,7 @@ def modifiers_ui_with_list(context, layout, num_of_rows=False, use_in_popup=Fals
     # === Modifier batch operators and modifier extras menu ===
     sub = row.row(align=True)
     sub.scale_x = 3 if align_button_groups else 1.34
-    batch_operators(sub)
+    batch_operators(sub, pcoll)
 
     sub_sub = sub.row(align=True)
     sub_sub.scale_x = 0.65 if align_button_groups else 0.85
@@ -779,7 +776,7 @@ def modifiers_ui_with_list(context, layout, num_of_rows=False, use_in_popup=Fals
         sub.label(text="", icon=active_mod_icon)
         sub.prop(active_mod, "name", text="")
 
-        modifier_visibility_buttons(active_mod, row)
+        modifier_visibility_buttons(active_mod, row, pcoll)
 
     row = box.row()
 
@@ -860,6 +857,7 @@ def modifiers_ui_with_stack(context, layout, use_in_popup=False):
     ob = get_ml_active_object()
     active_mod_index = ob.ml_modifier_active_index
     prefs = bpy.context.preferences.addons["modifier_list"].preferences
+    pcoll = get_icons()
 
     # Ensure the active index is never out of range. That can happen if
     # a modifier gets deleted without using Modifier List, e.g. when
@@ -887,7 +885,7 @@ def modifiers_ui_with_stack(context, layout, use_in_popup=False):
     if prefs.show_batch_ops_in_main_layout_with_stack_style:
         row = layout.row(align=True)
         row.scale_x = 50
-        batch_operators(row, use_with_stack=True)
+        batch_operators(row, pcoll, use_with_stack=True)
 
     # === Modifier stack ===
     layout.template_modifiers()
