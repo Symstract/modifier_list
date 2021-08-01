@@ -291,10 +291,7 @@ class DATA_PT_modifiers:
         box.prop(md, "velocity_scale")
 
     def CAST(self, layout, ob, md):
-        split = layout.split(factor=0.25)
-
-        split.label(text="Cast Type:")
-        split.prop(md, "cast_type", text="")
+        layout.row().prop(md, "cast_type", expand=True)
 
         split = layout.split(factor=0.25)
 
