@@ -690,14 +690,6 @@ def modifiers_ui_with_list(context, layout, num_of_rows=False, use_in_popup=Fals
     prefs = bpy.context.preferences.addons["modifier_list"].preferences
     pcoll = get_icons()
 
-    # Ensure the active index is never out of range. That can happen if
-    # a modifier gets deleted without using Modifier List, e.g. when
-    # removing a Cloth modifier from within the physics panel.
-    if ob.modifiers and active_mod_index > len(ob.modifiers) - 1:
-        layout.label(text="The active modifier index has gotten out of range...")
-        layout.operator("object.ml_reset_modifier_active_index")
-        return
-
     if ob.modifiers:
         # This makes operators work without passing the active modifier
         # to them manually as an argument.
@@ -855,17 +847,8 @@ def modifiers_ui_with_list(context, layout, num_of_rows=False, use_in_popup=Fals
 
 def modifiers_ui_with_stack(context, layout, use_in_popup=False):
     ob = get_ml_active_object()
-    active_mod_index = ob.ml_modifier_active_index
     prefs = bpy.context.preferences.addons["modifier_list"].preferences
     pcoll = get_icons()
-
-    # Ensure the active index is never out of range. That can happen if
-    # a modifier gets deleted without using Modifier List, e.g. when
-    # removing a Cloth modifier from within the physics panel.
-    if ob.modifiers and active_mod_index > len(ob.modifiers) - 1:
-        layout.label(text="The active modifier index has gotten out of range...")
-        layout.operator("object.ml_reset_modifier_active_index")
-        return
 
     if ob.modifiers:
         # This makes operators work without passing the active modifier
