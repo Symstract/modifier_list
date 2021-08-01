@@ -142,7 +142,9 @@ class ApplyModifier:
             self.remove_modifier_from_instances(ml_active_ob_init_data_name, mod_name, mod_type)
             self.linked_object_data_changer.assign_new_data_to_other_instances()
 
-        self.ensure_correct_modifier_active_index(ml_active_ob)
+        # Report if the modifier was not first
+        if active_mod_index != 0:
+            self.report({'INFO'}, "Applied modifier was not first, result may not be as expected")
 
         # Delete the gizmo object and the vertex group
         if self.shift or prefs.always_delete_gizmo:
@@ -246,16 +248,6 @@ class ApplyModifier:
                 bpy.ops.object.editmode_toggle()
         elif lattice_toggle_editmode.init_mode == 'EDIT_MESH':
             bpy.ops.object.editmode_toggle()
-
-    def ensure_correct_modifier_active_index(self, ml_active_object):
-        # Set correct modifier_active_index in case the applied modifier
-        # is not the first in modifier stack.
-        current_active_mod_index = ml_active_object.ml_modifier_active_index
-        new_active_mod_index = np.clip(current_active_mod_index - 1, 0, 99)
-        ml_active_object.ml_modifier_active_index = new_active_mod_index
-
-        if current_active_mod_index != 0:
-            self.report({'INFO'}, "Applied modifier was not first, result may not be as expected")
 
     def delete_gizmo_and_vertex_group(self, context, ml_active_object, modifier_type, gizmo_object,
                                       vertex_group):
