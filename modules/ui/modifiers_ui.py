@@ -27,9 +27,6 @@ from ..utils import (
 )
 
 
-BLENDER_VERSION_MAJOR_POINT_MINOR = float(bpy.app.version_string[0:4].strip("."))
-
-
 # UI elements
 # =======================================================================
 
@@ -442,8 +439,7 @@ class MESH_MT_ml_add_modifier_menu(Menu):
             col.operator("object.ml_modifier_add", text=name, icon=icon).modifier_type = mod
 
         col = row.column()
-        label = "Simulate" if BLENDER_VERSION_MAJOR_POINT_MINOR < 2.90 else "Physics"
-        col.label(text=label)
+        col.label(text="Physics")
         col.separator(factor=0.3)
         for name, icon, mod in modifier_categories.MESH_SIMULATE_NAMES_ICONS_TYPES:
             col.operator("object.ml_modifier_add", text=name, icon=icon).modifier_type = mod
@@ -478,8 +474,7 @@ class CURVE_MT_ml_add_modifier_menu(Menu):
             col.operator("object.ml_modifier_add", text=name, icon=icon).modifier_type = mod
 
         col = row.column()
-        label = "Simulate" if BLENDER_VERSION_MAJOR_POINT_MINOR < 2.90 else "Physics"
-        col.label(text=label)
+        col.label(text="Physics")
         col.separator(factor=0.3)
         for name, icon, mod in modifier_categories.CURVE_SIMULATE_NAMES_ICONS_TYPES:
             col.operator("object.ml_modifier_add", text=name, icon=icon).modifier_type = mod
@@ -508,8 +503,7 @@ class LATTICE_MT_ml_add_modifier_menu(Menu):
             col.operator("object.ml_modifier_add", text=name, icon=icon).modifier_type = mod
 
         col = row.column()
-        label = "Simulate" if BLENDER_VERSION_MAJOR_POINT_MINOR < 2.90 else "Physics"
-        col.label(text=label)
+        col.label(text="Physics")
         col.separator(factor=0.3)
         for name, icon, mod in modifier_categories.LATTICE_SIMULATE_NAMES_ICONS_TYPES:
             col.operator("object.ml_modifier_add", text=name, icon=icon).modifier_type = mod
@@ -632,14 +626,14 @@ class ModifierExtrasBase:
 
                     layout.separator()
 
-        if BLENDER_VERSION_MAJOR_POINT_MINOR >= 2.92:
-            if active_mod:
-                layout.operator("object.modifier_copy_to_selected").modifier = active_mod.name
-            else:
-                row = layout.row()
-                row.enabled = False
-                row.operator("object.modifier_copy_to_selected")
-            layout.separator()
+        if active_mod:
+            layout.operator("object.modifier_copy_to_selected").modifier = active_mod.name
+        else:
+            row = layout.row()
+            row.enabled = False
+            row.operator("object.modifier_copy_to_selected")
+
+        layout.separator()
 
         layout.label(text="Syncronize Modifiers Between Instances:")
         layout.operator("object.ml_sync_active_modifier_between_instances", text="Active Only")
@@ -789,10 +783,9 @@ def modifiers_ui_with_list(context, layout, num_of_rows=False, use_in_popup=Fals
             icon = pcoll['APPLY_MODIFIER_AS_SHAPEKEY']
             sub.operator("object.ml_modifier_apply_as_shapekey", text="",
                         icon_value=icon.icon_id)
-            if BLENDER_VERSION_MAJOR_POINT_MINOR >= 2.90:
-                icon = pcoll['SAVE_MODIFIER_AS_SHAPEKEY']
-                sub.operator("object.ml_modifier_save_as_shapekey", text="",
-                             icon_value=icon.icon_id)
+            icon = pcoll['SAVE_MODIFIER_AS_SHAPEKEY']
+            sub.operator("object.ml_modifier_save_as_shapekey", text="",
+                            icon_value=icon.icon_id)
 
         if active_mod.type not in modifier_categories.DONT_SUPPORT_COPY:
             sub.operator("object.ml_modifier_copy",
