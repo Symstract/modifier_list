@@ -1711,7 +1711,7 @@ class DATA_PT_modifiers:
         col.prop(md, "material_offset", text="Material Offset")
 
     def WELD(self, layout, ob, md):
-        layout.prop(md, "mode")
+        layout.row().prop(md, "mode", expand=True)
         layout.prop(md, "merge_threshold", text="Distance")
 
         row = layout.row(align=True)
