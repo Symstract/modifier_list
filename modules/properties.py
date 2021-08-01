@@ -203,11 +203,11 @@ class ML_SceneProperties(PropertyGroup):
 
 
 class ML_PreferencesUIProperties(PropertyGroup):
-    favourite_modifiers_expand: BoolProperty(name="", default=True)
-    favourite_modifiers_menu_expand: BoolProperty(name="", default=True)
-    general_expand: BoolProperty(name="")
-    popup_expand: BoolProperty(name="")
-    gizmo_expand: BoolProperty(name="")
+    favourite_modifiers_expand: BoolProperty(default=True)
+    favourite_modifiers_menu_expand: BoolProperty(default=True)
+    general_expand: BoolProperty()
+    popup_expand: BoolProperty()
+    gizmo_expand: BoolProperty()
     modifier_defaults_expand: BoolProperty()
     modifier_to_show_defaults_for: StringProperty(
         name="Modifier to show defaults for",

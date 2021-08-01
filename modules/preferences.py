@@ -533,7 +533,6 @@ class Preferences(AddonPreferences):
         default=300)
 
     mod_list_def_len: IntProperty(
-        name="",
         description="Default/min number of rows to display in the modifier list in the popup",
         default=7)
 
