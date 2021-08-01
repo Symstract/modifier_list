@@ -208,7 +208,7 @@ class ML_PreferencesUIProperties(PropertyGroup):
     modifier_defaults_expand: BoolProperty()
     modifier_to_show_defaults_for: StringProperty(
         name="Modifier to show defaults for",
-        description="Search for a modifier and show its default settings to customize",
+        description="Search for a modifier to show its customizable default settings",
         default="Armature")
 
 
