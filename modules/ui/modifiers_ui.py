@@ -33,7 +33,7 @@ BLENDER_VERSION_MAJOR_POINT_MINOR = float(bpy.app.version_string[0:4].strip(".")
 # UI elements
 # =======================================================================
 
-def favourite_modifier_buttons(layout):
+def _favourite_modifier_buttons(layout):
     """Adds 2 or 3 buttons per row according to addon preferences.
 
     Empty rows in preferences are skipped."""
@@ -73,7 +73,7 @@ def favourite_modifier_buttons(layout):
                     row.label(text="")
 
 
-def modifier_search_and_menu(layout, object):
+def _modifier_search_and_menu(layout, object):
     """Creates the modifier search and menu row.
 
     Returns a sub row which contains the menu so that the modifier
@@ -114,7 +114,7 @@ def modifier_search_and_menu(layout, object):
     return sub
 
 
-def batch_operators(layout, pcoll, use_with_stack=False):
+def _batch_operators(layout, pcoll, use_with_stack=False):
     """Adds the the batch operators into the given layout."""
     icon = pcoll['TOGGLE_ALL_MODIFIERS_VISIBILITY']
     layout.operator("view3d.ml_toggle_all_modifiers", icon_value=icon.icon_id, text="")
@@ -130,7 +130,7 @@ def batch_operators(layout, pcoll, use_with_stack=False):
         layout.operator("object.ml_toggle_all_modifier_panels", icon_value=icon.icon_id, text="")
 
 
-def show_in_editmode_button(modifier, layout, pcoll, use_in_list):
+def _show_in_editmode_button(modifier, layout, pcoll, use_in_list):
     row = layout.row(align=True)
 
     if modifier.type in modifier_categories.DONT_SUPPORT_SHOW_IN_EDITMODE:
@@ -153,7 +153,7 @@ def show_in_editmode_button(modifier, layout, pcoll, use_in_list):
     row.prop(modifier, "show_in_editmode", text="", icon_value=icon, emboss=not use_in_list)
 
 
-def use_apply_on_spline_button(modifier, layout, pcoll, use_in_list):
+def _use_apply_on_spline_button(modifier, layout, pcoll, use_in_list):
     row = layout.row(align=True)
 
     if modifier.type not in modifier_categories.SUPPORT_USE_APPLY_ON_SPLINE:
@@ -168,7 +168,7 @@ def use_apply_on_spline_button(modifier, layout, pcoll, use_in_list):
     row.prop(modifier, "use_apply_on_spline", text="", icon_value=icon, emboss=not use_in_list)
 
 
-def show_on_cage_button(object, modifier, layout, pcoll, use_in_list):
+def _show_on_cage_button(object, modifier, layout, pcoll, use_in_list):
     support_show_on_cage = modifier_categories.SUPPORT_SHOW_ON_CAGE
 
     if modifier.type not in support_show_on_cage:
@@ -218,7 +218,7 @@ def show_on_cage_button(object, modifier, layout, pcoll, use_in_list):
     return True
 
 
-def curve_properties_context_change_button(layout, pcoll, use_in_list):
+def _curve_properties_context_change_button(layout, pcoll, use_in_list):
     sub = layout.row(align=True)
     empy_icon = pcoll['EMPTY_SPACE']
 
@@ -229,7 +229,7 @@ def curve_properties_context_change_button(layout, pcoll, use_in_list):
                      emboss=False).context = "PHYSICS"
 
 
-def mesh_properties_context_change_button(modifier, layout, use_in_list):
+def _mesh_properties_context_change_button(modifier, layout, use_in_list):
     if bpy.context.area.type != 'PROPERTIES' or use_in_list:
         return False
 
@@ -266,7 +266,7 @@ def mesh_properties_context_change_button(modifier, layout, use_in_list):
     return False
 
 
-def modifier_visibility_buttons(modifier, layout, pcoll, use_in_list=False):
+def _modifier_visibility_buttons(modifier, layout, pcoll, use_in_list=False):
     """This handles the modifier visibility buttons (and also the
     properties_context_change button) to match the behaviour of the
     regular UI .
@@ -301,7 +301,7 @@ def modifier_visibility_buttons(modifier, layout, pcoll, use_in_list=False):
         sub.prop(modifier, "show_viewport", text="", emboss=not use_in_list)
 
     # show_in_editmode
-    show_in_editmode_button(modifier, row, pcoll, use_in_list)
+    _show_in_editmode_button(modifier, row, pcoll, use_in_list)
 
     ob = get_ml_active_object()
 
@@ -312,16 +312,16 @@ def modifier_visibility_buttons(modifier, layout, pcoll, use_in_list=False):
     # use_apply_on_spline or properties_context_change
     if ob.type != 'MESH':
         if modifier.type == 'SOFT_BODY':
-            curve_properties_context_change_button(row, pcoll, use_in_list)
+            _curve_properties_context_change_button(row, pcoll, use_in_list)
         else:
-            use_apply_on_spline_button(modifier, row, pcoll, use_in_list)
+            _use_apply_on_spline_button(modifier, row, pcoll, use_in_list)
         return
 
     # show_on_cage or properties_context_change
-    show_on_cage_added = show_on_cage_button(ob, modifier, row, pcoll, use_in_list)
+    show_on_cage_added = _show_on_cage_button(ob, modifier, row, pcoll, use_in_list)
     context_change_added = False
     if not show_on_cage_added:
-        context_change_added = mesh_properties_context_change_button(modifier, row, use_in_list)
+        context_change_added = _mesh_properties_context_change_button(modifier, row, use_in_list)
 
     # Make icons align nicely if neither show_on_cage nor
     # properties_context_change was added.
@@ -330,7 +330,7 @@ def modifier_visibility_buttons(modifier, layout, pcoll, use_in_list=False):
         sub.label(text="", translate=False, icon_value=empy_icon.icon_id)
 
 
-def gizmo_object_settings(layout):
+def _gizmo_object_settings(layout):
     ob = get_ml_active_object()
     active_mod_index = ob.ml_modifier_active_index
     active_mod = ob.modifiers[active_mod_index]
@@ -393,7 +393,7 @@ def gizmo_object_settings(layout):
         layout.operator("object.ml_gizmo_object_delete")
 
 
-def modifier_extras_button(context, layout, use_in_popup=False):
+def _modifier_extras_button(context, layout, use_in_popup=False):
     """Adds the correct popover for the current area type into the given
     layout.
 
@@ -568,7 +568,7 @@ class OBJECT_UL_ml_modifier_list(UIList):
 
                 layout.prop(mod, "name", text="", emboss=False, icon_value=icon)
 
-                modifier_visibility_buttons(mod, layout, get_icons(), use_in_list=True)
+                _modifier_visibility_buttons(mod, layout, get_icons(), use_in_list=True)
             else:
                 layout.label(text="", translate=False, icon_value=icon)
 
@@ -603,7 +603,7 @@ class ModifierExtrasBase:
             if not prefs.show_batch_ops_in_main_layout_with_stack_style:
                 row = layout.row(align=True)
                 row.scale_x = 50
-                batch_operators(row, pcoll, use_with_stack=layout_style_is_stack)
+                _batch_operators(row, pcoll, use_with_stack=layout_style_is_stack)
                 layout.separator()
 
             if ob.type in {'CURVE', 'FONT', 'LATTICE', 'MESH', 'SURFACE'} and active_mod:
@@ -628,7 +628,7 @@ class ModifierExtrasBase:
                                      icon='EMPTY_ARROWS', depress=depress)
 
                     if ml_props.gizmo_object_settings_expand:
-                        gizmo_object_settings(box)
+                        _gizmo_object_settings(box)
 
                     layout.separator()
 
@@ -678,7 +678,7 @@ class OBJECT_PT_ml_gizmo_object_settings(Panel):
         if not ob.modifiers:
             return
 
-        gizmo_object_settings(layout)
+        _gizmo_object_settings(layout)
 
 
 # UI
@@ -705,11 +705,11 @@ def modifiers_ui_with_list(context, layout, num_of_rows=False, use_in_popup=Fals
 
     # === Favourite modifiers ===
     col = layout.column(align=True)
-    favourite_modifier_buttons(col)
+    _favourite_modifier_buttons(col)
 
     # === Modifier search and menu ===
     col = layout.column()
-    modifier_search_and_menu(col, ob)
+    _modifier_search_and_menu(col, ob)
 
     # === Modifier list ===
     layout.template_list("OBJECT_UL_ml_modifier_list", "", ob, "modifiers",
@@ -730,11 +730,11 @@ def modifiers_ui_with_list(context, layout, num_of_rows=False, use_in_popup=Fals
     # === Modifier batch operators and modifier extras menu ===
     sub = row.row(align=True)
     sub.scale_x = 3 if align_button_groups else 1.34
-    batch_operators(sub, pcoll)
+    _batch_operators(sub, pcoll)
 
     sub_sub = sub.row(align=True)
     sub_sub.scale_x = 0.65 if align_button_groups else 0.85
-    modifier_extras_button(context, sub_sub, use_in_popup=use_in_popup)
+    _modifier_extras_button(context, sub_sub, use_in_popup=use_in_popup)
 
     # === List manipulation ===
     sub = row.row(align=True)
@@ -776,7 +776,7 @@ def modifiers_ui_with_list(context, layout, num_of_rows=False, use_in_popup=Fals
         sub.label(text="", icon=active_mod_icon)
         sub.prop(active_mod, "name", text="")
 
-        modifier_visibility_buttons(active_mod, row, pcoll)
+        _modifier_visibility_buttons(active_mod, row, pcoll)
 
     row = box.row()
 
@@ -874,18 +874,18 @@ def modifiers_ui_with_stack(context, layout, use_in_popup=False):
 
     # === Favourite modifiers ===
     col = layout.column(align=True)
-    favourite_modifier_buttons(col)
+    _favourite_modifier_buttons(col)
 
     # === Modifier search and menu and modifier extras menu ===
     col = layout.column()
-    row = modifier_search_and_menu(col, ob)
-    modifier_extras_button(context, row, use_in_popup=use_in_popup)
+    row = _modifier_search_and_menu(col, ob)
+    _modifier_extras_button(context, row, use_in_popup=use_in_popup)
 
     # === Modifier batch operators ===
     if prefs.show_batch_ops_in_main_layout_with_stack_style:
         row = layout.row(align=True)
         row.scale_x = 50
-        batch_operators(row, pcoll, use_with_stack=True)
+        _batch_operators(row, pcoll, use_with_stack=True)
 
     # === Modifier stack ===
     layout.template_modifiers()
