@@ -42,11 +42,7 @@ class OBJECT_OT_ml_modifier_move_up(Operator):
         active_mod_name = ml_active_ob.modifiers[active_mod_index].name
 
         if self.shift:
-            if float(bpy.app.version_string[0:4].strip(".")) >= 2.90:
-                bpy.ops.object.modifier_move_to_index(modifier=active_mod_name, index=0)
-            else:
-                for _ in range(active_mod_index):
-                    bpy.ops.object.modifier_move_up(override, modifier=active_mod_name)
+            bpy.ops.object.modifier_move_to_index(modifier=active_mod_name, index=0)
             ml_active_ob.ml_modifier_active_index = 0
         else:
             bpy.ops.object.modifier_move_up(override, modifier=active_mod_name)
