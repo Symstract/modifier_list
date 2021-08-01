@@ -1226,7 +1226,6 @@ class DATA_PT_modifiers:
         split = layout.split()
         col = split.column()
         col.active = not md.is_bound
-
         col.label(text="Target:")
         col.prop(md, "target", text="")
 
