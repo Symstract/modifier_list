@@ -1239,6 +1239,13 @@ class DATA_PT_modifiers:
         split = layout.split()
         col = split.column()
         col.prop(md, "falloff")
+
+        if BLENDER_VERSION_MAJOR_POINT_MINOR >= 3.0:
+            row = col.row()
+            row.enabled = not md.is_bound
+            row.active = not md.is_bound and bool(md.vertex_group)
+            row.prop(md, "use_sparse_bind")
+
         col = split.column()
         col.prop(md, "strength")
 
