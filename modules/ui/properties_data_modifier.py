@@ -1982,18 +1982,27 @@ class DATA_PT_modifiers:
 
         valid_node_input_names = []
         invalid_node_input_names = []
+        node_input_types = []
 
         for node_input in md.node_group.inputs:
             if node_input.type == 'GEOMETRY':
                 invalid_node_input_names.append(node_input.name)
             else:
                 valid_node_input_names.append(node_input.name)
+                node_input_types.append(node_input.type)
 
         prop_ids = [prop_id for prop_id in md.keys() if prop_id.startswith("Input_")]
 
-        for prop_id, name in zip(prop_ids, valid_node_input_names):
+        identifiers_names_types = zip(prop_ids, valid_node_input_names, node_input_types)
+
+        for prop_id, name, input_type in identifiers_names_types:
             layout.separator(factor=0.5)
-            layout.prop(md, f'["{prop_id}"]', text=name)
+            if input_type == 'COLLECTION':
+                layout.prop_search(md, f'["{prop_id}"]', bpy.data, "collections", text=name)
+            elif input_type == 'OBJECT':
+                layout.prop_search(md, f'["{prop_id}"]', bpy.data, "objects", text=name)
+            else:
+                layout.prop(md, f'["{prop_id}"]', text=name)
 
         if len(invalid_node_input_names) > 1:
             layout.separator()
