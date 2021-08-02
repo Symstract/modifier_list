@@ -584,6 +584,7 @@ class Preferences(AddonPreferences):
 
         layout.separator()
 
+        # === UI style ===
         layout.label(text="Style:")
 
         split = layout.split()
@@ -608,6 +609,7 @@ class Preferences(AddonPreferences):
         row.enabled = False
         row.prop(self, "popup_style", expand=True)
 
+        # === Sidebar ===
         if self.use_sidebar:
             layout.separator()
 
@@ -637,7 +639,7 @@ class Preferences(AddonPreferences):
 
             box.prop(self, "use_icons_in_favourites")
 
-        # === General settings ===
+        # === General ===
         _, box = box_with_header(layout, "General", prefs_ui_props, "general_expand")
 
         if prefs_ui_props.general_expand:
@@ -657,7 +659,7 @@ class Preferences(AddonPreferences):
             split.label(text="Show Info Messages For")
             split.row().prop(self, "batch_ops_reports", expand=True)
 
-        # === Popup settings ===
+        # === Popup ===
         _, box = box_with_header(layout, "Popup", prefs_ui_props, "popup_expand")
 
         if prefs_ui_props.popup_expand:
@@ -671,7 +673,7 @@ class Preferences(AddonPreferences):
 
             box.prop(self, "use_props_dialog")
 
-        # === Gizmo object settings ===
+        # === Gizmo object ===
         _, box = box_with_header(layout, "Gizmo", prefs_ui_props, "gizmo_expand")
 
         if prefs_ui_props.gizmo_expand:
