@@ -618,8 +618,6 @@ class Preferences(AddonPreferences):
             split.label(text="Sidebar Category")
             split.prop(self, "sidebar_category", text="")
 
-            category = self.sidebar_category
-
         layout.separator()
 
         # === Favourite modifiers ===
