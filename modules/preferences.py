@@ -677,11 +677,11 @@ class Preferences(AddonPreferences):
 
         if prefs_ui_props.popup_expand:
             row = box.row()
-            row.label(text="Popup Width")
+            row.label(text="Width")
             row.prop(self, "popup_width", text="")
 
             row = box.row()
-            row.label(text="Modifier List Default/Min Height in Popup")
+            row.label(text="Modifier List Default/Min Height")
             row.prop(self, "mod_list_def_len")
 
             box.prop(self, "use_props_dialog")
