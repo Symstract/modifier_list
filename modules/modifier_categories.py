@@ -13,18 +13,10 @@ _mods = ALL_MODIFIERS_NAMES_ICONS_TYPES
 
 _modify_end = next(_mods.index(mod) + 1 for mod in _mods if mod[0] == "Vertex Weight Proximity")
 _gen_start = next(_mods.index(mod) for mod in _mods if mod[0] == "Array")
-
-# In Blender 2.82, the Weld modifier was added but it was incorrectly
-# placed before Wireframe. That's been fixed in 2.83.
-if bpy.app.version[1] == 82:
-    _gen_end = next(_mods.index(mod) + 1 for mod in _mods if mod[0] == "Weld")
-else:
-    _gen_end = next(_mods.index(mod) + 1 for mod in _mods if mod[0] == "Wireframe")
-
+_gen_end = next(_mods.index(mod) + 1 for mod in _mods if mod[0] == "Wireframe")
 _def_start = next(_mods.index(mod) for mod in _mods if mod[0] == "Armature")
 _def_end = next(_mods.index(mod) + 1 for mod in _mods if mod[0] == "Wave")
 _sim_start = next(_mods.index(mod) for mod in _mods if mod[0] == "Cloth")
-
 _sim_end = next(_mods.index(mod) + 1 for mod in _mods if mod[0] == "Soft Body")
 
 ALL_MODIFY_NAMES_ICONS_TYPES = [mod for mod in _mods[0:_modify_end]]
@@ -66,11 +58,9 @@ CURVE_GENERATE_NAMES_ICONS_TYPES = [
     ('Screw', 'MOD_SCREW', 'SCREW'),
     ('Solidify', 'MOD_SOLIDIFY', 'SOLIDIFY'),
     ('Subdivision Surface', 'MOD_SUBSURF', 'SUBSURF'),
-    ('Triangulate', 'MOD_TRIANGULATE', 'TRIANGULATE')
+    ('Triangulate', 'MOD_TRIANGULATE', 'TRIANGULATE'),
+    ('Weld', 'AUTOMERGE_OFF', 'WELD')
 ]
-
-if bpy.app.version[1] >= 82:
-    CURVE_GENERATE_NAMES_ICONS_TYPES.append(('Weld', 'AUTOMERGE_OFF', 'WELD'))
 
 CURVE_DEFORM_NAMES_ICONS_TYPES = [
     ('Armature', 'MOD_ARMATURE', 'ARMATURE'),
