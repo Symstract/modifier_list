@@ -643,6 +643,12 @@ class ModifierExtrasBase:
 
         layout.operator("wm.ml_favourite_modifiers_configuration_popup")
 
+        # Style setting is currently only shown for Properties Editor
+        # because template_modifiers() doesn't currently work outside of
+        # Properties Editor: https://developer.blender.org/T88655.
+        if class_name.endswith("properties_editor"):
+            layout.prop(prefs, "properties_editor_style", expand=True)
+
 
 class OBJECT_PT_ml_modifier_extras_for_popup(Panel, ModifierExtrasBase):
     pass
