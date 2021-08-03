@@ -79,7 +79,7 @@ Default hotkey is **Alt + Space**. Inside the keymap editor, you can find it und
 1. Go to Edit menu (File menu in 2.79) and open user preferences
 2. Switch to Addons tab and click Install...
 3. Navigate to where you downloaded the zip file to, select it and click Install Add-on from File
-4. Enable the add-on by ticking the check box next to its name
+4. Enable the add-on by ticking the checkbox next to its name
 5. Save user preferences
 
 ## Known Issues and Limitations
