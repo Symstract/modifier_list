@@ -36,7 +36,7 @@
 - **Modifier search**
 - **Modifier menu**
 - **Favourite modifiers** which can be set in the addon preferences or from a popup available from the Modifier Extras popover
-- **Ability to apply modifiers in edit mode (kind of).** The apply operator acts as a macro when used in edit mode and automatically switches to object mode, applies the modifier and switches back to edit mode.
+- **Ability to apply modifiers in edit mode (kind of).** The "Apply Modifier" and "Apply All Modifiers" operators automatically switch to object mode, apply the modifier and switch back to edit mode.
 - **Ability to apply modifiers even if the object's data is used by multiple objects.** In this case, a popup with two options is shown: "Apply To Active Object Only (Break Link)" and "Apply To All Objects"
 - **Operators for synchronizing one or all modifiers on instances.** These can be found in the Modifier Extras popover.
 - **Ability to inserted new modifiers after the active one** by enabling the "Insert New Modifier After Active" setting.
