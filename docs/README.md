@@ -79,9 +79,11 @@
 - **Auto Smooth is enabled automatically when you add a Weighted Normal or a Normal Edit modifier**
 - **Black and white icons** to choose between
 
-## Popup Hotkey
+## Hotkeys
 
-Default hotkey is **Alt + Space**. Inside the keymap editor, you can find it under 3D View > 3D View (Global) > Modifier Popup.
+**Default hotkey for the popup is Alt + Space**. Inside the keymap editor, you can find it under 3D View > 3D View (Global) > Modifier Popup.
+
+It's recommended to add shortcuts under the 3D View > 3D View (Global) category so they are availabe in all modes.
 
 ## Preferences are auto saved into your Blender config folder
 
