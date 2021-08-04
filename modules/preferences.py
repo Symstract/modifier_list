@@ -507,7 +507,7 @@ class Preferences(AddonPreferences):
     show_batch_ops_in_main_layout_with_stack_style: BoolProperty(
         name="Show Batch Operators In Main Layout With Stack Style",
         description="When using the stack layout, show the batch operators in the main layout in "
-                    "their own row. Otherwise they are located in the Modifier Extras menu",
+                    "their own row. Otherwise they are located in the Modifier Extras popover",
         default=True)
 
     batch_ops_reports_items = [
