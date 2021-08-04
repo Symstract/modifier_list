@@ -1,10 +1,41 @@
 # Changelog
 
-## 1.7 - Unreleased
+## 1.7 - 4.8.2021
 
-- Fixed possible error when reloading the addon. Now it should always work.
-- Adding shortcuts to modifier applying operators is now possible because they don't need the modifier name as an argument any more
-- When applying a modifier to all instances, the modifier is now removed from the instances (based on the name and type)
+### New features and changes
+
+- **Optional stack layout**
+  - It uses the default modifier stack (so layouts are always up to date)
+  - There are separate settings for Properties Editor, sidebar and popup in the preferences
+  - Setting for the current layout (Properties Editor, sidebar or popup) can also be found in the Modifier Extras popover
+  - Currently only the Properties Editor setting is enabled because the stack layout is not working outside of Properties Editor because of a bug in Blender
+  - Modifier Extras popover is located in the same row with modifier search and menu
+  - Gizmo settings are in the popover
+  - Batch operators are located either where they are now or in the popover. The "Show Batch Operators In Main Layout With Stack Style" setting controls that.
+  - There's also an operator for expanding/collapsing all modifier panels
+  - When switching from stack to list, the panels don't seem to get removed. Disabling and re-enabling the addon fixed that. Seems like a bug I need to report.
+- **Customizable modifier default settings**
+  - Can be found in the preferences
+  - In some cases one setting affects another, which can be confusing. Example: Wertex Weight Proximity's proximity_geometry enum's 'FACE' option is synched with the invert_mask_vertex_groupin setting. Hopefully these kind of situations are rare.
+- **When applying a modifier to all instances, the modifier is now removed from the instances** (based on the name and type)
+- **Adding shortcuts to modifier applying operators is now possible** because they don't need the modifier name as an argument any more. (Btw, it's recommended to add shortcuts under 3D View > 3D View (Global) in the keymap editor so they work in all modes.)
+- **Modifiers are now sorted alphabetically in the search**
+- **Some mode enums are now expanded** for convenience in Weld, Mask, Remesh, Solidify and Cast modifiers' UI.
+- **Surface Deform: Interpolation Falloff is now deactivate when the mesh is not bound** like it's in the default UI
+- **Weighted Normal: autosmooth is now enabled before adding the modifier, not after** to avoid the usual warning in the console
+- **Normal Edit: autosmooth is now enabled automatically**
+
+### Updates for Blender 3.0
+
+- Added "Sparse Bind" checkbox for Surface Deform
+- Added "Only Loose Edges" checkbox for Weld
+
+### Fixes
+
+- Fixed Geometry Nodes object and collection inputs appearing disabled
+- Fixed a possible error when reloading the addon. Now it should always work.
+
+**The minimum required Blender version is now 2.92.**
 
 ## 1.6.4 - 22.5.2021
 
