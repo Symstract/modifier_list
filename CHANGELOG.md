@@ -1,6 +1,6 @@
 # Changelog
 
-## 1.7 - 4.8.2021
+## 1.7 - 5.8.2021
 
 ### New features and changes
 
