@@ -1,5 +1,13 @@
 # Changelog
 
+## 1.7.1 - 18.8.2021
+
+Fixes for the list layout.
+
+- Fixed Boolean missing Edit Mode toggle. This has been available since Blender 2.91. Awful mistake from me to miss this as this is useful.
+- Fixed Weld missing On Cage toggle
+- Fixed Volume to Mesh, Mesh to Volume and Volume Displace showing Edit Mode toggle
+
 ## 1.7 - 5.8.2021
 
 ### New features and changes
