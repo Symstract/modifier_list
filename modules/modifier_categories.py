@@ -142,7 +142,6 @@ VOLUME_ALL_NAMES_ICONS_TYPES = (
 # === Don't support show_in_editmode ===
 DONT_SUPPORT_SHOW_IN_EDITMODE = {
     'MESH_SEQUENCE_CACHE',
-    'BOOLEAN',
     'BUILD',
     'DECIMATE',
     'MULTIRES',
