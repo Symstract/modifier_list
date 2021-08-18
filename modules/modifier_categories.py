@@ -153,7 +153,10 @@ DONT_SUPPORT_SHOW_IN_EDITMODE = {
     'FLUID_SIMULATION',
     'PARTICLE_SYSTEM',
     'SMOKE',
-    'SOFT_BODY'
+    'SOFT_BODY',
+    'VOLUME_TO_MESH',
+    'MESH_TO_VOLUME',
+    'VOLUME_DISPLACE'
 }
 
 # === Support show_on_cage ===
