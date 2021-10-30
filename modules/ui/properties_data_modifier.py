@@ -1996,12 +1996,19 @@ class DATA_PT_modifiers:
 
         identifiers_names_types = zip(prop_ids, valid_node_input_names, node_input_types)
 
+        input_type_data_col_name_map = {
+            "COLLECTION": "collections",
+            "IMAGE": "images",
+            "MATERIAL": "materials",
+            "OBJECT": "objects",
+            "TEXTURE": "textures",
+        }
+
         for prop_id, name, input_type in identifiers_names_types:
             layout.separator(factor=0.5)
-            if input_type == 'COLLECTION':
-                layout.prop_search(md, f'["{prop_id}"]', bpy.data, "collections", text=name)
-            elif input_type == 'OBJECT':
-                layout.prop_search(md, f'["{prop_id}"]', bpy.data, "objects", text=name)
+            if input_type in input_type_data_col_name_map.keys():
+                layout.prop_search(md, f'["{prop_id}"]', bpy.data,
+                                   input_type_data_col_name_map[input_type], text=name)
             else:
                 layout.prop(md, f'["{prop_id}"]', text=name)
 
