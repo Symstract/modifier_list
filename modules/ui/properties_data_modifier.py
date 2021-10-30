@@ -1978,7 +1978,8 @@ class DATA_PT_modifiers:
         layout.prop(md, "use_smooth_shade")
 
     def NODES(self, layout, ob, md):
-        layout.prop(md, "node_group")
+        layout.template_ID(md, "node_group", new="node.new_geometry_node_group_assign")
+        layout.separator()
 
         valid_node_input_names = []
         invalid_node_input_names = []
