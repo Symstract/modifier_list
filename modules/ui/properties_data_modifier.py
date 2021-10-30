@@ -1991,7 +1991,8 @@ class DATA_PT_modifiers:
                 valid_node_input_names.append(node_input.name)
                 node_input_types.append(node_input.type)
 
-        prop_ids = [prop_id for prop_id in md.keys() if prop_id.startswith("Input_")]
+        prop_ids = [prop_id for prop_id in md.keys()
+                    if (prop_id.startswith("Input_") and prop_id[-1].isdigit())]
 
         identifiers_names_types = zip(prop_ids, valid_node_input_names, node_input_types)
 
