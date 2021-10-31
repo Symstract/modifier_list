@@ -1997,19 +1997,20 @@ class DATA_PT_modifiers:
 
         identifiers_names_types = zip(prop_ids, valid_node_input_names, node_input_types)
 
-        input_type_data_col_name_map = {
-            "COLLECTION": "collections",
-            "IMAGE": "images",
-            "MATERIAL": "materials",
-            "OBJECT": "objects",
-            "TEXTURE": "textures",
+        datablock_input_info_per_type = {
+            "COLLECTION": {"data_collection": "collections", "icon": "OUTLINER_COLLECTION"},
+            "IMAGE": {"data_collection": "images", "icon": "IMAGE"},
+            "MATERIAL": {"data_collection": "materials", "icon": "MATERIAL"},
+            "OBJECT": {"data_collection": "objects", "icon": "OBJECT_DATA"},
+            "TEXTURE": {"data_collection": "textures", "icon": "TEXTURE"},
         }
 
         for prop_id, name, input_type in identifiers_names_types:
             layout.separator(factor=0.5)
-            if input_type in input_type_data_col_name_map.keys():
-                layout.prop_search(md, f'["{prop_id}"]', bpy.data,
-                                   input_type_data_col_name_map[input_type], text=name)
+            if input_type in datablock_input_info_per_type.keys():
+                input_info = datablock_input_info_per_type[input_type]
+                layout.prop_search(md, f'["{prop_id}"]', bpy.data, input_info["data_collection"],
+                                   text=name, icon=input_info["icon"])
             else:
                 layout.prop(md, f'["{prop_id}"]', text=name)
 
