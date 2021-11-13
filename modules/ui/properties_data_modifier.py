@@ -1977,7 +1977,7 @@ class DATA_PT_modifiers:
         layout.prop(md, "adaptivity")
         layout.prop(md, "use_smooth_shade")
 
-    def NODES(self, layout, ob, md):
+    def _nodes_2_93(self, layout, ob, md):
         layout.template_ID(md, "node_group", new="node.new_geometry_node_group_assign")
         layout.separator()
 
@@ -2017,3 +2017,116 @@ class DATA_PT_modifiers:
         if len(invalid_node_input_names) > 1:
             layout.separator()
             layout.label(text="Node group can only have one geometry input", icon='ERROR')
+
+    def _nodes_3_0_inputs(self, layout, ob, md, split_facor):
+        # Find an input node because md.node_group.inputs contains
+        # NodeSocketInterfaces that don't have enough info. Currently,
+        # the only way to find out if an input accepts an attribute
+        # (i.e. is a field input) is to check the shape of a socket.
+        # Nodes have that info.
+        input_node = next((node for node in md.node_group.nodes if node.type == 'GROUP_INPUT'),
+                          None)
+
+        if not input_node:
+            return
+
+        valid_node_output_names = []
+        invalid_node_output_names = []
+        node_output_types = []
+        node_output_socket_shapes = []
+
+        # Skip the last output because it's a placeholder.
+        for node_output in input_node.outputs[:-1]:
+            if node_output.type == 'GEOMETRY':
+                invalid_node_output_names.append(node_output.name)
+            else:
+                valid_node_output_names.append(node_output.name)
+                node_output_types.append(node_output.type)
+                node_output_socket_shapes.append(node_output.display_shape)
+
+        input_prop_ids = [prop_id for prop_id in md.keys()
+                          if (prop_id.startswith("Input_") and prop_id[-1].isdigit())]
+
+        input_identifiers_names_types_shapes = zip(input_prop_ids, valid_node_output_names,
+                                                   node_output_types, node_output_socket_shapes)
+
+        datablock_input_info_per_type = {
+            "COLLECTION": {"data_collection": "collections", "icon": "OUTLINER_COLLECTION"},
+            "IMAGE": {"data_collection": "images", "icon": "IMAGE"},
+            "MATERIAL": {"data_collection": "materials", "icon": "MATERIAL"},
+            "OBJECT": {"data_collection": "objects", "icon": "OBJECT_DATA"},
+            "TEXTURE": {"data_collection": "textures", "icon": "TEXTURE"},
+        }
+
+        for prop_id, name, input_type, socket_shape in input_identifiers_names_types_shapes:
+            split = layout.split(factor=split_facor)
+            split.label(text=name + ":")
+
+            row = split.row(align=True)
+
+            if input_type in datablock_input_info_per_type.keys():
+                input_info = datablock_input_info_per_type[input_type]
+                row.prop_search(md, f'["{prop_id}"]', bpy.data, input_info["data_collection"],
+                                   text="", icon=input_info["icon"])
+
+            else:
+                # If the socket shape is 'DIAMOND' or 'DIAMOND_DOT' the
+                # input accepts an attribute.
+                if socket_shape in {'DIAMOND', 'DIAMOND_DOT'}:
+                    op = row.operator("object.geometry_nodes_input_attribute_toggle", text="",
+                                      icon='SPREADSHEET')
+                    op.prop_path = f'[\"{prop_id}_use_attribute\"]'
+                    op.modifier_name = md.name
+
+                if md[f"{prop_id}_use_attribute"]:
+                    row.prop_search(md, f'["{prop_id}_attribute_name"]', ob.data, "attributes",
+                                    text="")
+                else:
+                    col = row.column()
+                    col.prop(md, f'["{prop_id}"]', text="")
+
+            layout.separator(factor=0.5)
+
+        if len(invalid_node_output_names) > 1:
+            layout.separator()
+            layout.label(text="Node group can only have one geometry input", icon='ERROR')
+
+    def _nodes_3_0_outputs(self, layout, ob, md, split_factor):
+        valid_output_types = {'BOOLEAN', 'FLOAT', 'INTEGER', 'RGBA', 'VALUE', 'VECTOR'}
+        valid_node_outputs_names = [output.name for output in md.node_group.outputs
+                                   if output.type in valid_output_types]
+        output_prop_ids = [prop_id for prop_id in md.keys()
+                           if (prop_id.startswith("Output_")
+                           and prop_id.endswith("attribute_name"))]
+
+        if not output_prop_ids:
+            return
+
+        layout.label(text="Outputs")
+
+        layout.separator(factor=0.5)
+
+        for prop_id, name in zip(output_prop_ids, valid_node_outputs_names):
+            split = layout.split(factor=split_factor)
+            split.label(text=name + ":")
+            split.prop_search(md, f'["{prop_id}"]', ob.data, "attributes", text="")
+            layout.separator(factor=0.5)
+
+    def _nodes_3_0(self, layout, ob, md):
+        layout.template_ID(md, "node_group", new="node.new_geometry_node_group_assign")
+
+        layout.separator()
+
+        split_factor = 0.4
+
+        self._nodes_3_0_inputs(layout, ob, md, split_factor)
+
+        layout.separator()
+
+        self._nodes_3_0_outputs(layout, ob, md, split_factor)
+
+    def NODES(self, layout, ob, md):
+        if BLENDER_VERSION_MAJOR_POINT_MINOR < 3.0:
+            self._nodes_2_93(layout, ob, md)
+        else:
+            self._nodes_3_0(layout, ob, md)
