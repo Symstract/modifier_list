@@ -1982,12 +1982,12 @@ class DATA_PT_modifiers:
         layout.separator()
 
         valid_node_input_names = []
-        invalid_node_input_names = []
+        node_geometry_input_count = 0
         node_input_types = []
 
         for node_input in md.node_group.inputs:
             if node_input.type == 'GEOMETRY':
-                invalid_node_input_names.append(node_input.name)
+                node_geometry_input_count += 1
             else:
                 valid_node_input_names.append(node_input.name)
                 node_input_types.append(node_input.type)
@@ -2011,7 +2011,7 @@ class DATA_PT_modifiers:
             else:
                 layout.prop(md, f'["{prop_id}"]', text=name)
 
-        if len(invalid_node_input_names) > 1:
+        if node_geometry_input_count > 1:
             layout.separator()
             layout.label(text="Node group can only have one geometry input", icon='ERROR')
 
@@ -2027,24 +2027,24 @@ class DATA_PT_modifiers:
         if not input_node:
             return
 
-        valid_node_output_names = []
-        invalid_node_output_names = []
+        valid_node_outputs_names = []
+        node_geometry_output_count = 0
         node_output_types = []
         node_output_socket_shapes = []
 
         # Skip the last output because it's a placeholder.
         for node_output in input_node.outputs[:-1]:
             if node_output.type == 'GEOMETRY':
-                invalid_node_output_names.append(node_output.name)
+                node_geometry_output_count += 1
             else:
-                valid_node_output_names.append(node_output.name)
+                valid_node_outputs_names.append(node_output.name)
                 node_output_types.append(node_output.type)
                 node_output_socket_shapes.append(node_output.display_shape)
 
         input_prop_ids = [prop_id for prop_id in md.keys()
                           if (prop_id.startswith("Input_") and prop_id[-1].isdigit())]
 
-        input_identifiers_names_types_shapes = zip(input_prop_ids, valid_node_output_names,
+        input_identifiers_names_types_shapes = zip(input_prop_ids, valid_node_outputs_names,
                                                    node_output_types, node_output_socket_shapes)
 
         datablock_input_info_per_type = {
@@ -2084,14 +2084,14 @@ class DATA_PT_modifiers:
 
             layout.separator(factor=0.5)
 
-        if len(invalid_node_output_names) > 1:
+        if node_geometry_output_count > 1:
             layout.separator()
             layout.label(text="Node group can only have one geometry input", icon='ERROR')
 
     def _nodes_3_0_outputs(self, layout, ob, md, split_factor):
         valid_output_types = {'BOOLEAN', 'FLOAT', 'INTEGER', 'RGBA', 'VALUE', 'VECTOR'}
         valid_node_outputs_names = [output.name for output in md.node_group.outputs
-                                   if output.type in valid_output_types]
+                                    if output.type in valid_output_types]
         output_prop_ids = [prop_id for prop_id in md.keys()
                            if (prop_id.startswith("Output_")
                            and prop_id.endswith("attribute_name"))]
