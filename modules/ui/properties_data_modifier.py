@@ -1999,10 +1999,7 @@ class DATA_PT_modifiers:
 
         datablock_input_info_per_type = {
             "COLLECTION": {"data_collection": "collections", "icon": "OUTLINER_COLLECTION"},
-            "IMAGE": {"data_collection": "images", "icon": "IMAGE"},
-            "MATERIAL": {"data_collection": "materials", "icon": "MATERIAL"},
-            "OBJECT": {"data_collection": "objects", "icon": "OBJECT_DATA"},
-            "TEXTURE": {"data_collection": "textures", "icon": "TEXTURE"},
+            "OBJECT": {"data_collection": "objects", "icon": "OBJECT_DATA"}
         }
 
         for prop_id, name, input_type in identifiers_names_types:
