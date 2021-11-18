@@ -582,6 +582,8 @@ class DATA_PT_modifiers:
             sub = row.row(align=True)
             sub.active = bool(md.vertex_group)
             sub.prop(md, "invert_vertex_group", text="", icon='ARROW_LEFTRIGHT')
+            if BLENDER_VERSION_MAJOR_POINT_MINOR >= 3.0:
+                layout.prop(md, "use_smooth")
 
         col = layout.column()
         col.prop(md, "threshold")
