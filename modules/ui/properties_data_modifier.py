@@ -2064,7 +2064,7 @@ class DATA_PT_modifiers:
             if input_type in datablock_input_info_per_type.keys():
                 input_info = datablock_input_info_per_type[input_type]
                 row.prop_search(md, f'["{prop_id}"]', bpy.data, input_info["data_collection"],
-                                   text="", icon=input_info["icon"])
+                                text="", icon=input_info["icon"])
 
             else:
                 # If the socket shape is 'DIAMOND' or 'DIAMOND_DOT' the
