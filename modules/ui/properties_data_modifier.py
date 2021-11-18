@@ -1982,13 +1982,10 @@ class DATA_PT_modifiers:
         layout.separator()
 
         valid_node_input_names = []
-        node_geometry_input_count = 0
         node_input_types = []
 
         for node_input in md.node_group.inputs:
-            if node_input.type == 'GEOMETRY':
-                node_geometry_input_count += 1
-            else:
+            if node_input.type != 'GEOMETRY':
                 valid_node_input_names.append(node_input.name)
                 node_input_types.append(node_input.type)
 
@@ -2011,10 +2008,6 @@ class DATA_PT_modifiers:
             else:
                 layout.prop(md, f'["{prop_id}"]', text=name)
 
-        if node_geometry_input_count > 1:
-            layout.separator()
-            layout.label(text="Node group can only have one geometry input", icon='ERROR')
-
     def _nodes_3_0_inputs(self, layout, ob, md, split_facor):
         # Find an input node because md.node_group.inputs contains
         # NodeSocketInterfaces that don't have enough info. Currently,
@@ -2028,15 +2021,12 @@ class DATA_PT_modifiers:
             return
 
         valid_node_outputs_names = []
-        node_geometry_output_count = 0
         node_output_types = []
         node_output_socket_shapes = []
 
         # Skip the last output because it's a placeholder.
         for node_output in input_node.outputs[:-1]:
-            if node_output.type == 'GEOMETRY':
-                node_geometry_output_count += 1
-            else:
+            if node_output.type != 'GEOMETRY':
                 valid_node_outputs_names.append(node_output.name)
                 node_output_types.append(node_output.type)
                 node_output_socket_shapes.append(node_output.display_shape)
@@ -2083,10 +2073,6 @@ class DATA_PT_modifiers:
                     col.prop(md, f'["{prop_id}"]', text="")
 
             layout.separator(factor=0.5)
-
-        if node_geometry_output_count > 1:
-            layout.separator()
-            layout.label(text="Node group can only have one geometry input", icon='ERROR')
 
     def _nodes_3_0_outputs(self, layout, ob, md, split_factor):
         valid_output_types = {'BOOLEAN', 'FLOAT', 'INTEGER', 'RGBA', 'VALUE', 'VECTOR'}
