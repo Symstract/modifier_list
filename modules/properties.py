@@ -83,17 +83,17 @@ def set_mesh_modifier_collection_items():
             item.value = mod
 
 
-def set_curve_modifier_collection_items():
+def set_curve_text_modifier_collection_items():
     """This is to be called on loading a new file or reloading addons
     to make modifiers available in search.
     """
-    curve_modifiers = bpy.context.window_manager.modifier_list.curve_modifiers
-    sorted_names_icons_types = sorted(modifier_categories.CURVE_ALL_NAMES_ICONS_TYPES,
+    curve_and_text_modifiers = bpy.context.window_manager.modifier_list.curve_text_modifiers
+    sorted_names_icons_types = sorted(modifier_categories.CURVE_TEXT_ALL_NAMES_ICONS_TYPES,
                                       key=lambda mod: mod[0])
 
-    if not curve_modifiers:
+    if not curve_and_text_modifiers:
         for name, _, mod in sorted_names_icons_types:
-            item = curve_modifiers.add()
+            item = curve_and_text_modifiers.add()
             item.name = name
             item.value = mod
 
@@ -128,6 +128,21 @@ def set_pointcloud_modifier_collection_items():
             item.value = mod
 
 
+def set_surface_modifier_collection_items():
+    """This is to be called on loading a new file or reloading addons
+    to make modifiers available in search.
+    """
+    surface_modifiers = bpy.context.window_manager.modifier_list.surface_modifiers
+    sorted_names_icons_types = sorted(modifier_categories.SURFACE_ALL_NAMES_ICONS_TYPES,
+                                      key=lambda mod: mod[0])
+
+    if not surface_modifiers:
+        for name, _, mod in sorted_names_icons_types:
+            item = surface_modifiers.add()
+            item.name = name
+            item.value = mod
+
+
 def set_volume_modifier_collection_items():
     """This is to be called on loading a new file or reloading addons
     to make modifiers available in search.
@@ -147,9 +162,10 @@ def set_volume_modifier_collection_items():
 def on_file_load(dummy):
     set_all_modifier_collection_items()
     set_mesh_modifier_collection_items()
-    set_curve_modifier_collection_items()
+    set_curve_text_modifier_collection_items()
     set_lattice_modifier_collection_items()
     set_pointcloud_modifier_collection_items()
+    set_surface_modifier_collection_items()
     set_volume_modifier_collection_items()
 
 
@@ -182,7 +198,7 @@ class MeshModifiersCollection(PropertyGroup):
     value: StringProperty(name="Type")
 
 
-class CurveModifiersCollection(PropertyGroup):
+class CurveTextModifiersCollection(PropertyGroup):
     # Collection Property for search
     value: StringProperty(name="Type")
 
@@ -193,6 +209,11 @@ class LatticeModifiersCollection(PropertyGroup):
 
 
 class PointcloudModifiersCollection(PropertyGroup):
+    # Collection Property for search
+    value: StringProperty(name="Type")
+
+
+class SurfaceModifiersCollection(PropertyGroup):
     # Collection Property for search
     value: StringProperty(name="Type")
 
@@ -231,9 +252,10 @@ class ML_WindowManagerProperties(PropertyGroup):
         description="Search for a modifier and add it to the stack")
     all_modifiers: CollectionProperty(type=AllModifiersCollection)
     mesh_modifiers: CollectionProperty(type=MeshModifiersCollection)
-    curve_modifiers: CollectionProperty(type=CurveModifiersCollection)
+    curve_text_modifiers: CollectionProperty(type=CurveTextModifiersCollection)
     lattice_modifiers: CollectionProperty(type=LatticeModifiersCollection)
     pointcloud_modifiers: CollectionProperty(type=PointcloudModifiersCollection)
+    surface_modifiers: CollectionProperty(type=SurfaceModifiersCollection)
     volume_modifiers: CollectionProperty(type=VolumeModifiersCollection)
     popup_tabs_items = [
         ("MODIFIERS", "Modifiers", "Modifiers", 'MODIFIER', 1),
@@ -254,9 +276,10 @@ class ML_WindowManagerProperties(PropertyGroup):
 classes = (
     AllModifiersCollection,
     MeshModifiersCollection,
-    CurveModifiersCollection,
+    CurveTextModifiersCollection,
     LatticeModifiersCollection,
     PointcloudModifiersCollection,
+    SurfaceModifiersCollection,
     VolumeModifiersCollection,
     ML_SceneProperties,
     ML_PreferencesUIProperties,
@@ -284,9 +307,10 @@ def register():
 
     set_all_modifier_collection_items()
     set_mesh_modifier_collection_items()
-    set_curve_modifier_collection_items()
+    set_curve_text_modifier_collection_items()
     set_lattice_modifier_collection_items()
     set_pointcloud_modifier_collection_items()
+    set_surface_modifier_collection_items()
     set_volume_modifier_collection_items()
 
 
