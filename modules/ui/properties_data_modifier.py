@@ -242,6 +242,12 @@ class DATA_PT_modifiers:
         layout.prop(md, "deform_mode")
         layout.prop(md, "interpolation")
 
+        if BLENDER_VERSION_MAJOR_POINT_MINOR >= 3.0:
+            row = layout.row(align=True)
+            row.label(text="Vertex Group:")
+            row.prop_search(md, "vertex_group", _ob, "vertex_groups", text="")
+            row.prop(md, "invert_vertex_group", text="", icon='ARROW_LEFTRIGHT')
+
         layout.label(text="Time Mapping:")
 
         row = layout.row()
