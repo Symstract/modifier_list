@@ -1,6 +1,8 @@
 import bpy
 
 
+BLENDER_VERSION_MAJOR_POINT_MINOR = float(bpy.app.version_string[0:4].strip("."))
+
 _mods_enum = bpy.types.Modifier.bl_rna.properties['type'].enum_items
 # There's' a modifier called "Surface" which needs to be filtered out
 # because it's not meant to be seen by users.
@@ -42,12 +44,12 @@ MESH_ALL_NAMES_ICONS_TYPES = (
 )
 
 # === Curve, surface and text modifiers by categories ===
-CURVE_MODIFY_NAMES_ICONS_TYPES = [
+CURVE_SURFACE_TEXT_MODIFY_NAMES_ICONS_TYPES = [
     ('Mesh Cache', 'MOD_MESHDEFORM', 'MESH_CACHE'),
     ('Mesh Sequence Cache', 'MOD_MESHDEFORM', 'MESH_SEQUENCE_CACHE')
 ]
 
-CURVE_GENERATE_NAMES_ICONS_TYPES = [
+CURVE_TEXT_GENERATE_NAMES_ICONS_TYPES = [
     ('Array', 'MOD_ARRAY', 'ARRAY'),
     ('Bevel', 'MOD_BEVEL', 'BEVEL'),
     ('Build', 'MOD_BUILD', 'BUILD'),
@@ -62,7 +64,25 @@ CURVE_GENERATE_NAMES_ICONS_TYPES = [
     ('Weld', 'AUTOMERGE_OFF', 'WELD')
 ]
 
-CURVE_DEFORM_NAMES_ICONS_TYPES = [
+if BLENDER_VERSION_MAJOR_POINT_MINOR >= 3.0:
+    CURVE_TEXT_GENERATE_NAMES_ICONS_TYPES.insert(5, ('Geometry Nodes', 'NODETREE', 'NODES'))
+
+SURFACE_GENERATE_NAMES_ICONS_TYPES = [
+    ('Array', 'MOD_ARRAY', 'ARRAY'),
+    ('Bevel', 'MOD_BEVEL', 'BEVEL'),
+    ('Build', 'MOD_BUILD', 'BUILD'),
+    ('Decimate', 'MOD_DECIM', 'DECIMATE'),
+    ('Edge Split', 'MOD_EDGESPLIT', 'EDGE_SPLIT'),
+    ('Mirror', 'MOD_MIRROR', 'MIRROR'),
+    ('Remesh', 'MOD_REMESH', 'REMESH'),
+    ('Screw', 'MOD_SCREW', 'SCREW'),
+    ('Solidify', 'MOD_SOLIDIFY', 'SOLIDIFY'),
+    ('Subdivision Surface', 'MOD_SUBSURF', 'SUBSURF'),
+    ('Triangulate', 'MOD_TRIANGULATE', 'TRIANGULATE'),
+    ('Weld', 'AUTOMERGE_OFF', 'WELD')
+]
+
+CURVE_SURFACE_TEXT_DEFORM_NAMES_ICONS_TYPES = [
     ('Armature', 'MOD_ARMATURE', 'ARMATURE'),
     ('Cast', 'MOD_CAST', 'CAST'),
     ('Curve', 'MOD_CURVE', 'CURVE'),
@@ -76,15 +96,22 @@ CURVE_DEFORM_NAMES_ICONS_TYPES = [
     ('Wave', 'MOD_WAVE', 'WAVE')
 ]
 
-CURVE_SIMULATE_NAMES_ICONS_TYPES = [
+CURVE_SURFACE_TEXT_SIMULATE_NAMES_ICONS_TYPES = [
     ('Soft Body', 'MOD_SOFT', 'SOFT_BODY')
 ]
 
-CURVE_ALL_NAMES_ICONS_TYPES = (
-    CURVE_MODIFY_NAMES_ICONS_TYPES
-    + CURVE_GENERATE_NAMES_ICONS_TYPES
-    + CURVE_DEFORM_NAMES_ICONS_TYPES
-    + CURVE_SIMULATE_NAMES_ICONS_TYPES
+CURVE_TEXT_ALL_NAMES_ICONS_TYPES = (
+    CURVE_SURFACE_TEXT_MODIFY_NAMES_ICONS_TYPES
+    + CURVE_TEXT_GENERATE_NAMES_ICONS_TYPES
+    + CURVE_SURFACE_TEXT_DEFORM_NAMES_ICONS_TYPES
+    + CURVE_SURFACE_TEXT_SIMULATE_NAMES_ICONS_TYPES
+)
+
+SURFACE_ALL_NAMES_ICONS_TYPES = (
+    CURVE_SURFACE_TEXT_MODIFY_NAMES_ICONS_TYPES
+    + SURFACE_GENERATE_NAMES_ICONS_TYPES
+    + CURVE_SURFACE_TEXT_DEFORM_NAMES_ICONS_TYPES
+    + CURVE_SURFACE_TEXT_SIMULATE_NAMES_ICONS_TYPES
 )
 
 # === Lattice modifiers by categories ===

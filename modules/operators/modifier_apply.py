@@ -5,7 +5,7 @@ from bpy.props import *
 from bpy.types import Operator
 
 from . import lattice_toggle_editmode, lattice_toggle_editmode_prop_editor
-from ..modifier_categories import CURVE_DEFORM_NAMES_ICONS_TYPES
+from ..modifier_categories import CURVE_SURFACE_TEXT_DEFORM_NAMES_ICONS_TYPES
 from ..multiuser_data_modifier_apply_utils import LinkedObjectDataChanger
 from ..utils import (
     delete_gizmo_object,
@@ -225,7 +225,7 @@ class ApplyModifier:
                 ob.modifiers.remove(mod)
 
     def curve_modifier_apply_report(self, modifier_type):
-        curve_deform_mods = [mod[2] for mod in CURVE_DEFORM_NAMES_ICONS_TYPES]
+        curve_deform_mods = [mod[2] for mod in CURVE_SURFACE_TEXT_DEFORM_NAMES_ICONS_TYPES]
         if modifier_type in curve_deform_mods:
             self.report({'INFO'}, "Applied modifier only changed CV points, "
                         "not tessellated/bevel vertices")

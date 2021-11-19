@@ -87,11 +87,11 @@ def _modifier_search_and_menu(layout, object):
                         text="", icon='MODIFIER')
         sub = row.row()
         sub.menu("MESH_MT_ml_add_modifier_menu")
-    elif ob.type in {'CURVE', 'SURFACE', 'FONT'}:
-        row.prop_search(ml_props, "modifier_to_add_from_search", ml_props, "curve_modifiers",
+    elif ob.type in {'CURVE', 'FONT'}:
+        row.prop_search(ml_props, "modifier_to_add_from_search", ml_props, "curve_text_modifiers",
                         text="", icon='MODIFIER')
         sub = row.row()
-        sub.menu("CURVE_MT_ml_add_modifier_menu")
+        sub.menu("CURVE_TEXT_MT_ml_add_modifier_menu")
     elif ob.type == 'LATTICE':
         row.prop_search(ml_props, "modifier_to_add_from_search", ml_props, "lattice_modifiers",
                         text="", icon='MODIFIER')
@@ -101,7 +101,11 @@ def _modifier_search_and_menu(layout, object):
         row.prop_search(ml_props, "modifier_to_add_from_search", ml_props, "pointcloud_modifiers",
                         text="", icon='MODIFIER')
         sub = row.row()
-        sub.menu("POINTCLOUD_MT_ml_add_modifier_menu")
+    elif ob.type == 'SURFACE':
+        row.prop_search(ml_props, "modifier_to_add_from_search", ml_props, "surface_modifiers",
+                        text="", icon='MODIFIER')
+        sub = row.row()
+        sub.menu("SURFACE_MT_ml_add_modifier_menu")
     elif ob.type == 'VOLUME':
         row.prop_search(ml_props, "modifier_to_add_from_search", ml_props, "volume_modifiers",
                         text="", icon='MODIFIER')
@@ -445,7 +449,7 @@ class MESH_MT_ml_add_modifier_menu(Menu):
             col.operator("object.ml_modifier_add", text=name, icon=icon).modifier_type = mod
 
 
-class CURVE_MT_ml_add_modifier_menu(Menu):
+class CURVE_TEXT_MT_ml_add_modifier_menu(Menu):
     bl_label = "Add Modifier"
     bl_description = "Add a procedural operation/effect to the active object"
 
@@ -458,25 +462,60 @@ class CURVE_MT_ml_add_modifier_menu(Menu):
         col = row.column()
         col.label(text="Modify")
         col.separator(factor=0.3)
-        for name, icon, mod in modifier_categories.CURVE_MODIFY_NAMES_ICONS_TYPES:
+        for name, icon, mod in modifier_categories.CURVE_SURFACE_TEXT_MODIFY_NAMES_ICONS_TYPES:
             col.operator("object.ml_modifier_add", text=name, icon=icon).modifier_type = mod
 
         col = row.column()
         col.label(text="Generate")
         col.separator(factor=0.3)
-        for name, icon, mod in modifier_categories.CURVE_GENERATE_NAMES_ICONS_TYPES:
+        for name, icon, mod in modifier_categories.CURVE_TEXT_GENERATE_NAMES_ICONS_TYPES:
             col.operator("object.ml_modifier_add", text=name, icon=icon).modifier_type = mod
 
         col = row.column()
         col.label(text="Deform")
         col.separator(factor=0.3)
-        for name, icon, mod in modifier_categories.CURVE_DEFORM_NAMES_ICONS_TYPES:
+        for name, icon, mod in modifier_categories.CURVE_SURFACE_TEXT_DEFORM_NAMES_ICONS_TYPES:
             col.operator("object.ml_modifier_add", text=name, icon=icon).modifier_type = mod
 
         col = row.column()
         col.label(text="Physics")
         col.separator(factor=0.3)
-        for name, icon, mod in modifier_categories.CURVE_SIMULATE_NAMES_ICONS_TYPES:
+        for name, icon, mod in modifier_categories.CURVE_SURFACE_TEXT_SIMULATE_NAMES_ICONS_TYPES:
+            col.operator("object.ml_modifier_add", text=name, icon=icon).modifier_type = mod
+
+
+class SURFACE_MT_ml_add_modifier_menu(Menu):
+    bl_label = "Add Modifier"
+    bl_description = "Add a procedural operation/effect to the active object"
+
+    def draw(self, context):
+        layout = self.layout
+
+        row = layout.row()
+        row.alignment = 'LEFT'
+
+        col = row.column()
+        col.label(text="Modify")
+        col.separator(factor=0.3)
+        for name, icon, mod in modifier_categories.CURVE_SURFACE_TEXT_MODIFY_NAMES_ICONS_TYPES:
+            col.operator("object.ml_modifier_add", text=name, icon=icon).modifier_type = mod
+
+        col = row.column()
+        col.label(text="Generate")
+        col.separator(factor=0.3)
+        for name, icon, mod in modifier_categories.SURFACE_GENERATE_NAMES_ICONS_TYPES:
+            col.operator("object.ml_modifier_add", text=name, icon=icon).modifier_type = mod
+
+        col = row.column()
+        col.label(text="Deform")
+        col.separator(factor=0.3)
+        for name, icon, mod in modifier_categories.CURVE_SURFACE_TEXT_DEFORM_NAMES_ICONS_TYPES:
+            col.operator("object.ml_modifier_add", text=name, icon=icon).modifier_type = mod
+
+        col = row.column()
+        col.label(text="Physics")
+        col.separator(factor=0.3)
+        for name, icon, mod in modifier_categories.CURVE_SURFACE_TEXT_SIMULATE_NAMES_ICONS_TYPES:
             col.operator("object.ml_modifier_add", text=name, icon=icon).modifier_type = mod
 
 
