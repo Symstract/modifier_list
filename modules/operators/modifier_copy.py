@@ -32,8 +32,4 @@ class OBJECT_OT_ml_modifier_copy(Operator):
 
         bpy.ops.object.modifier_copy(override, modifier=self.modifier)
 
-        # Set correct active_mod index
-        active_index = ob.ml_modifier_active_index
-        ob.ml_modifier_active_index = active_index + 1
-
         return {'FINISHED'}
