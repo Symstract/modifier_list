@@ -108,16 +108,30 @@ def write_prefs():
 # Callbacks
 # ======================================================================
 
+
+# On registering the addon, triggering the update function for every
+# property would be very slow, so in that case that should be skipped.
+skip_writing_prefs = False
+
+
+def prefs_callback(self, context):
+    if not skip_writing_prefs:
+        write_prefs()
+
+
 def use_properties_editor_callback(self, context):
     register_DATA_PT_modifiers(self, context)
+    prefs_callback(self, context)
 
 
 def sidebar_category_callback(self, context):
     update_sidebar_category()
+    prefs_callback(self, context)
 
 
 def icon_color_callback(self, context):
     load_icons()
+    prefs_callback(self, context)
 
 
 # Modifier default settings
@@ -384,6 +398,8 @@ def add_modifier_defaults_group_props(identifier, cls, property_group):
             if setting.identifier in actual_defaults.keys():
                 kwargs["default"] = actual_defaults[setting.identifier]
 
+        kwargs["update"] = prefs_callback
+
         property_group.__annotations__[setting.identifier] = prop(**kwargs)
 
 
@@ -397,7 +413,8 @@ class Preferences(AddonPreferences):
     use_sidebar: BoolProperty(
         name="Sidebar",
         description="Enable/disable the Sidebar tab",
-        default=True)
+        default=True,
+        update=prefs_callback)
 
     use_properties_editor: BoolProperty(
         name="Properties Editor",
@@ -413,21 +430,25 @@ class Preferences(AddonPreferences):
     properties_editor_style: EnumProperty(
         items=style_items,
         name="Properties Editor Style",
-        description="Display modifiers inside Properties Editor as")
+        description="Display modifiers inside Properties Editor as",
+        update=prefs_callback)
 
     sidebar_style: EnumProperty(
         items=style_items,
         name="Sidebar Style",
-        description="Display modifiers inside the sidebar as")
+        description="Display modifiers inside the sidebar as",
+        update=prefs_callback)
 
     popup_style: EnumProperty(
         items=style_items,
         name="Popup Style",
-        description="Display modifiers inside the popup as")
+        description="Display modifiers inside the popup as",
+        update=prefs_callback)
 
     keep_sidebar_visible: BoolProperty(
         name="Keep Sidebar Panels Visible",
-        description="Keep the sidebar panels always visible")
+        description="Keep the sidebar panels always visible",
+        update=prefs_callback)
 
     sidebar_category: StringProperty(
         name="Sidebar Category",
@@ -442,41 +463,46 @@ class Preferences(AddonPreferences):
         items=favourites_per_row_items,
         name="Favourites Per Row",
         description="The number of favourites per row",
-        default="2")
+        default="2",
+        update=prefs_callback)
 
     auto_sort_favourites_when_choosing_from_menu: BoolProperty(
         name="Auto Sort Favourites When Choosing From Menu",
         description="Automatically sort favourite modifiers when choosing from the menu. "
-                    "Also removes empty slots between favourites")
+                    "Also removes empty slots between favourites",
+        update=prefs_callback)
 
-    modifier_01: StringProperty(description="Add a favourite modifier")
-    modifier_02: StringProperty(description="Add a favourite modifier")
-    modifier_03: StringProperty(description="Add a favourite modifier")
-    modifier_04: StringProperty(description="Add a favourite modifier")
-    modifier_05: StringProperty(description="Add a favourite modifier")
-    modifier_06: StringProperty(description="Add a favourite modifier")
-    modifier_07: StringProperty(description="Add a favourite modifier")
-    modifier_08: StringProperty(description="Add a favourite modifier")
-    modifier_09: StringProperty(description="Add a favourite modifier")
-    modifier_10: StringProperty(description="Add a favourite modifier")
-    modifier_11: StringProperty(description="Add a favourite modifier")
-    modifier_12: StringProperty(description="Add a favourite modifier")
+    modifier_01: StringProperty(description="Add a favourite modifier", update=prefs_callback)
+    modifier_02: StringProperty(description="Add a favourite modifier", update=prefs_callback)
+    modifier_03: StringProperty(description="Add a favourite modifier", update=prefs_callback)
+    modifier_04: StringProperty(description="Add a favourite modifier", update=prefs_callback)
+    modifier_05: StringProperty(description="Add a favourite modifier", update=prefs_callback)
+    modifier_06: StringProperty(description="Add a favourite modifier", update=prefs_callback)
+    modifier_07: StringProperty(description="Add a favourite modifier", update=prefs_callback)
+    modifier_08: StringProperty(description="Add a favourite modifier", update=prefs_callback)
+    modifier_09: StringProperty(description="Add a favourite modifier", update=prefs_callback)
+    modifier_10: StringProperty(description="Add a favourite modifier", update=prefs_callback)
+    modifier_11: StringProperty(description="Add a favourite modifier", update=prefs_callback)
+    modifier_12: StringProperty(description="Add a favourite modifier", update=prefs_callback)
 
     use_icons_in_favourites: BoolProperty(
         name="Use Icons In Favourites",
         description="Use icons in favourite modifier buttons",
-        default=True)
+        default=True,
+        update=prefs_callback)
 
     insert_modifier_after_active: BoolProperty(
         name="Insert New Modifier After Active",
         description="When adding a new modifier, insert it after the active one. \n"
                     "Hold Control to override this. (When off, the behaviour is reversed). \n"
-                    "NOTE: This is really slow on heavy meshes")
+                    "NOTE: This is really slow on heavy meshes",
+        update=prefs_callback)
 
     disallow_applying_hidden_modifiers: BoolProperty(
         name="Disallow Applying Hidden Modifiers",
         description="Disallow applying modifier's which are hidden in the viewport. \n"
-                    "Hold Alt to override this. (When off, the behaviour is reversed)")
+                    "Hold Alt to override this. (When off, the behaviour is reversed)",
+        update=prefs_callback)
 
     icon_color_items = [
         ("black", "Black", "", 1),
@@ -491,24 +517,28 @@ class Preferences(AddonPreferences):
 
     reverse_list: BoolProperty(
         name="Reverse List",
-        description="Reverse the order of the list persistently (requires restart)")
+        description="Reverse the order of the list persistently (requires restart)",
+        update=prefs_callback)
 
     hide_general_settings_region: BoolProperty(
         name="Hide General Settings Region",
         description="Hide the region which shows modifier name and display settings. "
-                    "The same settings are also inside the modifier list")
+                    "The same settings are also inside the modifier list",
+        update=prefs_callback)
 
     show_confirmation_popups: BoolProperty(
         name="Show Confirmation Popups",
         description="Show confirmation popups for Apply All Modifiers "
                     "and Remove All Modifiers operators",
-        default=True)
+        default=True,
+        update=prefs_callback)
 
     show_batch_ops_in_main_layout_with_stack_style: BoolProperty(
         name="Show Batch Operators In Main Layout With Stack Style",
         description="When using the stack layout, show the batch operators in the main layout in "
                     "their own row. Otherwise they are located in the Modifier Extras popover",
-        default=True)
+        default=True,
+        update=prefs_callback)
 
     batch_ops_reports_items = [
         ("APPLY", "Apply", ""),
@@ -520,39 +550,46 @@ class Preferences(AddonPreferences):
         name="Show Info Messages For",
         description="Show batch operator info messages for",
         default={'APPLY', 'REMOVE', 'TOGGLE_VISIBILITY'},
-        options={'ENUM_FLAG'})
+        options={'ENUM_FLAG'},
+        update=prefs_callback)
 
     # === Popup settings ===
     popup_width: IntProperty(
         name="Width",
         description="Width of the popup, excluding the navigation bar",
-        default=300)
+        default=300,
+        update=prefs_callback)
 
     mod_list_def_len: IntProperty(
         name="",
         description="Default/min number of rows to display in the modifier list in the popup",
-        default=7)
+        default=7,
+        update=prefs_callback)
 
     use_props_dialog: BoolProperty(
         name="Use Dialog Type Popup",
         description="Use a dialog type popup which doesn't close when you are not hovering over "
-                    "it")
+                    "it",
+        update=prefs_callback)
 
     # === Gizmo object settings ===
     parent_new_gizmo_to_object: BoolProperty(
         name="Auto Parent Gizmos To Active Object",
-        description="Automatically parent gizmos to the active object on addition")
+        description="Automatically parent gizmos to the active object on addition",
+        update=prefs_callback)
 
     match_gizmo_size_to_object: BoolProperty(
         name="Match Gizmo Size To Active Object",
         description="Automatically match the size of the gizmo to the largest dimension of the "
                     "active object (before modifiers).\n"
-                    "NOTE: This can be a bit slow on heavy meshes")
+                    "NOTE: This can be a bit slow on heavy meshes",
+        update=prefs_callback)
 
     always_delete_gizmo: BoolProperty(
         name="Always Delete Gizmo",
         description="Always delete the gizmo object when applying or removing a modifier. "
-                    "When off, the gizmo object is deleted only when holding shift")
+                    "When off, the gizmo object is deleted only when holding shift",
+        update=prefs_callback)
 
     # === Modifier defaults ===
     modifier_defaults: PointerProperty(type=ModifierDefaults)
@@ -736,7 +773,11 @@ def register():
     # === Read preferences from a json ===
     config_dir = bpy.utils.user_resource('CONFIG')
     prefs_file = os.path.join(config_dir, "modifier_list", "preferences.json")
+
+    global skip_writing_prefs
+    skip_writing_prefs = True
     read_prefs(prefs_file)
+    skip_writing_prefs = False
 
 
 def unregister():
