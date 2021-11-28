@@ -1,5 +1,31 @@
 # Changelog
 
+## 1.7.2 - 28.11.2021
+
+Updates for Blender 3.0 (and 2.93 if mentioned).
+
+### Geometry Nodes
+
+- Added support for adding the modifier to curve objects
+- Added support for image, material and texture inputs
+- Added support for attribute inputs
+- Added support for outputs
+- Added icons for data-block inputs (also in 2.93)
+- Node group selector now uses the proper data-block selector (also in 2.93)
+- Fixed some Geometry Nodes inputs not working
+- Removed warning when node group has multiple geometry inputs. Other modifier warning are not shown either, so this was an exception.
+- The modifier is now shown as disabled when it has no node tree (also in 2.93)
+
+### Other
+
+- Added "Smooth" checkbox for Mask Modifier
+- Added vertex group control for the MeshCache modifier
+
+### Fixes
+
+- Fixed wrong modifier being active after copying a modifier
+- Preferences are now (again) written to the .json when changing a property, not only when disabling the addon
+
 ## 1.7.1 - 18.8.2021
 
 Fixes for the list layout.
