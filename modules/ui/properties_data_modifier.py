@@ -2074,8 +2074,11 @@ class DATA_PT_modifiers:
                     op.modifier_name = md.name
 
                 if md[f"{prop_id}_use_attribute"]:
-                    row.prop_search(md, f'["{prop_id}_attribute_name"]', ob.data, "attributes",
-                                    text="")
+                    attr_prop_name = f'["{prop_id}_attribute_name"]'
+                    row.prop(md, attr_prop_name, text="")
+                    op = row.operator("object.ml_geometry_nodes_attribute_search", text="",
+                                      icon='VIEWZOOM')
+                    op.property_name = attr_prop_name
                 else:
                     col = row.column()
                     col.prop(md, f'["{prop_id}"]', text="")
@@ -2100,7 +2103,11 @@ class DATA_PT_modifiers:
         for prop_id, name in zip(output_prop_ids, valid_node_outputs_names):
             split = layout.split(factor=split_factor)
             split.label(text=name + ":")
-            split.prop_search(md, f'["{prop_id}"]', ob.data, "attributes", text="")
+            row = split.row(align=True)
+            row.prop(md, f'["{prop_id}"]', text="")
+            op = row.operator("object.ml_geometry_nodes_attribute_search", text="",
+                              icon='VIEWZOOM')
+            op.property_name = f'["{prop_id}"]'
             layout.separator(factor=0.5)
 
     def _nodes_3_0(self, layout, ob, md):
