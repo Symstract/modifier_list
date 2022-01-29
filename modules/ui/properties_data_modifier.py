@@ -277,7 +277,7 @@ class DATA_PT_modifiers:
         row = split.row()
         row.prop(md, "flip_axis")
 
-    def MESH_SEQUENCE_CACHE(self, layout, ob, md):
+    def _mesh_sequence_cache_3_0(self, layout, ob, md):
         layout.label(text="Cache File Properties:")
         box = layout.box()
         box.template_cache_file(md, "cache_file")
@@ -295,6 +295,34 @@ class DATA_PT_modifiers:
 
         box.prop(md, "use_vertex_interpolation")
         box.prop(md, "velocity_scale")
+
+    def _mesh_sequence_cache_3_1(self, layout, ob, md):
+        layout.use_property_split = True
+
+        box = layout.box()
+        box.template_cache_file(md, "cache_file")
+
+        box = layout.box()
+        box.label(text="Time:")
+        box.template_cache_file_time_settings(md, "cache_file")
+
+        box = layout.box()
+        box.label(text="Render Procedural:")
+        box.template_cache_file_procedural(md, "cache_file")
+
+        box = layout.box()
+        box.label(text="Velocity:")
+        box.template_cache_file_velocity(md, "cache_file")
+
+        box = layout.box()
+        box.label(text="Override:")
+        box.template_cache_file_layers(md, "cache_file")
+
+    def MESH_SEQUENCE_CACHE(self, layout, ob, md):
+        if BLENDER_VERSION_MAJOR_POINT_MINOR <= 3.0:
+            self._mesh_sequence_cache_3_0(layout, ob, md)
+        else:
+            self._mesh_sequence_cache_3_1(layout, ob, md)
 
     def CAST(self, layout, ob, md):
         layout.row().prop(md, "cast_type", expand=True)
