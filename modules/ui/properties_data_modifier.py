@@ -2101,7 +2101,7 @@ class DATA_PT_modifiers:
                     op.prop_path = f'[\"{prop_id}_use_attribute\"]'
                     op.modifier_name = md.name
 
-                if md[f"{prop_id}_use_attribute"]:
+                if md[f"{prop_id}_use_attribute"] == 1:
                     attr_prop_name = f'["{prop_id}_attribute_name"]'
                     row.prop(md, attr_prop_name, text="")
                     op = row.operator("object.ml_geometry_nodes_attribute_search", text="",
