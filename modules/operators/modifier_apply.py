@@ -220,9 +220,12 @@ class ApplyModifier:
                               if ob.data and ob.data.name == data_name]
 
         for ob in obs_with_same_data:
-            mod = ob.modifiers[modifier_name]
-            if mod.type == modifier_type:
-                ob.modifiers.remove(mod)
+            try:
+                mod = ob.modifiers[modifier_name]
+                if mod.type == modifier_type:
+                    ob.modifiers.remove(mod)
+            except:
+                pass
 
     def curve_modifier_apply_report(self, modifier_type):
         curve_deform_mods = [mod[2] for mod in CURVE_SURFACE_TEXT_DEFORM_NAMES_ICONS_TYPES]
