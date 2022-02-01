@@ -220,8 +220,8 @@ class ApplyModifier:
                               if ob.data and ob.data.name == data_name]
 
         for ob in obs_with_same_data:
-            mod = ob.modifiers[modifier_name]
-            if mod.type == modifier_type:
+            mod = ob.modifiers.get(modifier_name)
+            if mod and mod.type == modifier_type:
                 ob.modifiers.remove(mod)
 
     def curve_modifier_apply_report(self, modifier_type):
