@@ -302,6 +302,9 @@ class DATA_PT_modifiers:
         box = layout.box()
         box.template_cache_file(md, "cache_file")
 
+        if not md.cache_file:
+            return
+
         box = layout.box()
         box.label(text="Time:")
         box.template_cache_file_time_settings(md, "cache_file")
