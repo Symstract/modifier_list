@@ -1,6 +1,6 @@
 # Changelog
 
-## 1.7.3 - 3.2.2021
+## 1.7.3 - 3.2.2022
 
 - Updated Mesh Sequence Cache for Blender 3.1 (Alembic override layers, layout changes)
 - Fixed Geometry Nodes' attribute search not working properly. Previously, vertex groups were not supported with the list layout because the attribute search only shows attributes. Also, only existing ones could be selected, new ones couldn't be created. To support vertex groups and adding new attributes, the layout now uses a text input field for names and next to each one there is a button to search both attributes and vertex groups.
