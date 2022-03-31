@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.7.4 - 1.4.2022
+
+- Fixed Mesh Sequence Cache missing some settings in 3.1
+
 ## 1.7.3 - 3.2.2022
 
 - Updated Mesh Sequence Cache for Blender 3.1 (Alembic override layers, layout changes)
