@@ -305,6 +305,12 @@ class DATA_PT_modifiers:
         if not md.cache_file:
             return
 
+        box.prop_search(md, "object_path", md.cache_file, "object_paths")
+
+        if ob.type == 'MESH':
+            box.row().prop(md, "read_data")
+            box.prop(md, "use_vertex_interpolation")
+
         box = layout.box()
         box.label(text="Time:")
         box.template_cache_file_time_settings(md, "cache_file")
