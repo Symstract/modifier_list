@@ -101,6 +101,7 @@ def _modifier_search_and_menu(layout, object):
         row.prop_search(ml_props, "modifier_to_add_from_search", ml_props, "pointcloud_modifiers",
                         text="", icon='MODIFIER')
         sub = row.row()
+        sub.menu("POINTCLOUD_MT_ml_add_modifier_menu")
     elif ob.type == 'SURFACE':
         row.prop_search(ml_props, "modifier_to_add_from_search", ml_props, "surface_modifiers",
                         text="", icon='MODIFIER')
