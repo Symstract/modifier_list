@@ -98,6 +98,21 @@ def set_curve_text_modifier_collection_items():
             item.value = mod
 
 
+def set_curves_modifier_collection_items():
+    """This is to be called on loading a new file or reloading addons
+    to make modifiers available in search.
+    """
+    curves_modifiers = bpy.context.window_manager.modifier_list.curves_modifiers
+    sorted_names_icons_types = sorted(modifier_categories.CURVES_ALL_NAMES_ICONS_TYPES,
+                                      key=lambda mod: mod[0])
+
+    if not curves_modifiers:
+        for name, _, mod in sorted_names_icons_types:
+            item = curves_modifiers.add()
+            item.name = name
+            item.value = mod
+
+
 def set_lattice_modifier_collection_items():
     """This is to be called on loading a new file or reloading addons
     to make modifiers available in search.
@@ -163,6 +178,7 @@ def on_file_load(dummy):
     set_all_modifier_collection_items()
     set_mesh_modifier_collection_items()
     set_curve_text_modifier_collection_items()
+    set_curves_modifier_collection_items()
     set_lattice_modifier_collection_items()
     set_pointcloud_modifier_collection_items()
     set_surface_modifier_collection_items()
@@ -199,6 +215,11 @@ class MeshModifiersCollection(PropertyGroup):
 
 
 class CurveTextModifiersCollection(PropertyGroup):
+    # Collection Property for search
+    value: StringProperty(name="Type")
+
+
+class CurvesModifiersCollection(PropertyGroup):
     # Collection Property for search
     value: StringProperty(name="Type")
 
@@ -253,6 +274,7 @@ class ML_WindowManagerProperties(PropertyGroup):
     all_modifiers: CollectionProperty(type=AllModifiersCollection)
     mesh_modifiers: CollectionProperty(type=MeshModifiersCollection)
     curve_text_modifiers: CollectionProperty(type=CurveTextModifiersCollection)
+    curves_modifiers: CollectionProperty(type=CurvesModifiersCollection)
     lattice_modifiers: CollectionProperty(type=LatticeModifiersCollection)
     pointcloud_modifiers: CollectionProperty(type=PointcloudModifiersCollection)
     surface_modifiers: CollectionProperty(type=SurfaceModifiersCollection)
@@ -277,6 +299,7 @@ classes = (
     AllModifiersCollection,
     MeshModifiersCollection,
     CurveTextModifiersCollection,
+    CurvesModifiersCollection,
     LatticeModifiersCollection,
     PointcloudModifiersCollection,
     SurfaceModifiersCollection,
@@ -308,6 +331,7 @@ def register():
     set_all_modifier_collection_items()
     set_mesh_modifier_collection_items()
     set_curve_text_modifier_collection_items()
+    set_curves_modifier_collection_items()
     set_lattice_modifier_collection_items()
     set_pointcloud_modifier_collection_items()
     set_surface_modifier_collection_items()
