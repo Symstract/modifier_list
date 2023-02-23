@@ -7,9 +7,9 @@ from ..utils import get_ml_active_object
 def attr_or_vertex_group_name_enum_items(self, context):
     ob = get_ml_active_object()
     groups = [(group.name, f"Point > {group.name}", "")
-              for group in ob.vertex_groups]
+              for group in ob.vertex_groups if not group.name.startswith(".")]
     attrs = [(attr.name, f"{attr.domain.capitalize()} > {attr.name}", "")
-             for attr in ob.data.attributes]
+             for attr in ob.data.attributes if not attr.name.startswith(".")]
     return groups + attrs
 
 
