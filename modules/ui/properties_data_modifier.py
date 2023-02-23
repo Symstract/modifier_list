@@ -2054,6 +2054,9 @@ class DATA_PT_modifiers:
                 layout.prop(md, f'["{prop_id}"]', text=name)
 
     def _nodes_3_0_inputs(self, layout, ob, md, split_facor):
+        if not md.node_group:
+            return
+
         # Find an input node because md.node_group.inputs contains
         # NodeSocketInterfaces that don't have enough info. Currently,
         # the only way to find out if an input accepts an attribute
@@ -2136,6 +2139,9 @@ class DATA_PT_modifiers:
             layout.separator(factor=0.5)
 
     def _nodes_3_0_outputs(self, layout, ob, md, split_factor):
+        if not md.node_group:
+            return
+
         valid_output_types = {'BOOLEAN', 'FLOAT', 'INTEGER', 'RGBA', 'VALUE', 'VECTOR'}
         valid_node_outputs_names = [output.name for output in md.node_group.outputs
                                     if output.type in valid_output_types]
