@@ -11,8 +11,6 @@ class OBJECT_OT_ml_modifier_copy(Operator):
     bl_description = "Duplicate modifier at the same position in the stack"
     bl_options = {'REGISTER', 'INTERNAL', 'UNDO'}
 
-    modifier: StringProperty(options={'HIDDEN'})
-
     @classmethod
     def poll(cls, ontext):
         ob = get_ml_active_object()
@@ -25,11 +23,12 @@ class OBJECT_OT_ml_modifier_copy(Operator):
 
     def execute(self, context):
         ob = get_ml_active_object()
+        mod = ob.modifiers[ob.ml_modifier_active_index]
 
         # Make copying modifiers possible when an object is pinned
         override = context.copy()
         override['object'] = ob
 
-        bpy.ops.object.modifier_copy(override, modifier=self.modifier)
+        bpy.ops.object.modifier_copy(override, modifier=mod.name)
 
         return {'FINISHED'}
