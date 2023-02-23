@@ -2095,32 +2095,43 @@ class DATA_PT_modifiers:
             split.label(text=name + ":")
 
             row = split.row(align=True)
+            prop_row = row.row(align=True)
+            toggle_row = row.row()
+            toggle_row.ui_units_x = 1
 
             if input_type in datablock_input_info_per_type.keys():
                 input_info = datablock_input_info_per_type[input_type]
-                row.prop_search(md, f'["{prop_id}"]', bpy.data, input_info["data_collection"],
-                                text="", icon=input_info["icon"])
+                prop_row.prop_search(md, f'["{prop_id}"]', bpy.data, input_info["data_collection"],
+                                     text="", icon=input_info["icon"])
+                toggle_row.label(text="", icon='BLANK1')
 
             else:
                 # If the socket shape is 'DIAMOND' or 'DIAMOND_DOT' the
                 # input accepts an attribute.
                 if socket_shape in {'DIAMOND', 'DIAMOND_DOT'}:
-                    op = row.operator("object.geometry_nodes_input_attribute_toggle", text="",
-                                      icon='SPREADSHEET')
-                    op.prop_path = f'[\"{prop_id}_use_attribute\"]'
-                    op.modifier_name = md.name
                     if md[f"{prop_id}_use_attribute"] == 1:
                         attr_prop_name = f'["{prop_id}_attribute_name"]'
-                        row.prop(md, attr_prop_name, text="")
-                        op = row.operator("object.ml_geometry_nodes_attribute_search", text="",
-                                        icon='VIEWZOOM')
+                        prop_row.prop(md, attr_prop_name, text="")
+                        op = prop_row.operator("object.ml_geometry_nodes_attribute_search",
+                                               text="", icon='VIEWZOOM')
                         op.property_name = attr_prop_name
                     else:
-                        col = row.column()
-                        col.prop(md, f'["{prop_id}"]', text="")
+                        col = prop_row.column()
+                        # Use a space as a label for boolean checkboxes
+                        # to make alignment work.
+                        text = ""
+                        if input_type == 'BOOLEAN' and BLENDER_VERSION_MAJOR_POINT_MINOR >= 3.5:
+                            text = " "
+                        col.prop(md, f'["{prop_id}"]', text=text)
+
+                    op = toggle_row.operator("object.geometry_nodes_input_attribute_toggle",
+                                             text="", icon='SPREADSHEET')
+                    op.prop_path = f'[\"{prop_id}_use_attribute\"]'
+                    op.modifier_name = md.name
                 else:
-                    col = row.column()
+                    col = prop_row.column()
                     col.prop(md, f'["{prop_id}"]', text="")
+                    toggle_row.label(text="", icon='BLANK1')
 
             layout.separator(factor=0.5)
 
