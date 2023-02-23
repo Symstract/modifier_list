@@ -862,8 +862,7 @@ def modifiers_ui_with_list(context, layout, num_of_rows=False, use_in_popup=Fals
                             icon_value=icon.icon_id)
 
         if active_mod.type not in modifier_categories.DONT_SUPPORT_COPY:
-            sub.operator("object.ml_modifier_copy",
-                        text="", icon='DUPLICATE').modifier = active_mod.name
+            sub.operator("object.ml_modifier_copy", text="", icon='DUPLICATE')
 
     # === Gizmo object settings ===
     if ob.type in {'CURVE', 'FONT', 'LATTICE', 'MESH', 'SURFACE'}:
