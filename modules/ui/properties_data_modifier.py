@@ -2109,13 +2109,15 @@ class DATA_PT_modifiers:
                                       icon='SPREADSHEET')
                     op.prop_path = f'[\"{prop_id}_use_attribute\"]'
                     op.modifier_name = md.name
-
-                if md[f"{prop_id}_use_attribute"] == 1:
-                    attr_prop_name = f'["{prop_id}_attribute_name"]'
-                    row.prop(md, attr_prop_name, text="")
-                    op = row.operator("object.ml_geometry_nodes_attribute_search", text="",
-                                      icon='VIEWZOOM')
-                    op.property_name = attr_prop_name
+                    if md[f"{prop_id}_use_attribute"] == 1:
+                        attr_prop_name = f'["{prop_id}_attribute_name"]'
+                        row.prop(md, attr_prop_name, text="")
+                        op = row.operator("object.ml_geometry_nodes_attribute_search", text="",
+                                        icon='VIEWZOOM')
+                        op.property_name = attr_prop_name
+                    else:
+                        col = row.column()
+                        col.prop(md, f'["{prop_id}"]', text="")
                 else:
                     col = row.column()
                     col.prop(md, f'["{prop_id}"]', text="")
