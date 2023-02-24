@@ -23,7 +23,17 @@ def sync_bpy_object_props(source, dest):
 # ======================================================================
 
 def object_type_has_modifiers(object):
-    return object.type in {'MESH', 'CURVE', 'CURVES', 'SURFACE', 'FONT', 'LATTICE', 'POINTCLOUD', 'VOLUME'}
+    obs_with_mods = {
+        'MESH',
+        'CURVE',
+        'CURVES',
+        'SURFACE',
+        'FONT',
+        'LATTICE',
+        'POINTCLOUD',
+        'VOLUME'
+    }
+    return object.type in obs_with_mods
 
 
 def get_favourite_modifiers():
