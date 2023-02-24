@@ -81,6 +81,10 @@ class ApplyModifier:
     @classmethod
     def poll(cls, context):
         ob = get_ml_active_object()
+
+        if not ob:
+            return False
+
         data = ob.data
         mod = ob.modifiers[ob.ml_modifier_active_index]
 

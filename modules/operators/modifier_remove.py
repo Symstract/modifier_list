@@ -26,6 +26,9 @@ class OBJECT_OT_ml_modifier_remove(Operator):
     def poll(cls, ontext):
         ob = get_ml_active_object()
 
+        if not ob:
+            return False
+
         if not ob.modifiers:
             return False
 
@@ -34,7 +37,7 @@ class OBJECT_OT_ml_modifier_remove(Operator):
 
     def execute(self, context):
         prefs = bpy.context.preferences.addons["modifier_list"].preferences
-        
+
         ml_active_ob = get_ml_active_object()
 
         # Make using operators possible when an object is pinned

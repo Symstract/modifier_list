@@ -23,7 +23,7 @@ class OBJECT_OT_ml_modifier_add(Operator):
     @classmethod
     def poll(cls, context):
         ob = get_ml_active_object()
-        return ob.library is None or ob.override_library is not None
+        return ob is not None and (ob.library is None or ob.override_library is not None)
 
     def execute(self, context):
         ob = get_ml_active_object()

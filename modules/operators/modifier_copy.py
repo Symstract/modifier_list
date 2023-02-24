@@ -15,6 +15,9 @@ class OBJECT_OT_ml_modifier_copy(Operator):
     def poll(cls, ontext):
         ob = get_ml_active_object()
 
+        if not ob:
+            return False
+
         if ob.override_library:
             return True
 
