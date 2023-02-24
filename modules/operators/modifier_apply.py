@@ -110,8 +110,7 @@ class ApplyModifier:
         vert_group = mod.vertex_group if hasattr(mod, "vertex_group") else None
         mod_type = mod.type
 
-        is_editmode = (context.mode in
-                       {'EDIT_MESH', 'EDIT_CURVE', 'EDIT_SURFACE', 'EDIT_TEXT', 'EDIT_LATTICE'})
+        is_editmode = context.mode.startswith("EDIT")
 
         if is_editmode:
             bpy.ops.object.editmode_toggle()
