@@ -15,12 +15,6 @@ class OBJECT_OT_ml_modifier_move_down(Operator):
                       "Hold Shift to move it to the top/bottom")
     bl_options = {'REGISTER', 'INTERNAL', 'UNDO'}
 
-    direction_items = [
-        ("UP", "Up", ""),
-        ("DOWN", "Down", "")
-    ]
-    direction: EnumProperty(items=direction_items, default='UP', options={'HIDDEN', 'SKIP_SAVE'})
-
     @classmethod
     def poll(cls, ontext):
         ob = get_ml_active_object()
