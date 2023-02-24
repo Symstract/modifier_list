@@ -672,7 +672,7 @@ class ModifierExtrasBase:
 
                     sub = row.row()
                     sub.scale_x = 1.2
-                    sub.enabled = is_modifier_local(ob, active_mod)
+                    sub.enabled = ob.library is None
 
                     if not gizmo_ob:
                         icon = pcoll['ADD_GIZMO']
@@ -815,7 +815,6 @@ def modifiers_ui_with_list(context, layout, num_of_rows=False, use_in_popup=Fals
     active_mod = ob.modifiers[active_mod_index]
     all_mods = modifier_categories.ALL_MODIFIERS_NAMES_ICONS_TYPES
     active_mod_icon = next(icon for _, icon, mod in all_mods if mod == active_mod.type)
-    is_active_mod_local = is_modifier_local(ob, active_mod)
 
     col = layout.column(align=True)
 
@@ -866,7 +865,7 @@ def modifiers_ui_with_list(context, layout, num_of_rows=False, use_in_popup=Fals
 
             sub = row.row(align=True)
             sub.alignment = 'RIGHT'
-            sub.enabled = is_active_mod_local
+            sub.enabled = ob.library is None
 
             if not gizmo_ob:
                 sub_sub = sub.row()
@@ -886,7 +885,7 @@ def modifiers_ui_with_list(context, layout, num_of_rows=False, use_in_popup=Fals
     box = col.box()
     # Disable layout for linked modifiers here manually so in custom
     # layouts all operators/settings are greyed out.
-    box.enabled = is_active_mod_local
+    box.enabled = ob.library is None
 
     # A column is needed here to keep the layout more compact,
     # because in a box separators give an unnecessarily big space.
