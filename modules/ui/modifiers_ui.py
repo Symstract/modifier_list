@@ -506,12 +506,6 @@ class CURVES_MT_ml_add_modifier_menu(Menu):
         for name, icon, mod in modifier_categories.CURVES_GENERATE_NAMES_ICONS_TYPES:
             col.operator("object.ml_modifier_add", text=name, icon=icon).modifier_type = mod
 
-        col = row.column()
-        col.label(text="Deform")
-        col.separator(factor=0.3)
-        for name, icon, mod in modifier_categories.CURVES_DEFORM_NAMES_ICONS_TYPES:
-            col.operator("object.ml_modifier_add", text=name, icon=icon).modifier_type = mod
-
 
 class SURFACE_MT_ml_add_modifier_menu(Menu):
     bl_label = "Add Modifier"
