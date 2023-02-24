@@ -2099,14 +2099,12 @@ class DATA_PT_modifiers:
 
             row = split.row(align=True)
             prop_row = row.row(align=True)
-            toggle_row = row.row()
-            toggle_row.ui_units_x = 1
 
             if input_type in datablock_input_info_per_type.keys():
                 input_info = datablock_input_info_per_type[input_type]
                 prop_row.prop_search(md, f'["{prop_id}"]', bpy.data, input_info["data_collection"],
                                      text="", icon=input_info["icon"])
-                toggle_row.label(text="", icon='BLANK1')
+                row.label(text="", icon='BLANK1')
 
             else:
                 # If the socket shape is 'DIAMOND' or 'DIAMOND_DOT' the
@@ -2127,14 +2125,14 @@ class DATA_PT_modifiers:
                             text = " "
                         col.prop(md, f'["{prop_id}"]', text=text)
 
-                    op = toggle_row.operator("object.geometry_nodes_input_attribute_toggle",
-                                             text="", icon='SPREADSHEET')
+                    op = row.operator("object.geometry_nodes_input_attribute_toggle",
+                                      text="", icon='SPREADSHEET')
                     op.prop_path = f'[\"{prop_id}_use_attribute\"]'
                     op.modifier_name = md.name
                 else:
                     col = prop_row.column()
                     col.prop(md, f'["{prop_id}"]', text="")
-                    toggle_row.label(text="", icon='BLANK1')
+                    row.label(text="", icon='BLANK1')
 
             layout.separator(factor=0.5)
 
