@@ -15,6 +15,8 @@ class OBJECT_OT_ml_modifier_move_down(Operator):
                       "Hold Shift to move it to the top/bottom")
     bl_options = {'REGISTER', 'INTERNAL', 'UNDO'}
 
+    move_to_end: BoolProperty(name="Move to End", options={'HIDDEN', 'SKIP_SAVE'})
+
     @classmethod
     def poll(cls, ontext):
         ob = get_ml_active_object()
@@ -47,7 +49,7 @@ class OBJECT_OT_ml_modifier_move_down(Operator):
 
         mods_max_index = len(ml_active_ob.modifiers) - 1
 
-        if self.shift:
+        if self.move_to_end:
             bpy.ops.object.modifier_move_to_index(modifier=active_mod_name,
                                                   index=mods_max_index)
             ml_active_ob.ml_modifier_active_index = mods_max_index
@@ -58,6 +60,7 @@ class OBJECT_OT_ml_modifier_move_down(Operator):
         return {'FINISHED'}
 
     def invoke(self, context, event):
-        self.shift = event.shift
+        if event.shift:
+            self.move_to_end = True
 
         return self.execute(context)
