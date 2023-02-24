@@ -18,6 +18,10 @@ class OBJECT_OT_ml_modifier_move_up(Operator):
     @classmethod
     def poll(cls, ontext):
         ob = get_ml_active_object()
+
+        if not ob:
+            return False
+
         active_mod_index = ob.ml_modifier_active_index
         mods = ob.modifiers
 
