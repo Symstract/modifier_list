@@ -70,6 +70,14 @@ class OBJECT_OT_ml_lattice_toggle_editmode(Operator):
     bl_description = "Toggle lattice edit mode"
     bl_options = {'REGISTER', 'INTERNAL', 'UNDO'}
 
+    @classmethod
+    def poll(cls, context):
+        ml_active_ob = get_ml_active_object()
+        active_mod_index = ml_active_ob.ml_modifier_active_index
+        active_mod = ml_active_ob.modifiers[active_mod_index]
+        gizmo_ob = get_gizmo_object_from_modifier(active_mod)
+        return gizmo_ob.library is None and gizmo_ob.override_library is None
+
     def execute(self, context):
         ob = context.object
         ml_props = context.scene.modifier_list
@@ -102,9 +110,9 @@ class OBJECT_OT_ml_lattice_toggle_editmode(Operator):
             init_act_ob_name = ob.name
 
             ml_active_ob = get_ml_active_object()
-            
+
             ml_props.pinned_object = ml_active_ob
-            
+
             active_mod_index = ml_active_ob.ml_modifier_active_index
             active_mod = ml_active_ob.modifiers[active_mod_index]
             gizmo_ob = get_gizmo_object_from_modifier(active_mod)

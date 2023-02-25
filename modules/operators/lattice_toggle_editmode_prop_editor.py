@@ -2,6 +2,8 @@ import bpy
 from bpy.props import *
 from bpy.types import Operator
 
+from ..utils import get_gizmo_object_from_modifier, get_ml_active_object
+
 
 area_index = None
 is_init_ob_pinned = False
@@ -76,6 +78,14 @@ class OBJECT_OT_ml_lattice_toggle_editmode_prop_editor(Operator):
     bl_label = "Toggle Lattice Edit Mode"
     bl_description = "Toggle lattice edit mode"
     bl_options = {'REGISTER', 'INTERNAL', 'UNDO'}
+
+    @classmethod
+    def poll(cls, context):
+        ml_active_ob = get_ml_active_object()
+        active_mod_index = ml_active_ob.ml_modifier_active_index
+        active_mod = ml_active_ob.modifiers[active_mod_index]
+        gizmo_ob = get_gizmo_object_from_modifier(active_mod)
+        return gizmo_ob.library is None and gizmo_ob.override_library is None
 
     def execute(self, context):
         global area_index
