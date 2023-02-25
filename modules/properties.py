@@ -4,24 +4,21 @@ from bpy.props import *
 from bpy.types import PropertyGroup
 
 from . import modifier_categories
-from .utils import get_ml_active_object
 
 
 # Callbacks
 # ======================================================================
 
 def modifier_active_index_get(self):
-    ob = get_ml_active_object()
-
-    for mod in ob.modifiers:
+    for mod in self.modifiers:
         if mod.is_active:
-            return ob.modifiers.find(mod.name)
+            return self.modifiers.find(mod.name)
 
     return 0
 
 
 def modifier_active_index_set(self, value):
-    mods = get_ml_active_object().modifiers
+    mods = self.modifiers
 
     if mods:
         mods[value].is_active = True
