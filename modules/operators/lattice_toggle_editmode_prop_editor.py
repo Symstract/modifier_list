@@ -89,11 +89,9 @@ class OBJECT_OT_ml_lattice_toggle_editmode_prop_editor(Operator):
         use_pin_id = space_data.use_pin_id
         pin_id = space_data.pin_id
 
-        # Switch editor type to 3d View so Properties Editor's context
-        # pinning won't mess things up.
-        context.area.type = 'VIEW_3D'
-
-        ob = context.object
+        # Use active_object instead of object because that's not
+        # affected by Property Editor's context pinning.
+        ob = context.active_object
         depsgraph_handlers = bpy.app.handlers.depsgraph_update_post
         undo_handlers = bpy.app.handlers.undo_post
 
@@ -129,7 +127,6 @@ class OBJECT_OT_ml_lattice_toggle_editmode_prop_editor(Operator):
 
             bpy.ops.object.mode_set(mode='EDIT')
 
-            context.area.type = 'PROPERTIES'
             space_data.pin_id = pin_id if is_init_ob_pinned else ob
             space_data.use_pin_id = True
 
@@ -157,8 +154,6 @@ class OBJECT_OT_ml_lattice_toggle_editmode_prop_editor(Operator):
                 if init_mode == 'EDIT_MESH':
                     bpy.ops.object.mode_set(mode='EDIT')
 
-                context.area.type = 'PROPERTIES'
-
             else:
                 if init_mode == 'OBJECT':
                     ob.select_set(False)
@@ -167,7 +162,6 @@ class OBJECT_OT_ml_lattice_toggle_editmode_prop_editor(Operator):
                     context.view_layer.objects.active = init_act_ob
                     bpy.ops.object.mode_set(mode='EDIT')
 
-                context.area.type = 'PROPERTIES'
                 space_data.pin_id = None
                 space_data.use_pin_id = False
 
