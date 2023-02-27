@@ -79,6 +79,11 @@ def register():
         kmi = km.keymap_items.new("view3d.modifier_popup", 'SPACE', 'PRESS', alt=True)
         addon_keymaps.append((km, kmi))
 
+        km = wm.keyconfigs.addon.keymaps.new(name='Property Editor', space_type='PROPERTIES')
+        kmi = km.keymap_items.new("object.ml_add_modifier_from_search", 'A', 'PRESS', ctrl=True,
+                                  shift=True)
+        addon_keymaps.append((km, kmi))
+
 
 def unregister():
     # === Keymap ===
