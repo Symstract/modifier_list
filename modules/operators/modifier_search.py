@@ -29,7 +29,7 @@ def modifier_enum_items(self, context):
 
 
 class OBJECT_OT_ml_add_modifier_from_search(Operator):
-    bl_idname = "object.ml_add_modifier_from_search"
+    bl_idname = "object.ml_modifier_add_from_search"
     bl_label = "Add Modifier from Search"
     bl_description = "Search for a modifier and add it to the active object."
     bl_options = {'REGISTER', 'UNDO'}
