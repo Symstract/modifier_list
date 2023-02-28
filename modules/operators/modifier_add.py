@@ -56,18 +56,12 @@ class OBJECT_OT_ml_modifier_add(Operator):
         # === Add a gizmo object ===
         mod = ob.modifiers[-1]
 
-        # Search doesn't call invoke, so check if self.shift exists
-        if hasattr(self, "shift"):
-            if self.shift and ob.type in {'CURVE', 'FONT', 'LATTICE', 'MESH', 'SURFACE'}:
-                if mod.type in HAVE_GIZMO_PROPERTY or mod.type == 'UV_PROJECT':
-                    placement = 'WORLD_ORIGIN' if self.alt else 'OBJECT'
-                    assign_gizmo_object_to_modifier(self, context, mod.name, placement=placement)
+        if self.shift and ob.type in {'CURVE', 'FONT', 'LATTICE', 'MESH', 'SURFACE'}:
+            if mod.type in HAVE_GIZMO_PROPERTY or mod.type == 'UV_PROJECT':
+                placement = 'WORLD_ORIGIN' if self.alt else 'OBJECT'
+                assign_gizmo_object_to_modifier(self, context, mod.name, placement=placement)
 
         # === Move modifier into place ===
-        # Search doesn't call invoke, so check if self.ctrl exists.
-        # If not, can't support overriding insert_modifier_after_active
-        # by holding control.
-
         # This doesn't work with library overrides because the context
         # of the layout can be wrong.
         # layout.context_pointer_set("modifier", active_modifier) is
@@ -79,11 +73,7 @@ class OBJECT_OT_ml_modifier_add(Operator):
             return {'FINISHED'}
 
         prefs = bpy.context.preferences.addons["modifier_list"].preferences
-
-        if hasattr(self, "ctrl"):
-            move = not self.ctrl if prefs.insert_modifier_after_active else self.ctrl
-        else:
-            move = prefs.insert_modifier_after_active
+        move = not self.ctrl if prefs.insert_modifier_after_active else self.ctrl
 
         if move:
             if init_active_mod_index != max_active_mod_index:

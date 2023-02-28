@@ -191,7 +191,7 @@ def add_modifier(self, context):
         return None
 
     mod_type = ml_props.all_modifiers[mod_name].value
-    bpy.ops.object.ml_modifier_add(modifier_type=mod_type)
+    bpy.ops.object.ml_modifier_add('INVOKE_DEFAULT', modifier_type=mod_type)
 
     # Executing an operator via a function doesn't create an undo event,
     # so it needs to be added manually.
