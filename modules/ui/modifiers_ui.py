@@ -543,6 +543,10 @@ class OBJECT_MT_ml_add_modifier_menu(Menu):
 
     def draw(self, context):
         layout = self.layout
+        # Set the invoke method to be called for ml_modifier_add so the
+        # "Add Modifier from Menu" operator can also support affecting
+        # the behavior by holding keys down while pressing a button.
+        layout.operator_context = 'INVOKE_DEFAULT'
         row = layout.row()
         row.alignment = 'LEFT'
 
