@@ -83,6 +83,8 @@ def register():
         kmi = km.keymap_items.new("object.ml_add_modifier_from_search", 'A', 'PRESS', ctrl=True,
                                   shift=True)
         addon_keymaps.append((km, kmi))
+        kmi = km.keymap_items.new("object.ml_modifier_add_from_menu", 'A', 'PRESS', shift=True)
+        addon_keymaps.append((km, kmi))
 
 
 def unregister():
