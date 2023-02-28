@@ -52,7 +52,7 @@ class OBJECT_OT_ml_add_modifier_from_search(Operator):
     def execute(self, context):
         ml_props = context.window_manager.modifier_list
         mod_type = ml_props.all_modifiers[self.modifier_name].value
-        bpy.ops.object.ml_modifier_add(modifier_type=mod_type)
+        bpy.ops.object.ml_modifier_add('INVOKE_DEFAULT', modifier_type=mod_type)
 
         return {'FINISHED'}
 
