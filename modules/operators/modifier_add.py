@@ -46,6 +46,10 @@ class OBJECT_OT_ml_modifier_add(Operator):
                     break
             self.report({'ERROR'}, f"Cannot add {modifier_name} modifier for this object type")
             return {'FINISHED'}
+        # Non-editable override objects don't support adding modifiers
+        except RuntimeError as rte:
+            self.report(type={'ERROR'}, message=str(rte).replace("Error: ", ""))
+            return {'FINISHED'}
 
         self.set_modifier_default_settings()
 
