@@ -578,9 +578,7 @@ class OBJECT_UL_ml_modifier_list(UIList):
                 row = layout.row()
                 row.alert = is_modifier_disabled(mod)
                 row.label(text="", translate=False, icon_value=layout.icon(mod))
-
-                layout.prop(mod, "name", text="", emboss=False, icon_value=icon)
-
+                layout.prop(mod, "name", text="", emboss=False)
                 _modifier_visibility_buttons(mod, layout, get_icons(), use_in_list=True)
             else:
                 layout.label(text="", translate=False, icon_value=icon)
