@@ -22,9 +22,9 @@ class DATA_PT_modifiers(Panel):
 
     def draw(self, context):
         layout = self.layout
-        
+
         prefs = bpy.context.preferences.addons["modifier_list"].preferences
-        
+
         if prefs.properties_editor_style == 'LIST':
             modifiers_ui_with_list(context, layout)
         else:
@@ -51,6 +51,23 @@ def register_DATA_PT_modifiers(self, context):
             register_class(original_DATA_PT_modifiers)
         except RuntimeError:
             pass
+
+
+def reregister_DATA_PT_modifiers(self, context):
+    """Callback function for re-registering Modifier List layout in
+    Property Editor.
+
+    This is needed because there is a bug in Blender that causes the
+    modifier stack to stay visible even after it no longer should be
+    drawn (after switching the layout style from stack to list).
+    """
+    from bpy.utils import register_class, unregister_class
+
+    try:
+        unregister_class(DATA_PT_modifiers)
+        register_class(DATA_PT_modifiers)
+    except RuntimeError:
+        pass
 
 
 def register():
