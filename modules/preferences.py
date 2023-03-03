@@ -10,7 +10,7 @@ from mathutils import Vector
 
 from .icons import load_icons
 from .modifier_categories import ALL_MODIFIERS_NAMES_ICONS_TYPES
-from .ui.properties_editor import register_DATA_PT_modifiers
+from .ui.properties_editor import register_DATA_PT_modifiers, reregister_DATA_PT_modifiers
 from .ui.ui_common import box_with_header, favourite_modifiers_configuration_layout
 from .ui.sidebar import update_sidebar_category
 
@@ -121,6 +121,13 @@ def prefs_callback(self, context):
 
 def use_properties_editor_callback(self, context):
     register_DATA_PT_modifiers(self, context)
+    prefs_callback(self, context)
+
+
+def properties_editor_style_callback(self, context):
+    # Ensure stack layout won't stay visible when switching from stack
+    # to list.
+    reregister_DATA_PT_modifiers(self, context)
     prefs_callback(self, context)
 
 
@@ -431,7 +438,7 @@ class Preferences(AddonPreferences):
         items=style_items,
         name="Properties Editor Style",
         description="Display modifiers inside Properties Editor as",
-        update=prefs_callback)
+        update=properties_editor_style_callback)
 
     sidebar_style: EnumProperty(
         items=style_items,
