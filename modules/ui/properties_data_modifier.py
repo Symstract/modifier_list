@@ -2054,7 +2054,9 @@ class DATA_PT_modifiers:
                 layout.prop(md, f'["{prop_id}"]', text=name)
 
     def _nodes_3_0_inputs(self, layout, ob, md, split_facor):
-        if not md.node_group:
+        node_group = md.node_group
+
+        if not node_group:
             return
 
         # Find an input node because md.node_group.inputs contains
@@ -2062,28 +2064,40 @@ class DATA_PT_modifiers:
         # the only way to find out if an input accepts an attribute
         # (i.e. is a field input) is to check the shape of a socket.
         # Nodes have that info.
-        input_node = next((node for node in md.node_group.nodes if node.type == 'GROUP_INPUT'),
+        input_node = next((node for node in node_group.nodes if node.type == 'GROUP_INPUT'),
                           None)
 
         if not input_node:
             return
 
-        valid_node_outputs_names = []
-        node_output_types = []
-        node_output_socket_shapes = []
+        info_per_input = []
 
         # Skip the last output because it's a placeholder.
         for node_output in input_node.outputs[:-1]:
-            if node_output.type != 'GEOMETRY':
-                valid_node_outputs_names.append(node_output.name)
-                node_output_types.append(node_output.type)
-                node_output_socket_shapes.append(node_output.display_shape)
+            if node_output.type == 'GEOMETRY':
+                continue
+
+            info_per_input.append(
+                {
+                    "name": node_output.name,
+                    "type": node_output.type,
+                    "accepts_attribute": node_output.display_shape in {'DIAMOND', 'DIAMOND_DOT'},
+                }
+            )
 
         input_prop_ids = [prop_id for prop_id in md.keys()
                           if (prop_id.startswith("Input_") and prop_id[-1].isdigit())]
 
-        input_identifiers_names_types_shapes = zip(input_prop_ids, valid_node_outputs_names,
-                                                   node_output_types, node_output_socket_shapes)
+        for i, prop_id in enumerate(input_prop_ids):
+            info_per_input[i]["prop_id"] = prop_id
+
+        if BLENDER_VERSION_MAJOR_POINT_MINOR >= 3.5:
+            inputs_hide_in_modifier = [group_input.hide_in_modifier for group_input
+                                       in node_group.inputs
+                                       if group_input.type != 'GEOMETRY']
+
+            for i, hide_in_mod in enumerate(inputs_hide_in_modifier):
+                info_per_input[i]["hide_in_modifier"] = hide_in_mod
 
         datablock_input_info_per_type = {
             "COLLECTION": {"data_collection": "collections", "icon": "OUTLINER_COLLECTION"},
@@ -2093,23 +2107,28 @@ class DATA_PT_modifiers:
             "TEXTURE": {"data_collection": "textures", "icon": "TEXTURE"},
         }
 
-        for prop_id, name, input_type, socket_shape in input_identifiers_names_types_shapes:
+        for input_info in info_per_input:
+            prop_id = input_info["prop_id"]
+            input_type = input_info["type"]
+
+            if BLENDER_VERSION_MAJOR_POINT_MINOR >= 3.5 and input_info["hide_in_modifier"]:
+                continue
+
             split = layout.split(factor=split_facor)
-            split.label(text=name + ":")
+            split.label(text=input_info["name"] + ":")
 
             row = split.row(align=True)
             prop_row = row.row(align=True)
 
             if input_type in datablock_input_info_per_type.keys():
-                input_info = datablock_input_info_per_type[input_type]
-                prop_row.prop_search(md, f'["{prop_id}"]', bpy.data, input_info["data_collection"],
-                                     text="", icon=input_info["icon"])
+                datablock_input_info = datablock_input_info_per_type[input_type]
+                prop_row.prop_search(md, f'["{prop_id}"]', bpy.data,
+                                     datablock_input_info["data_collection"],
+                                     text="", icon=datablock_input_info["icon"])
                 row.label(text="", icon='BLANK1')
 
             else:
-                # If the socket shape is 'DIAMOND' or 'DIAMOND_DOT' the
-                # input accepts an attribute.
-                if socket_shape in {'DIAMOND', 'DIAMOND_DOT'}:
+                if input_info["accepts_attribute"]:
                     if md[f"{prop_id}_use_attribute"] == 1:
                         attr_prop_name = f'["{prop_id}_attribute_name"]'
                         prop_row.prop(md, attr_prop_name, text="")
