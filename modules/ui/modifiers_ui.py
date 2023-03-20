@@ -642,13 +642,13 @@ class ModifierExtrasBase:
                         _gizmo_object_settings(box)
 
                     layout.separator()
-
-        if active_mod:
-            layout.operator("object.modifier_copy_to_selected").modifier = active_mod.name
         else:
-            row = layout.row()
-            row.enabled = False
-            row.operator("object.modifier_copy_to_selected")
+            if active_mod:
+                layout.operator("object.modifier_copy_to_selected").modifier = active_mod.name
+            else:
+                row = layout.row()
+                row.enabled = False
+                row.operator("object.modifier_copy_to_selected")
 
         layout.separator()
 
