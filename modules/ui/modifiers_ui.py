@@ -27,6 +27,9 @@ from ..utils import (
 )
 
 
+BLENDER_VERSION_MAJOR_POINT_MINOR = float(bpy.app.version_string[0:4].strip("."))
+
+
 # UI elements
 # =======================================================================
 
@@ -644,6 +647,9 @@ class ModifierExtrasBase:
                     layout.separator()
         else:
             if active_mod:
+                if BLENDER_VERSION_MAJOR_POINT_MINOR >= 3.5:
+                    if active_mod.type == 'NODES' and active_mod.node_group:
+                        layout.operator("object.geometry_nodes_move_to_nodes")
                 layout.operator("object.modifier_copy_to_selected").modifier = active_mod.name
             else:
                 row = layout.row()
