@@ -647,10 +647,14 @@ class ModifierExtrasBase:
                     layout.separator()
         else:
             if active_mod:
+                col = layout.column()
+                pinned_ob = context.scene.modifier_list.pinned_object
+                if (class_name.endswith("popup") or class_name.endswith("sidebar")) and pinned_ob:
+                    col.enabled = False
                 if BLENDER_VERSION_MAJOR_POINT_MINOR >= 3.5:
                     if active_mod.type == 'NODES' and active_mod.node_group:
-                        layout.operator("object.geometry_nodes_move_to_nodes")
-                layout.operator("object.modifier_copy_to_selected").modifier = active_mod.name
+                        col.operator("object.geometry_nodes_move_to_nodes")
+                col.operator("object.modifier_copy_to_selected").modifier = active_mod.name
             else:
                 row = layout.row()
                 row.enabled = False
