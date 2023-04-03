@@ -108,3 +108,4 @@ It's recommended to add shortcuts under the 3D View > 3D View (Global) category 
 - Add Modifier's tooltip doesn't fit to Lattice
 - Custom bevel profiles don't get synchronized when synchronizing modifiers between instances
 - Geometry Nodes doesn't have the Internal Dependencies panel
+- Move to Nodes and Copy to Selected operators don't work in the popup or in the sidebar if an object is pinned
