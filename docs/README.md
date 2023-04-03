@@ -107,3 +107,4 @@ It's recommended to add shortcuts under the 3D View > 3D View (Global) category 
 - Data Transfer's "Generate Data Layers" doesn't use automatic settings, instead it opens a menu
 - Add Modifier's tooltip doesn't fit to Lattice
 - Custom bevel profiles don't get synchronized when synchronizing modifiers between instances
+- Geometry Nodes doesn't have the Internal Dependencies panel
