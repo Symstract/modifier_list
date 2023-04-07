@@ -19,6 +19,10 @@ def parse_args():
     return parser.parse_args()
 
 
+def get_dir_content_to_ignore(src: str, names: list[str]):
+    return [name for name in names if name == "__pycache__"]
+
+
 def main():
     root = Path(__file__).resolve().parents[2]
     all_releases_dir = root / f"{ADDON_DIR_NAME}_RELEASES"
@@ -41,7 +45,7 @@ def main():
         source = root / ADDON_DIR_NAME / item
         dest = release_dir / item
         if source.is_dir():
-            shutil.copytree(source, dest)
+            shutil.copytree(source, dest, ignore=get_dir_content_to_ignore)
         else:
             shutil.copy(source, dest)
 
