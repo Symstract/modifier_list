@@ -83,6 +83,8 @@
 
 **Default hotkey for the popup is Alt + Space**. Inside the keymap editor, you can find it under 3D View > 3D View (Global) > Modifier Popup.
 
+In the Property Editor, **Shift + A opens the modifier menu** and **Shift + Ctrl + A opens the modifier search**. To disable or add shortcuts for them for other editors, use "object.ml_modifier_add_from_menu" and "object.ml_modifier_add_from_search" in the keymap editor.
+
 It's recommended to add shortcuts under the 3D View > 3D View (Global) category so they are availabe in all modes.
 
 ## Preferences are auto saved into your Blender config folder
