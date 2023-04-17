@@ -1,5 +1,29 @@
 # Changelog
 
+## 1.7.5 - 17.4.2023
+
+- Curves object is now supported
+- Geometry Nodes: Move to Nodes operator is now supported (disabled in the popup and sidebar when an object is pinned. It doesn't work in that case.)
+- Geometry Nodes: Hide in Modifier toggle is now supported
+- Geometry Nodes: fixed string properties not working
+- Geometry Nodes: now uses the dedicated icon
+- Geometry Nodes: attributes starting with a dot are now filtered out
+- Geometry Nodes: moved field toggles to the right
+- Geometry Nodes: fixed an error in the console when the modifier has no node group
+- Fixed point cloud missing the modifier menu
+- Fixed modifier stack staying visible after switching to the list
+- Fixed modifier settings being disabled for objects with a library override
+- Fixed the modifier stack displaying an extra icon for each modifier
+- Error raising when adding modifier to non-editable override object is now handled
+- Disabled the Copy to Selected operator in the popup and sidebar when an object is pinned. It doesn't work in that case.
+- Fixed (presumably) a minor error arising when there is no objects in the scene at all, and when the cursor is placed in the Outliner context
+- Fixed an error with lattice edit mode toggling when there is a pinned object
+- Fixed modifier default selector showing some unsuitable settings (enums) for Data Transfer. Those have options that could lead to errors.
+- Shift + A now opens the modifier menu in the Property Editor (add manually to other editors)
+- Shift + Ctrl + A now opens the modifier search in the Property Editor (add manually to other editors)
+- Assigning a hotkey for the Copy Modifier and Modifier Move Up/Down operators is now possible
+- Modifier search now supports adding a gizmo object
+
 ## 1.7.4 - 1.4.2022
 
 - Fixed Mesh Sequence Cache missing some settings in 3.1
