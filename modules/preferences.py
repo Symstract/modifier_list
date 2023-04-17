@@ -267,6 +267,8 @@ SETTINGS_TO_IGNORE_PER_MODIFIER = {
         # seem to be a valid option for the modifier.
         "layers_vgroup_select_src",
         "layers_vcol_select_src",
+        "layers_vcol_loop_select_src",
+        "layers_vcol_vert_select_src",
         "layers_uv_select_src",
         # As with the settings above, these settings' enum_items also
         # include the option 'ACTIVE' but again it's not a valid option
@@ -275,6 +277,8 @@ SETTINGS_TO_IGNORE_PER_MODIFIER = {
         # simplest thing is to just ignore these as well.
         "layers_vgroup_select_dst",
         "layers_vcol_select_dst",
+        "layers_vcol_loop_select_dst",
+        "layers_vcol_vert_select_dst",
         "layers_uv_select_dst",
         # For some reason, setting data_types_polys to any value
         # disables the 'UV' option in data_types_loops enum, so it has
