@@ -29,9 +29,13 @@ class OBJECT_OT_ml_modifier_copy(Operator):
         mod = ob.modifiers[ob.ml_modifier_active_index]
 
         # Make copying modifiers possible when an object is pinned
-        override = context.copy()
-        override['object'] = ob
+        
+        ### Draise - removed for Blender 4.0.0 compatibility
 
-        bpy.ops.object.modifier_copy(override, modifier=mod.name)
+        #override = context.copy()
+        #override['object'] = ob
+
+        with context.temp_override(id=ob): ### Draise - added "with" for Blender 4.0.0 compatibility
+            bpy.ops.object.modifier_copy(modifier=mod.name)
 
         return {'FINISHED'}

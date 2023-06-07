@@ -41,8 +41,11 @@ class OBJECT_OT_ml_modifier_move_up(Operator):
         ml_active_ob = get_ml_active_object()
 
         # Make using operators possible when an object is pinned
-        override = context.copy()
-        override['object'] = ml_active_ob
+        
+        ### Draise - removed for Blender 4.0.0 compatibility
+
+        #override = context.copy()
+        #override['object'] = ml_active_ob
 
         active_mod_index = ml_active_ob.ml_modifier_active_index
         active_mod_name = ml_active_ob.modifiers[active_mod_index].name
@@ -51,8 +54,9 @@ class OBJECT_OT_ml_modifier_move_up(Operator):
             bpy.ops.object.modifier_move_to_index(modifier=active_mod_name, index=0)
             ml_active_ob.ml_modifier_active_index = 0
         else:
-            bpy.ops.object.modifier_move_up(override, modifier=active_mod_name)
-            ml_active_ob.ml_modifier_active_index = np.clip(active_mod_index - 1, 0, 999)
+            with context.temp_override(id=ml_active_ob): ### Draise - added "with" for Blender 4.0.0 compatibility 
+                bpy.ops.object.modifier_move_up(modifier=active_mod_name)
+                ml_active_ob.ml_modifier_active_index = np.clip(active_mod_index - 1, 0, 999)
 
         return {'FINISHED'}
 
