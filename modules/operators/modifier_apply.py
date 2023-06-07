@@ -185,8 +185,12 @@ class ApplyModifier:
 
     def apply_modifier(self, context, ml_active_object, init_mode_is_editmode):
         # Make applying modifiers possible when an object is pinned
-        override = context.copy()
-        override['object'] = ml_active_object
+        
+        ### Draise - removed for Blender 4.0.0 compatibility
+
+        #override = context.copy()
+        #override['object'] = ml_active_object
+        
         active_mod_index = ml_active_object.ml_modifier_active_index
         mod = ml_active_object.modifiers[active_mod_index]
         mod_type = mod.type
@@ -194,7 +198,8 @@ class ApplyModifier:
 
         try:
             if self.apply_as == 'DATA':
-                bpy.ops.object.modifier_apply(override, modifier=mod_name)
+                with context.temp_override(id=ml_active_object): ### Draise - added "with" for Blender 4.0.0 compatibility
+                    bpy.ops.object.modifier_apply(modifier=mod_name)
             elif self.apply_as == 'SHAPE':
                     bpy.ops.object.modifier_apply_as_shapekey(
                         override, modifier=mod_name,

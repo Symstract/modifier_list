@@ -20,13 +20,13 @@
 
 bl_info = {
     "name": "Modifier List",
-    "author": "Antti Tikka",
-    "version": (1, 8, 0),
+    "author": "Antti Tikka, Draise",
+    "version": (1, 7, 6),
     "blender": (2, 92, 0),
     "location": "Properties Editor & View3D > Sidebar & View3D > Alt + Spacebar",
     "description": "Alternative UI layout for modifiers with handy features "
                    "+ a Sidebar tab and a popup.",
-    "warning": "Development version",
+    "warning": "",
     "doc_url": "https://github.com/Symstract/modifier_list",
     "category": "3D View"
 }

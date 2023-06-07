@@ -34,11 +34,16 @@ class OBJECT_OT_ml_modifier_add(Operator):
         init_active_mod_index = ob.ml_modifier_active_index
 
         # Make adding modifiers possible when an object is pinned
-        override = context.copy()
-        override['object'] = ob
+        
+        ### Draise - Removed for compatibility with 4.0.0
 
+        #override = context.copy()
+        #override['object'] = ob
+
+        ### Draise - Added the "with" for compatibility with 4.0.0
         try:
-            bpy.ops.object.modifier_add(override, type=self.modifier_type)
+            with context.temp_override(id=ob): 
+                bpy.ops.object.modifier_add(type=self.modifier_type)
         except TypeError:
             for mod in ALL_MODIFIERS_NAMES_ICONS_TYPES:
                 if mod[2] == self.modifier_type:

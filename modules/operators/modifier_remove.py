@@ -41,8 +41,11 @@ class OBJECT_OT_ml_modifier_remove(Operator):
         ml_active_ob = get_ml_active_object()
 
         # Make using operators possible when an object is pinned
-        override = context.copy()
-        override['object'] = ml_active_ob
+        
+        ### Draise - removed for Blender 4.0.0 compatibility
+
+        #override = context.copy()
+        #override['object'] = ml_active_ob
 
         active_mod_index = ml_active_ob.ml_modifier_active_index
         active_mod = ml_active_ob.modifiers[active_mod_index]
@@ -50,7 +53,9 @@ class OBJECT_OT_ml_modifier_remove(Operator):
         if self.shift or prefs.always_delete_gizmo:
             self.remove_gizmo_and_vertex_group(context, ml_active_ob, active_mod)
 
-        bpy.ops.object.modifier_remove(override, modifier=active_mod.name)
+        ### Draise - added "with" for Blender 4.0.0 compatibility
+        with context.temp_override(id=ml_active_ob):
+            bpy.ops.object.modifier_remove(modifier=active_mod.name)
         ml_active_ob.ml_modifier_active_index = np.clip(active_mod_index - 1, 0, 999)
 
         return {'FINISHED'}
